@@ -2,10 +2,28 @@
 
 /*
 Plugin Name: WP2PCS (WP TO BAIDU PCS)
+Plugin URI: http://wordpress.org/plugins/wp2pcs/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
 Version: 1.0
 Author: 否子戈
-Author URI: http://www.utubon.com/
+Author URI: http://wp2pcs.duapp.com
+*/
+
+/*  Copyright 2013  否子戈  (email : frustigor@163.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 define('WP2PCS_PLUGIN_NAME',__FILE__);
