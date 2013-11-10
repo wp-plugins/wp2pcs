@@ -1,4 +1,4 @@
-﻿=== WP2PCS ===
+﻿=== WP2PCS （WordPress连接到百度网盘） ===
 Contributors: frustigor
 Donate link: http://wp2pcs.duapp.com
 Tags: backup, sync, baidu, personal cloud storage, PCS, 百度网盘
