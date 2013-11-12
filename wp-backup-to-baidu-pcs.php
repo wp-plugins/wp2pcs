@@ -54,7 +54,7 @@ function wp_backup_to_pcs_action(){
 			update_option('wp_backup_to_pcs_log_dir',$log_dir);
 		}
 		// 更新定时日周期
-		$run_date = trim($_POST['wp_backup_to_pcs_run_date']);
+		$run_date = $_POST['wp_backup_to_pcs_run_date'];
 		update_option('wp_backup_to_pcs_run_date',$run_date);
 		// 更新定时时间点
 		$run_time = trim($_POST['wp_backup_to_pcs_run_time']);
@@ -64,42 +64,31 @@ function wp_backup_to_pcs_action(){
 			set_time_limit(0); // 延长执行时间，防止备份失败
 			ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
 			date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
-			$access_token = get_option('wp_to_pcs_access_token');
 			$upload_dir = wp_upload_dir();
 			$upload_path = trailingslashit($upload_dir['path']);
+			$remote_dir = $root_dir.date('Y.m.d_H.i.s').'/';
+			$access_token = get_option('wp_to_pcs_access_token');
 			$pcs = new BaiduPCS($access_token);
 			
 			// 备份数据库
 			$file_content = get_database_backup_all_sql();
-			$file_dir = $root_dir.date('Y.m.d_H.i.s').'/';// 这是作为即时备份的文件夹
 			$file_name = 'database.sql';
-			$file_rename = '';
-			$result = $pcs->upload($file_content,$file_dir,$file_name,$file_rename);
+			$pcs->upload($file_content,$remote_dir,$file_name,'');
+			
 			// 备份日志
 			if($log_dir){
 				get_files_in_dir_reset();
 				$log_file = zip_files_in_dir($log_dir,$upload_path.'logs.zip');
 				if($log_file){
-					$file_name = basename($log_file);
-					$file_size = filesize($log_file);
-					$handle = fopen($log_file,'rb');
-					$file_content = fread($handle,$file_size);
-					$result = $pcs->upload($file_content,$file_dir,$file_name,'');
-					fclose($handle);
-					unlink($log_file);
+					wp_backup_to_pcs_send_file($log_file,$remote_dir);
 				}
 			}
+			
 			// 备份网站内的所有文件
 			get_files_in_dir_reset();
 			$www_file = zip_files_in_dir(ABSPATH,$upload_path.'www.zip');
 			if($www_file){
-				$file_name = basename($www_file);
-				$file_size = filesize($www_file);
-				$handle = fopen($www_file,'rb');
-				$file_content = fread($handle,$file_size);
-				$result = $pcs->upload($file_content,$file_dir,$file_name,'');
-				fclose($handle);
-				unlink($www_file);
+				wp_backup_to_pcs_send_file($www_file,$remote_dir);
 			}
 		}
 		// 定时备份，需要和下面的wp_backup_to_pcs_corn_task_function函数结合起来
@@ -114,10 +103,18 @@ function wp_backup_to_pcs_action(){
 					$run_time = date('Y-m-d '.$run_time.':00');
 				}
 				$run_time = strtotime($run_time);
-				if(!wp_next_scheduled('wp_backup_to_pcs_corn_task'))wp_schedule_event($run_time,$run_date,'wp_backup_to_pcs_corn_task');
+				if(!wp_next_scheduled('wp_backup_to_pcs_corn_task')){
+					foreach($run_date as $task => $date){
+						wp_schedule_event($run_time,$date,'wp_backup_to_pcs_corn_task_'.$task);
+					}
+				}
 			}else{
 				// 关闭定时任务
-				if(wp_next_scheduled('wp_backup_to_pcs_corn_task'))wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task');
+				if(wp_next_scheduled('wp_backup_to_pcs_corn_task')){
+					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_database');
+					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
+					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+				}
 			}
 		}
 		wp_redirect(add_query_arg(array('time'=>time())));
@@ -126,8 +123,10 @@ function wp_backup_to_pcs_action(){
 }
 
 // 函数wp_backup_to_pcs_corn_task_function按照规定的时间执行备份动作
-add_action('wp_backup_to_pcs_corn_task','wp_backup_to_pcs_corn_task_function');
-function wp_backup_to_pcs_corn_task_function() {
+add_action('wp_backup_to_pcs_corn_task_database','wp_backup_to_pcs_corn_task_function_database');
+add_action('wp_backup_to_pcs_corn_task_logs','wp_backup_to_pcs_corn_task_function_logs');
+add_action('wp_backup_to_pcs_corn_task_www','wp_backup_to_pcs_corn_task_function_www');
+function wp_backup_to_pcs_corn_task_function_database() {
 	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')return;
 	set_time_limit(0); // 延长执行时间，防止备份失败
 	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
@@ -136,53 +135,100 @@ function wp_backup_to_pcs_corn_task_function() {
 	$upload_dir = wp_upload_dir();
 	$upload_path = trailingslashit($upload_dir['path']);
 	$pcs = new BaiduPCS($access_token);
-			
+	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
+	
 	// 备份数据库
 	$file_content = get_database_backup_all_sql();
-	$file_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
 	$file_name = 'database.sql';
-	$file_rename = '';
-	$result = $pcs->upload($file_content,$file_dir,$file_name,$file_rename);
+	$result = $pcs->upload($file_content,$remote_dir,$file_name,'');
+}
+function wp_backup_to_pcs_corn_task_function_logs(){
+	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')return;
+	set_time_limit(0); // 延长执行时间，防止备份失败
+	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
+	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	$access_token = get_option('wp_to_pcs_access_token');
+	$upload_dir = wp_upload_dir();
+	$upload_path = trailingslashit($upload_dir['path']);
+	$pcs = new BaiduPCS($access_token);
+	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
+
 	// 备份日志
 	$log_dir = get_option('wp_backup_to_pcs_log_dir');
 	if($log_dir){
-		$log_dir =trailingslashit($log_dir);
 		get_files_in_dir_reset();
 		$log_file = zip_files_in_dir($log_dir,$upload_path.'logs.zip');
 		if($log_file){
-			$file_name = basename($log_file);
-			$file_size = filesize($log_file);
-			$handle = fopen($log_file,'rb');
-			$file_content = fread($handle,$file_size);
-			$result = $pcs->upload($file_content,$file_dir,$file_name,'');
-			fclose($handle);
-			unlink($log_file);
+			wp_backup_to_pcs_send_file($log_file,$remote_dir);
 		}
 	}
+}
+function wp_backup_to_pcs_corn_task_function_www(){
+	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')return;
+	set_time_limit(0); // 延长执行时间，防止备份失败
+	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
+	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	$access_token = get_option('wp_to_pcs_access_token');
+	$upload_dir = wp_upload_dir();
+	$upload_path = trailingslashit($upload_dir['path']);
+	$pcs = new BaiduPCS($access_token);
+	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
+
 	// 备份网站内的所有文件
 	get_files_in_dir_reset();
 	$www_file = zip_files_in_dir(ABSPATH,$upload_path.'www.zip');
 	if($www_file){
-		$file_name = basename($www_file);
-		$file_size = filesize($www_file);
-		$handle = fopen($www_file,'rb');
-		$file_content = fread($handle,$file_size);
-		$result = $pcs->upload($file_content,$file_dir,$file_name,'');
-		fclose($handle);
-		unlink($www_file);
+		wp_backup_to_pcs_send_file($www_file,$remote_dir);
 	}
 }
 
-// 创建一个函数直接将一个文件送到百度盘
-function wp_backup_to_pcs_send_file($file_path,$root_dir){
+// 创建一个函数直接将单个文件送到百度盘
+function wp_backup_to_pcs_send_single_file($local_path,$remote_dir){
 	$access_token = get_option('wp_to_pcs_access_token');
 	$pcs = new BaiduPCS($access_token);
-	$file_name = basename($file_path);
-	$fileSize = filesize($file_path);
-	$handle = fopen($file_path,'rb');
-	$file_content = fread($handle,$fileSize);
-	$result = $pcs->upload($file_content,trailingslashit($root_dir),$file_name,'');
+	$file_name = basename($local_path);
+	$file_size = filesize($local_path);
+	$handle = fopen($local_path,'rb');
+	$file_content = fread($handle,$file_size);
+	$pcs->upload($file_content,trailingslashit($remote_dir),$file_name,'');
 	fclose($handle);
+	unlink($local_path);
+}
+
+// 超大文件分片上传函数
+function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_size){
+	$access_token = get_option('wp_to_pcs_access_token');
+	$pcs = new BaiduPCS($access_token);
+	$file_blocks = array();//分片上传文件成功后返回的md5值数组集合
+	$file_name = basename($local_path);
+	$file_size = filesize($local_path);
+	$handle = fopen($local_path,'rb');
+	while(!feof($handle)){
+		$file_block_content = fread($handle,$file_block_size);
+		$temp = $pcs->upload($file_block_content,trailingslashit($remote_dir),$file_name,'',true);
+		if(!is_array($temp)){
+			$temp = json_decode($temp,true);
+		}
+		if(isset($temp['md5'])){
+			array_push($file_blocks,$temp['md5']);
+		}
+	}
+	fclose($handle);
+	unlink($local_path);
+	if(count($file_blocks) > 1){
+		$pcs->createSuperFile(trailingslashit($remote_dir),$file_name,$file_blocks,'');
+	}
+}
+
+// 创建一个函数来确定采取什么上传方式，并执行这种方式的上传
+function wp_backup_to_pcs_send_file($local_path,$remote_dir){
+	$file_size = filesize($local_path);
+	$file_max_size = 20*1024*1024;
+	if($file_size > $file_max_size){
+		wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_max_size);
+	}else{
+		wp_backup_to_pcs_send_single_file($local_path,$remote_dir);
+	}
 }
 
 // WP2PCS菜单中，使用下面的函数，打印与备份有关的内容
@@ -190,7 +236,7 @@ function wp_backup_to_pcs_panel(){
 	$app_key = get_option('wp_to_pcs_app_key');
 	$access_token = get_option('wp_to_pcs_access_token');
 	$root_dir = get_option('wp_backup_to_pcs_root_dir');
-	$run_date = get_option('wp_backup_to_pcs_run_date');
+	$run_date_arr = get_option('wp_backup_to_pcs_run_date');
 	$run_time = get_option('wp_backup_to_pcs_run_time');
 	$log_dir = get_option('wp_backup_to_pcs_log_dir');
 	$btn_text = (get_option('wp_backup_to_pcs_future') == '开启定时' ? '已经开启定时备份，现在关闭' : '开启定时');
@@ -200,22 +246,38 @@ function wp_backup_to_pcs_panel(){
 	<h3>PCS备份设置</h3>
 	<form method="post">
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-		<p>定时备份时间点：<select name="wp_backup_to_pcs_run_date">
-			<option <?php selected($run_date,'daily'); ?> value="daily">每天</option>
-			<option <?php selected($run_date,'doubly'); ?> value="doubly">两天</option>
-			<option <?php selected($run_date,'weekly'); ?> value="weekly">每周</option>
-			<option <?php selected($run_date,'biweekly'); ?> value="biweekly">两周</option>
-			<option <?php selected($run_date,'monthly'); ?> value="monthly">每月</option>
-		</select>
-		<select name="wp_backup_to_pcs_run_time">
-			<option <?php selected($run_time,'00:00'); ?>>00:00</option>
-			<option <?php selected($run_time,'01:00'); ?>>01:00</option>
-			<option <?php selected($run_time,'02:00'); ?>>02:00</option>
-			<option <?php selected($run_time,'03:00'); ?>>03:00</option>
-			<option <?php selected($run_time,'04:00'); ?>>04:00</option>
-			<option <?php selected($run_time,'05:00'); ?>>05:00</option>
-			<option <?php selected($run_time,'06:00'); ?>>06:00</option>
-		</select></p>
+		<p>定时备份：
+			数据库<select name="wp_backup_to_pcs_run_date[database]"><?php $run_date = $run_date_arr['database']; ?>
+				<option <?php selected($run_date,'daily'); ?> value="daily">每天</option>
+				<option <?php selected($run_date,'doubly'); ?> value="doubly">两天</option>
+				<option <?php selected($run_date,'weekly'); ?> value="weekly">每周</option>
+				<option <?php selected($run_date,'biweekly'); ?> value="biweekly">两周</option>
+				<option <?php selected($run_date,'monthly'); ?> value="monthly">每月</option>
+			</select> 
+			日志<select name="wp_backup_to_pcs_run_date[logs]"><?php $run_date = $run_date_arr['logs']; ?>
+				<option <?php selected($run_date,'daily'); ?> value="daily">每天</option>
+				<option <?php selected($run_date,'doubly'); ?> value="doubly">两天</option>
+				<option <?php selected($run_date,'weekly'); ?> value="weekly">每周</option>
+				<option <?php selected($run_date,'biweekly'); ?> value="biweekly">两周</option>
+				<option <?php selected($run_date,'monthly'); ?> value="monthly">每月</option>
+			</select> 
+			整个网站<select name="wp_backup_to_pcs_run_date[www]"><?php $run_date = $run_date_arr['www']; ?>
+				<option <?php selected($run_date,'daily'); ?> value="daily">每天</option>
+				<option <?php selected($run_date,'doubly'); ?> value="doubly">两天</option>
+				<option <?php selected($run_date,'weekly'); ?> value="weekly">每周</option>
+				<option <?php selected($run_date,'biweekly'); ?> value="biweekly">两周</option>
+				<option <?php selected($run_date,'monthly'); ?> value="monthly">每月</option>
+			</select> 
+			时间：<select name="wp_backup_to_pcs_run_time">
+				<option <?php selected($run_time,'00:00'); ?>>00:00</option>
+				<option <?php selected($run_time,'01:00'); ?>>01:00</option>
+				<option <?php selected($run_time,'02:00'); ?>>02:00</option>
+				<option <?php selected($run_time,'03:00'); ?>>03:00</option>
+				<option <?php selected($run_time,'04:00'); ?>>04:00</option>
+				<option <?php selected($run_time,'05:00'); ?>>05:00</option>
+				<option <?php selected($run_time,'06:00'); ?>>06:00</option>
+			</select>
+		</p>
 		<p>备份至网盘目录：<?php if($app_key == 'false') : echo WP2PCS_SUB_DIR; ?><input type="text"  class="regular-text" name="wp_backup_to_pcs_root_dir"  value="<?php echo str_replace(WP2PCS_SUB_DIR,'',$root_dir); ?>" /><?php else : echo WP2PCS_ROOT_DIR; ?><input type="text" name="wp_backup_to_pcs_root_dir" class="regular-text" value="<?php echo str_replace(WP2PCS_ROOT_DIR,'',$root_dir); ?>" /><?php endif; ?></p>
 		<p>当前网站的日志文件夹路径：<input type="text" name="wp_backup_to_pcs_log_dir" class="regular-text" value="<?php echo $log_dir; ?>" /></p>
 		<p>
@@ -235,27 +297,34 @@ function wp_backup_to_pcs_panel(){
 		$results = $results->list;
 		if(!empty($results)){
 			echo '<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">';
-?>
-<iframe name="wp_backup_to_pcs_opt_packs_iframe" id="wp_backup_to_pcs_opt_packs_iframe" style="display:none;" id=""></iframe>
-<script>
-function wp_backup_to_pcs_delete(object){
-	if(!confirm('删除操作将不能取消，是否继续？'))return false;
-	jQuery(object).parent().fadeOut();
-}
-</script>
-<?php
+			?>
+			<iframe name="wp_backup_to_pcs_opt_packs_iframe" id="wp_backup_to_pcs_opt_packs_iframe" style="display:none;" id=""></iframe>
+			<script>
+			function wp_backup_to_pcs_delete(object){
+				if(!confirm('删除操作将不能取消，是否继续？'))return false;
+				jQuery(object).parent().fadeOut();
+			}
+			</script>
+			<?php
 			foreach($results as $file){
-				$file_name = explode('/',$file->path);
-				$file_name = $file_name[count($file_name)-1];
-				$file_name = str_replace('_',' ',$file_name);
-				$download_link = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.$access_token.'&path='.urlencode($file->path.'/');
-?><p>
-	<?php echo $file_name; ?> : 
-	<a href="<?php echo $download_link; ?>database.sql" target="wp_backup_to_pcs_opt_packs_iframe">数据库</a>
-	<a href="<?php echo $download_link; ?>logs.zip" target="wp_backup_to_pcs_opt_packs_iframe">日志</a>
-	<a href="<?php echo $download_link; ?>www.zip" target="wp_backup_to_pcs_opt_packs_iframe">文件</a>
-	<a href="https://pcs.baidu.com/rest/2.0/pcs/file?method=delete&access_token=<?php echo $access_token; ?>&path=<?php echo urlencode($file->path); ?>" target="wp_backup_to_pcs_opt_packs_iframe" onclick="wp_backup_to_pcs_delete(this);">删除</a>
-</p><?php
+				$sub_results = $pcs->listFiles($file->path,'time','desc','0-10');
+				$sub_results = json_decode($sub_results);
+				$sub_results = $sub_results->list;
+				if(!empty($sub_results)){
+					$file_name = explode('/',$file->path);
+					$file_name = $file_name[count($file_name)-1];
+					$file_name = str_replace('_',' ',$file_name);
+					$download_link = 'https://pcs.baidu.com/rest/2.0/pcs/file?method=download&access_token='.$access_token.'&path=';
+					echo '<p>'.$file_name.':';
+					foreach($sub_results as $sub){
+						$sub_link = $download_link.urlencode($sub->path);
+						$sub_name = explode('/',$sub->path);
+						$sub_name = $sub_name[count($sub_name)-1];
+						echo '<a href="'.$sub_link.'" target="wp_backup_to_pcs_opt_packs_iframe">'.$sub_name.'</a> ';
+					}
+					echo '<a href="https://pcs.baidu.com/rest/2.0/pcs/file?method=delete&access_token='.$access_token.'&path='.urlencode($file->path).'" target="wp_backup_to_pcs_opt_packs_iframe" onclick="wp_backup_to_pcs_delete(this);">删除</a>';
+					echo '</p>';
+				}
 			}
 			echo '</div>';
 		}
@@ -263,6 +332,7 @@ function wp_backup_to_pcs_delete(object){
 	?>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p>定时功能：定时功能基于wordpress的corn，只有在激活时定时任务才能被加入进程中，所以，如果你想要修改定时任务的周期或时间，你必须先关闭定时任务，接着修改，再开启，这样才能让新的定时任务生效。为了方便管理定时任务，建议你使用一款名为wp-crontrol的插件来管理所有的定时任务，以了解本定时任务的进展。</p>
+		<p style="color:red;font-weight:bold;">注意：由于备份时需要创建压缩文件，并把压缩文件上传到百度网盘，因此一方面需要你的网站空间有可写权限和足够的剩余空间，另一方面可能会消耗你的网站流量，因此请你一定要注意定时备份时选择合理的备份方式，以免造成空间塞满或流量耗尽等问题。</p>
 		<?php if($app_key == 'false') : ?>
 		<p>备份至网盘目录：由于你使用的是托管服务，因此，我们只能划出一个文件夹给你使用，你没有对这个文件夹的权限，唯一可以做的就是给你的文件夹取一个容易找到的名字，以方便日后下载备份资料。</p>
 		<?php else : ?>
