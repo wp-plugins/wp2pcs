@@ -38,14 +38,23 @@ speculate the Chinese words with google translate service.
 4、前缀：在使用插件的图片外链和文件下载功能时，插件要求你填写一个访问URL的前缀，例如你填写image，那么当用户访问
 yourdomain.com/image/test.jpg时，就能正确显示这张图片了，下载链接的前缀也是同样一个道理。
 
+<strong>不适用范围</strong>
+
+* 超大型网站
+* 开启MULTISITE的多站点网站
+* 网站空间剩余不足三分之一
+* 没有读写权限或读写权限受限制的空间（如BAE、SAE不能备份网站文件）
+* 服务器memory limit, time limit比较小，又不能自己修改的
+* 服务器PHP不支持ZipArchive类
+
 == Installation ==
 
-1、把wp2pcs文件夹上传到/wp-content/plugins/目录
-2、在后台插件列表中激活它
-3、在“插件-WP2PCS”菜单中，点击授权按钮，等待授权跳转
-在授权过程中，如果你已经登录了百度账号，会直接跳转；如果没有登录百度账号，会要求你登录，登录之后一定要勾选同意授权
-网盘（PCS）服务，否则无法使用插件中的服务。
-4、如果授权成功，你会进入到插件的使用页面。
+1、把wp2pcs文件夹上传到/wp-content/plugins/目录<br />
+2、在后台插件列表中激活它<br />
+3、在“插件-WP2PCS”菜单中，点击授权按钮，等待授权跳转<br />
+在授权过程中，如果你已经登录了百度账号，会直接跳转；如果没有登录百度账号，会要求你登录，登录之后一定要勾选同意授权<br />
+网盘（PCS）服务，否则无法使用插件中的服务。<br />
+4、如果授权成功，你会进入到插件的使用页面。<br />
 5、初始化所有信息。
 
 == Frequently Asked Questions ==
