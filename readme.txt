@@ -67,13 +67,13 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 
 == Screenshots ==
 
-1. screenshot-1.png让你选择授权方式。screenshot-1.png shows the status before you get baidu oauth.
-2. screenshot-2.png时你可以对插件进行设置。screenshot-2.png shows the settings of the plugin.
-3. screenshot-3.png时你可以在媒体管理面板上传附件到百度网盘。screenshot-3.png shows how to upload to pcs when you post.
+1. 让你选择授权方式。the status before you get baidu oauth.
+2. 时你可以对插件进行设置。the settings of the plugin.
+3. 时你可以在媒体管理面板上传附件到百度网盘。how to upload to pcs when you post.
 
 == Changelog ==
 
-= 1.0 =
+= 1.1 =
 * 两项基本功能没有变，增加了更多的自定义备份选项。
 
 = 1.0 =
