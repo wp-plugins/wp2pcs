@@ -64,12 +64,10 @@ function wp_backup_to_pcs_action(){
 		if($run_time)update_option('wp_backup_to_pcs_run_time',$run_time);
 		// 要备份的目录列表
 		$local_paths = trim($_POST['wp_backup_to_pcs_local_paths']);
-		if($local_paths == ''){
-			wp_die('必须按照严格的格式填写备份目录列表');
-			exit;
+		if(!empty($local_paths)){
+			$local_paths = explode("\n",$local_paths);
+			update_option('wp_backup_to_pcs_local_paths',$local_paths);
 		}
-		$local_paths = explode("\n",$local_paths);
-		update_option('wp_backup_to_pcs_local_paths',$local_paths);
 		// 立即备份
 		if(isset($_POST['wp_backup_to_pcs_now']) && $_POST['wp_backup_to_pcs_now'] == '马上备份'){
 			set_time_limit(0); // 延长执行时间，防止备份失败
@@ -95,14 +93,16 @@ function wp_backup_to_pcs_action(){
 			}
 			
 			// 备份网站内的所有文件
-			get_files_in_dir_reset();
-			if(is_array($local_paths) && !empty($local_paths)){
-				$www_file = zip_files_in_dirs($local_paths,$upload_path.'www.zip');
-			}else{
-				$www_file = zip_files_in_dir(ABSPATH,$upload_path.'www.zip');
-			}
-			if($www_file){
-				wp_backup_to_pcs_send_file($www_file,$remote_dir);
+			if($local_paths && !empty($local_paths)){
+				get_files_in_dir_reset();
+				if(is_array($local_paths)){
+					$www_file = zip_files_in_dirs($local_paths,$upload_path.'www.zip');
+				}else{
+					$www_file = zip_files_in_dir(ABSPATH,$upload_path.'www.zip');
+				}
+				if($www_file){
+					wp_backup_to_pcs_send_file($www_file,$remote_dir);
+				}
 			}
 		}
 		// 定时备份，需要和下面的wp_backup_to_pcs_corn_task_function函数结合起来
@@ -141,9 +141,11 @@ add_action('wp_backup_to_pcs_corn_task_database','wp_backup_to_pcs_corn_task_fun
 add_action('wp_backup_to_pcs_corn_task_logs','wp_backup_to_pcs_corn_task_function_logs');
 add_action('wp_backup_to_pcs_corn_task_www','wp_backup_to_pcs_corn_task_function_www');
 function wp_backup_to_pcs_corn_task_function_database() {
-	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')return;
+	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')
+		return;
 	$run_date = get_option('wp_backup_to_pcs_run_date');
-	if(!isset($run_date['database']) || $run_date['database'] == 'never')return;
+	if(!isset($run_date['database']) || $run_date['database'] == 'never')
+		return;
 	set_time_limit(0); // 延长执行时间，防止备份失败
 	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
 	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
@@ -159,9 +161,14 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	$result = $pcs->upload($file_content,$remote_dir,$file_name,'');
 }
 function wp_backup_to_pcs_corn_task_function_logs(){
-	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')return;
+	if(get_option('wp_backup_to_pcs_future') != '开启定时')
+		return;
+	$log_dir = get_option('wp_backup_to_pcs_log_dir');
+	if(!$log_dir)
+		return;
 	$run_date = get_option('wp_backup_to_pcs_run_date');
-	if(!isset($run_date['logs']) || $run_date['logs'] == 'never')return;
+	if(!isset($run_date['logs']) || $run_date['logs'] == 'never')
+		return;
 	set_time_limit(0); // 延长执行时间，防止备份失败
 	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
 	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
@@ -172,7 +179,6 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	$pcs = new BaiduPCS($access_token);
 
 	// 备份日志
-	$log_dir = get_option('wp_backup_to_pcs_log_dir');
 	if($log_dir){
 		get_files_in_dir_reset();
 		$log_file = zip_files_in_dir($log_dir,$upload_path.'logs.zip');
@@ -182,16 +188,20 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	}
 }
 function wp_backup_to_pcs_corn_task_function_www(){
-	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')return;
+	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')
+		return;
+	$local_paths = get_option('wp_backup_to_pcs_local_paths');
+	if(!$local_paths || empty($local_paths))
+		return;
 	$run_date = get_option('wp_backup_to_pcs_run_date');
-	if(!isset($run_date['www']) || $run_date['www'] == 'never')return;
+	if(!isset($run_date['www']) || $run_date['www'] == 'never')
+		return;
 	set_time_limit(0); // 延长执行时间，防止备份失败
 	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
 	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
 	$access_token = get_option('wp_to_pcs_access_token');
 	$upload_dir = wp_upload_dir();
 	$upload_path = trailingslashit($upload_dir['path']);
-	$local_paths = get_option('wp_backup_to_pcs_local_paths');
 	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
 	$pcs = new BaiduPCS($access_token);
 
@@ -382,7 +392,7 @@ function wp_backup_to_pcs_panel(){
 	endif;
 	?>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-		<p>定时功能：定时功能基于wordpress的corn，只有在激活时定时任务才能被加入进程中，所以，如果你想要修改定时任务的周期或时间，你必须先关闭定时任务，接着修改，再开启，这样才能让新的定时任务生效。为了方便管理定时任务，建议你使用一款名为wp-crontrol的插件来管理所有的定时任务，以了解本定时任务的进展。</p>
+		<p>定时功能：选“永不”则不备份。定时功能基于wordpress的corn，只有在激活时定时任务才能被加入进程中，所以，如果你想要修改定时任务的周期或时间，你必须先关闭定时任务，接着修改，再开启，这样才能让新的定时任务生效。为了方便管理定时任务，建议你使用一款名为wp-crontrol的插件来管理所有的定时任务，以了解本定时任务的进展。</p>
 		<p style="color:red;font-weight:bold;">注意：由于备份时需要创建压缩文件，并把压缩文件上传到百度网盘，因此一方面需要你的网站空间有可写权限和足够的剩余空间，另一方面可能会消耗你的网站流量，因此请你一定要注意定时备份时选择合理的备份方式，以免造成空间塞满或流量耗尽等问题。</p>
 		<?php if($app_key == 'false') : ?>
 		<p>备份至网盘目录：由于你使用的是托管服务，因此，我们只能划出一个文件夹给你使用，你没有对这个文件夹的权限，唯一可以做的就是给你的文件夹取一个容易找到的名字，以方便日后下载备份资料。</p>
@@ -390,7 +400,7 @@ function wp_backup_to_pcs_panel(){
 		<p>备份至网盘目录：你就会在百度网盘的“我的应用数据”中看到这个目录，但由于需要采用英文，所以百度使用“apps”来代替“我的应用数据”。这里，你只需要填写“/apps/应用名称/backup/”的形式，后面的“backup”是自己规定的，但前面的前缀必须相同，否则会报错。<b>如果你打算把插件用在多个网站中，一定要注意通过设置不同的备份网盘目录，以区分不同的网站。</b></p>
 		<?php endif; ?>
 		<p>一般而言，网址的日志是以.log结束的，文件记录了网站被访问、蜘蛛抓取等信息。在上面填写日志文件夹的路径，留空则不备份日志。这个路径不是访问URL，而是相对于服务器的文件路径。你的网站的根地址是“<?php echo ABSPATH; ?>”，一般日志文件都存放在<?php echo ABSPATH; ?>logs/或和public_html目录同一个级别，你需要填写成你自己的。</p>
-		<p>备份特定目录或文件：每行一个，当前年月日分别用{year}{month}{day}代替，不能有空格，末尾带/，必须为网站目录路径（包含路径头<?php echo ABSPATH; ?>）。<b>注意，上级目录将包含下级目录，如<?php echo ABSPATH; ?>wp-content/将包含<?php echo ABSPATH; ?>wp-content/uploads/，因此务必不要重复，两个只能填一个，否则会报错。</b>填写了目录或文件列表之后，备份时整站将不备份，只备份填写的列表中的目录或文件。</p>
+		<p>备份特定目录或文件：每行一个，当前年月日分别用{year}{month}{day}代替，不能有空格，末尾带/，必须为网站目录路径（包含路径头<?php echo ABSPATH; ?>）。<b>注意，上级目录将包含下级目录，如<?php echo ABSPATH; ?>wp-content/将包含<?php echo ABSPATH; ?>wp-content/uploads/，因此务必不要重复，两个只能填一个，否则会报错。</b>填写了目录或文件列表之后，备份时整站将不备份，只备份填写的列表中的目录或文件。不填，则不备份网站目录下的文件。</p>
 	</div>
 	</form>
 </div>
