@@ -31,7 +31,8 @@ function wp_storage_print_image(){
 			if(get_option('wp_to_pcs_app_key') == 'false')$outlink_type = '200';
 			if($outlink_type == '200'){
 				$pcs = new BaiduPCS($access_token);
-				$result = $pcs->thumbnail($image_path,1600,1600,100);
+				//$result = $pcs->thumbnail($image_path,1600,3200,100);
+				$result = $pcs->downloadStream($image_path);
 				header('Content-type: image/jpeg');
 				echo $result;
 			}else{

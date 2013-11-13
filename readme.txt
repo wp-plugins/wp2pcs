@@ -4,7 +4,7 @@ Donate link: http://wp2pcs.duapp.com
 Tags: backup, sync, baidu, personal cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
 Tested up to: 3.7.1
-Stable tag: trunk
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,3 +70,22 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 1. screenshot-1.png让你选择授权方式。screenshot-1.png shows the status before you get baidu oauth.
 2. screenshot-2.png时你可以对插件进行设置。screenshot-2.png shows the settings of the plugin.
 3. screenshot-3.png时你可以在媒体管理面板上传附件到百度网盘。screenshot-3.png shows how to upload to pcs when you post.
+
+== Changelog ==
+
+= 1.0 =
+* 两项基本功能没有变，增加了更多的自定义备份选项。
+
+= 1.0 =
+* 基本功能：1、备份到百度网盘；2、保存文件到百度网盘，并可以插入到文章中。
+
+== Upgrade Notice ==
+
+= 1.1 =
+修改了一些BUG，更新了备份选项，添加自定义备份，升级到1.1版本。
+备份选项：注意，根据自己的网站情况选择特定的备份周期。
+备份特定目录或文件：每行一个，当前年月日分别用{year}{month}{day}代替，不能有空格，末尾带/，必须为网站目录路径（包含路径头/www/users/xn--sxry05m.xn--fiqs8s/）。注意，上级目录将包含下级目录，如/www/users/xn--sxry05m.xn--fiqs8s/wp-content/将包含/www/users/xn--sxry05m.xn--fiqs8s/wp-content/uploads/，因此务必不要重复，两个只能填一个，否则会报错。填写了目录或文件列表之后，备份时整站将不备份，只备份填写的列表中的目录或文件。
+
+= 1.0 =
+实现基本功能
+

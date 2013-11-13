@@ -59,7 +59,7 @@ function get_database_tables(){
 	$tables = $wpdb->get_results("SHOW TABLE STATUS");
 	return $tables;
 }
-// 获取最终的所有SQL语句，但这样可能让文件很大，不利于导入，因此建议采用分表导出的方式
+// 获取最终的所有SQL语句，但这样可能让文件很大，不利于导入，因此建议采用分表导出的方式（还未开发）
 function get_database_backup_all_sql(){
 	$tables = get_database_tables();
 	$sql = '';
