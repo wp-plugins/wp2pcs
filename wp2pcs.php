@@ -31,6 +31,28 @@ define('WP2PCS_API_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/'); // 应用在网盘中的位置
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/'); // 如果使用WP2PCS托管服务的话
 
+require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
+require(dirname(__FILE__).'/wp-backup-database-functions.php');
+require(dirname(__FILE__).'/wp-backup-file-functions.php');
+require(dirname(__FILE__).'/wp-backup-to-baidu-pcs.php');
+require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
+require(dirname(__FILE__).'/wp-storage-image-outlink.php');
+require(dirname(__FILE__).'/wp-storage-download-file.php');
+
+// 创建一个函数，用来判断是否已经授权
+function is_wp_to_pcs_token_active(){
+	$access_token = get_option('wp_to_pcs_access_token');
+	$pcs = new BaiduPCS($access_token);
+	$quota = json_decode($pcs->getQuota());
+	if(!$access_token || empty($access_token) || !$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
+		return false;
+	}
+	return true;
+}
+
+// 因为下面的文件需要上面的函数，所以放到最后
+include(dirname(__FILE__).'/wp-storage-insert-to-content.php');
+
 // 获取当前访问的URL地址
 function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 	// http://www.ludou.org/how-to-get-the-current-url-in-wordpress.html
@@ -64,18 +86,9 @@ function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 	return $current_url;
 }
 
-require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
-require(dirname(__FILE__).'/wp-backup-database-functions.php');
-require(dirname(__FILE__).'/wp-backup-file-functions.php');
-require(dirname(__FILE__).'/wp-backup-to-baidu-pcs.php');
-require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
-require(dirname(__FILE__).'/wp-storage-image-outlink.php');
-require(dirname(__FILE__).'/wp-storage-download-file.php');
-
-
-// 添加菜单
-add_action('admin_menu','wp_to_pcs_menu');
-function wp_to_pcs_menu(){
+// 添加更新动作
+add_action('init','wp_to_pcs_action');
+function wp_to_pcs_action(){
 	if(!is_admin())return;
 	// 提交授权
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key'){
@@ -125,18 +138,13 @@ function wp_to_pcs_menu(){
 		wp_redirect(add_query_arg('time',time()));
 		exit;
 	}
-	// 在wordpress菜单中添加插件菜单
-	add_plugins_page('WordPress连接百度云盘','WP2PCS','edit_theme_options','wp2pcs','wp_to_pcs_pannel');
 }
 
-function is_wp_to_pcs_token_active(){
-	$access_token = get_option('wp_to_pcs_access_token');
-	$pcs = new BaiduPCS($access_token);
-	$quota = json_decode($pcs->getQuota());
-	if(!$access_token || empty($access_token) || !$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
-		return false;
-	}
-	return true;
+// 添加菜单
+add_action('admin_menu','wp_to_pcs_menu');
+function wp_to_pcs_menu(){
+	// 在wordpress菜单中添加插件菜单
+	add_plugins_page('WordPress连接百度云盘','WP2PCS','edit_theme_options','wp2pcs','wp_to_pcs_pannel');
 }
 
 // 选项和菜单
@@ -201,6 +209,3 @@ function wp_to_pcs_pannel(){
 </div>
 <?php
 }
-
-// 因为下面的文件需要上面的函数，所以放到最后
-include(dirname(__FILE__).'/wp-storage-insert-to-content.php');

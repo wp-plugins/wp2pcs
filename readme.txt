@@ -25,16 +25,16 @@ pictures in wordpress easily.
 @@@@ as baidu accounts are always used by Chinese, now I have not support English. If you want to use this plugin,
 speculate the Chinese words with google translate service.
 
-<strong>注意问题</strong>
+<strong>说明</strong>
 
 1、版本：本插件同时发行三个版本，当前这个版本为“个人完美版”，另外还有两个版本为“开发者创意版”和“企业专业版”，它们
 之间的区别可以在主页 http://wp2pcs.duapp.com 了解。大体上，开发者版中，开发者可以使用自己的百度应用API KEY，从而
 使用自己的PCS API服务，并可以为别人提供这类服务；企业版则没有成形的最终可用产品，而是为企业用户特定项目中的这个服务
-提供定制开发。
+提供定制开发。<br />
 2、普通用户使用时是否选择托管？一般而言，只要拥有百度账户，并且开通了网盘服务的百度用户都可以使用本插件，托管服务是
-专门为那些没有百度网盘的用户提供的，网站数据将被托管到WP2PCS的官方网盘内，具体详情请看插件后台的介绍。
+专门为那些没有百度网盘的用户提供的，网站数据将被托管到WP2PCS的官方网盘内，具体详情请看插件后台的介绍。<br />
 3、路径设置：对于有一定wordpress经验的用户对此比较了解，对于那些完全不理解路径设置的用户或许需要花一点时间来理解这
-些概念，如果你不懂路径与URL的区别，请先google学习这些知识。
+些概念，如果你不懂路径与URL的区别，请先google学习这些知识。<br />
 4、前缀：在使用插件的图片外链和文件下载功能时，插件要求你填写一个访问URL的前缀，例如你填写image，那么当用户访问
 yourdomain.com/image/test.jpg时，就能正确显示这张图片了，下载链接的前缀也是同样一个道理。
 
