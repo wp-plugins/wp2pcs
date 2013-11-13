@@ -78,17 +78,22 @@ function zip_files_in_dirs($zip_local_paths = array(),$zip_file_path){
 		$zip_local_path = str_replace('{year}',date('Y'),$zip_local_path);
 		$zip_local_path = str_replace('{month}',date('m'),$zip_local_path);
 		$zip_local_path = str_replace('{day}',date('d'),$zip_local_path);
-		if(!file_exists($zip_local_path) || !is_dir($zip_local_path) || !is_file($zip_local_path)){
+		if(!file_exists($zip_local_path)){
 			continue;
 		}
-		$files = get_files_in_dir($zip_local_path);
-		if(!empty($files))foreach($files as $file){
-			$file_rename = str_replace(ABSPATH,'',$file);
-			if(is_dir($file)){
-				$zip->addEmptyDir($file_rename);
-			}elseif(is_file($file)){
-				$zip->addFile($file,$file_rename);
+		if(is_dir($zip_local_path)){
+			$files = get_files_in_dir($zip_local_path);
+			if(!empty($files))foreach($files as $file){
+				$file_rename = str_replace(ABSPATH,'',$file);
+				if(is_dir($file)){
+					$zip->addEmptyDir($file_rename);
+				}elseif(is_file($file)){
+					$zip->addFile($file,$file_rename);
+				}
 			}
+		}elseif(is_file($zip_local_path)){
+			$file_rename = str_replace(ABSPATH,'',$zip_local_path);
+			$zip->addFile($zip_local_path,$file_rename);
 		}
 	}
 	$zip->close();//关闭
