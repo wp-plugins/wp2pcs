@@ -32,12 +32,15 @@ define('WP2PCS_ROOT_DIR','/apps/wp2pcs/'); // 应用在网盘中的位置
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/'); // 如果使用WP2PCS托管服务的话
 
 require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
+// 下面三条是用来备份的
 require(dirname(__FILE__).'/wp-backup-database-functions.php');
 require(dirname(__FILE__).'/wp-backup-file-functions.php');
 require(dirname(__FILE__).'/wp-backup-to-baidu-pcs.php');
+// 下面四条是用来把网盘作为存储空间的
 require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-storage-image-outlink.php');
 require(dirname(__FILE__).'/wp-storage-download-file.php');
+include(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
 // 创建一个函数，用来判断是否已经授权
 function is_wp_to_pcs_token_active(){
@@ -50,8 +53,6 @@ function is_wp_to_pcs_token_active(){
 	return true;
 }
 
-// 因为下面的文件需要上面的函数，所以放到最后
-include(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
 // 获取当前访问的URL地址
 function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){

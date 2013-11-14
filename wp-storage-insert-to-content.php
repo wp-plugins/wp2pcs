@@ -15,15 +15,23 @@ http://stackoverflow.com/questions/5671550/jquery-window-send-to-editor
 http://wordpress.stackexchange.com/questions/50873/how-to-handle-multiple-instance-of-send-to-editor-js-function
 http://codeblow.com/questions/jquery-window-send-to-editor/
 http://wordpress.stackexchange.com/questions/85351/remove-other-tabs-in-new-wordpress-media-gallery
-
-
-
 */
+
+// 创建一个函数，用来判断是否已经授权
+function is_wp_to_pcs_token_active_for_tab(){
+	$access_token = get_option('wp_to_pcs_access_token');
+	$pcs = new BaiduPCS($access_token);
+	$quota = json_decode($pcs->getQuota());
+	if(!$access_token || empty($access_token) || !$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
+		return false;
+	}
+	return true;
+}
 
 // 在新媒体管理界面添加一个百度网盘的选项
 add_filter('media_upload_tabs', 'wp_storage_to_pcs_media_tab' );
 function wp_storage_to_pcs_media_tab($tabs){
-	if(!is_wp_to_pcs_token_active())return;
+	if(!is_wp_to_pcs_token_active_for_tab())return;
 	$newtab = array('file_from_pcs' => '百度网盘');
     return array_merge($tabs,$newtab);
 }

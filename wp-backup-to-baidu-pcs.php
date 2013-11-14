@@ -284,7 +284,7 @@ function wp_backup_to_pcs_panel(){
 	$timestamp_www = wp_next_scheduled('wp_backup_to_pcs_corn_task_www');
 	$timestamp_www = ($timestamp_www ? date('Y-m-d H:i',$timestamp_www) : false);
 	$local_paths = get_option('wp_backup_to_pcs_local_paths');
-	$local_paths = (is_array($local_paths) && !empty($local_paths) ? implode("\n",$local_paths) : ABSPATH);
+	$local_paths = (is_array($local_paths) && !empty($local_paths) ? implode("\n",$local_paths) : '');
 ?>
 <div class="postbox">
 	<h3>PCS备份设置</h3>
@@ -338,7 +338,7 @@ function wp_backup_to_pcs_panel(){
 		<p>备份至网盘目录：<?php if($app_key == 'false') : echo WP2PCS_SUB_DIR; ?><input type="text"  class="regular-text" name="wp_backup_to_pcs_root_dir"  value="<?php echo str_replace(WP2PCS_SUB_DIR,'',$root_dir); ?>" /><?php else : echo WP2PCS_ROOT_DIR; ?><input type="text" name="wp_backup_to_pcs_root_dir" class="regular-text" value="<?php echo str_replace(WP2PCS_ROOT_DIR,'',$root_dir); ?>" /><?php endif; ?></p>
 		<p>当前网站的日志文件夹路径：<input type="text" name="wp_backup_to_pcs_log_dir" class="regular-text" value="<?php echo $log_dir; ?>" /></p>
 		<p>
-			只备份下列文件或目录：（务必阅读下方说明）<br />
+			只备份下列文件或目录：（务必阅读下方说明，根路径为：<?php echo ABSPATH; ?>）<br />
 			<textarea name="wp_backup_to_pcs_local_paths" class="large-text code" style="height:90px;"><?php echo stripslashes($local_paths); ?></textarea>
 		</p>
 		<p>
