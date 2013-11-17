@@ -26,60 +26,13 @@ function get_files_in_dir_reset(){
 	$file_list = array();
 }
 
-// 打包某一个目录，打包的包括它的子目录
-function zip_files_in_dir($zip_dir_path,$zip_file_path,$remove_path){
-	// 适用于所有路径，和下面的zip_files_in_dirs不同
-	set_time_limit(0); // 延长执行时间，防止读取失败
-	//ini_set('max_execution_time', 1000);
-	ini_set('memory_limit','200M'); // 扩大内存限制，防止读取文件溢出
-	if(!file_exists($zip_dir_path) || !is_dir($zip_dir_path)){
-		return null;
-	}
-	if(file_exists($zip_file_path)){
-		unlink($zip_file_path);
-	}
-	$zip = new ZipArchive();
-	if($zip->open($zip_file_path,ZIPARCHIVE::CREATE)!==TRUE){
-		return false;
-	}
-	// 获取这个目录下的所有文件
-	$files = get_files_in_dir($zip_dir_path);
-	//print_r($files);
-	if(!empty($files))foreach($files as $file){
-		$file_rename = str_replace($zip_dir_path,'',$file);
-		if(is_dir($file)){
-			$zip->addEmptyDir($file_rename);
-		}elseif(is_file($file)){
-			$zip->addFile($file,$file_rename);
-		}
-	}
-	$zip->close();//关闭
-	return $zip_file_path;
-}
-
-// 基于PHPzip类的打包函数，其中第一个函数既可以是路径字串，也可以是路径数组
-function PHPzip_zip_files($files_and_dirs_to_zip,$put_into_zip_file,$remove_path = ''){
-	$faisunZIP = new PHPzip;
-	if($faisunZIP->startfile($put_into_zip_file)){
-		$file_count = 0;
-		if(!is_array($files_and_dirs_to_zip)){
-			$faisunZIP->goTree($files_and_dirs_to_zip,$remove_path);
-		}else{
-			foreach($files_and_dirs_to_zip as $file){
-				$faisunZIP->goTree($file,$remove_path);
-			}
-		}
-		$faisunZIP->createfile();
-	}else{
-		return false;
-	}
-	return $put_into_zip_file;
-}
-
-
-// 打包指定目录列表中的文件
+/*
+* 打包指定目录列表中的文件
+* 第一个参数为准备放入zip文件的路径数组，或某单一路径
+* 第二个参数为准备作为存放zip文件的路径
+* 第三个参数为zip文件中，准备移除的路径字串
+*/
 function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
-	// 只适用于ABSPATH开头的路径
 	if(empty($zip_local_paths)){
 		return null;
 	}
@@ -90,15 +43,14 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
 			return false;
 		}
 	}
-	set_time_limit(0);
-	ini_set('memory_limit','200M');
 	if(file_exists($zip_file_path)){
 		unlink($zip_file_path);
 	}
+	/* 基于PHPzip打包方法 */
 	if(!PHPzip_zip_files($zip_local_paths,$zip_file_path,$remove_path)){
 		return false;
 	}
-	/**
+	/* 基于ZipArchive的打包方法
 	$zip = new ZipArchive();
 	if($zip->open($zip_file_path,ZIPARCHIVE::CREATE)!==TRUE){
 		return false;
@@ -113,9 +65,10 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
 			continue;
 		}
 		if(is_dir($zip_local_path)){
+			get_files_in_dir_reset();
 			$files = get_files_in_dir($zip_local_path);
 			if(!empty($files))foreach($files as $file){
-				$file_rename = str_replace(ABSPATH,'',$file);
+				$file_rename = str_replace($remove_path,'',$file);
 				if(is_dir($file)){
 					$zip->addEmptyDir($file_rename);
 				}elseif(is_file($file)){
@@ -123,11 +76,11 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
 				}
 			}
 		}elseif(is_file($zip_local_path)){
-			$file_rename = str_replace(ABSPATH,'',$zip_local_path);
+			$file_rename = str_replace($remove_path,'',$zip_local_path);
 			$zip->addFile($zip_local_path,$file_rename);
 		}
 	}
-	$zip->close();//关闭
-	**/
+	$zip->close();//关闭 */
+
 	return $zip_file_path;
 }
