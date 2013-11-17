@@ -45,7 +45,6 @@ yourdomain.com/image/test.jpg时，就能正确显示这张图片了，下载链
 * 网站空间剩余不足三分之一
 * 没有读写权限或读写权限受限制的空间（如BAE、SAE不能备份网站文件）
 * 服务器memory limit, time limit比较小，又不能自己修改的
-* 服务器PHP不支持ZipArchive类
 
 == Installation ==
 
