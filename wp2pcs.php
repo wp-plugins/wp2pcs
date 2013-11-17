@@ -48,10 +48,9 @@ require(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
 // 创建一个函数，用来判断是否已经授权
 function is_wp_to_pcs_token_active(){
+	$app_key = get_option('wp_to_pcs_app_key');
 	$access_token = get_option('wp_to_pcs_access_token');
-	$pcs = new BaiduPCS($access_token);
-	$quota = json_decode($pcs->getQuota());
-	if(!$access_token || empty($access_token) || !$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
+	if(!$app_key || !$access_token){
 		return false;
 	}
 	return true;
