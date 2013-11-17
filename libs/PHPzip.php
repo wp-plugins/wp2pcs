@@ -184,3 +184,18 @@ class PHPzip{
 
 
 }// end of class PHPzip
+
+// 基于PHPzip的打包函数，第一个参数为要打包的路径数组，第二个参数是准备存放的压缩包，第三个是压缩包中要去除的文件路径字符串
+function PHPzip_zip_files($files_and_dirs_to_zip,$put_into_zip_file,$remove_path = ''){
+	$faisunZIP = new PHPzip;
+	if($faisunZIP->startfile($put_into_zip_file)){
+		$file_count = 0;
+		foreach($files_and_dirs_to_zip as $file){
+			$faisunZIP->goTree($file,$remove_path);
+		}
+		$faisunZIP->createfile();
+	}else{
+		return false;
+	}
+	return $put_into_zip_file;
+}

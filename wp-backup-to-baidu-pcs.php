@@ -243,7 +243,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 // 创建一个函数来确定采取什么上传方式，并执行这种方式的上传
 function wp_backup_to_pcs_send_file($local_path,$remote_dir){
 	$file_size = filesize($local_path);
-	$file_max_size = 20*1024*1024;
+	$file_max_size = 2*1024*1024;
 	if($file_size > $file_max_size){
 		wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_max_size);
 	}else{
@@ -279,7 +279,7 @@ function wp_backup_to_pcs_panel(){
 		<p><b>下一次自动备份时间</b>：
 			<?php echo ($timestamp_database ? '数据库：'.$timestamp_database : ''); ?>
 			<?php echo ($timestamp_logs ? '日志：'.$timestamp_logs : ''); ?>
-			<?php echo ($timestamp_www ? '整站：'.$timestamp_www : ''); ?>
+			<?php echo ($timestamp_www ? '网站：'.$timestamp_www : ''); ?>
 			<br />
 			要重新规定备份时间，必须先关闭定时备份。
 		</p>
