@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS (WP TO BAIDU PCS)
 Plugin URI: http://wordpress.org/plugins/wp2pcs/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.1
+Version: 1.0.2
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -27,20 +27,24 @@ Author URI: http://www.utubon.com
 */
 
 define('WP2PCS_PLUGIN_NAME',__FILE__);
+if(!defined('WP_CONTENT_DIR')){
+	defined('WP_CONTENT_DIR',trailingslashit(ABSPATH).'wp-content/');
+}
 define('WP2PCS_API_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/'); // 应用在网盘中的位置
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/'); // 如果使用WP2PCS托管服务的话
 
 require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
-// 下面三条是用来备份的
+// 下面是备份功能文件
+require(dirname(__FILE__).'/libs/PHPzip.php');
 require(dirname(__FILE__).'/wp-backup-database-functions.php');
 require(dirname(__FILE__).'/wp-backup-file-functions.php');
 require(dirname(__FILE__).'/wp-backup-to-baidu-pcs.php');
-// 下面四条是用来把网盘作为存储空间的
+// 下面是存储功能文件
 require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-storage-image-outlink.php');
 require(dirname(__FILE__).'/wp-storage-download-file.php');
-include(dirname(__FILE__).'/wp-storage-insert-to-content.php');
+require(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
 // 创建一个函数，用来判断是否已经授权
 function is_wp_to_pcs_token_active(){
@@ -85,6 +89,19 @@ function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 		$current_url = str_replace('?'.$parse_url['query'],'',$current_url);
 	}
 	return $current_url;
+}
+
+// 添加菜单
+if(is_multisite()){
+	add_action('network_admin_menu','wp_to_pcs_menu');
+	function wp_to_pcs_menu(){
+		add_plugins_page('WordPress连接百度云盘','WP2PCS','manage_network','wp2pcs','wp_to_pcs_pannel');
+	}
+}else{
+	add_action('admin_menu','wp_to_pcs_menu');
+	function wp_to_pcs_menu(){
+		add_plugins_page('WordPress连接百度云盘','WP2PCS','edit_theme_options','wp2pcs','wp_to_pcs_pannel');
+	}
 }
 
 // 添加更新动作
@@ -139,13 +156,6 @@ function wp_to_pcs_action(){
 		wp_redirect(add_query_arg('time',time()));
 		exit;
 	}
-}
-
-// 添加菜单
-add_action('admin_menu','wp_to_pcs_menu');
-function wp_to_pcs_menu(){
-	// 在wordpress菜单中添加插件菜单
-	add_plugins_page('WordPress连接百度云盘','WP2PCS','edit_theme_options','wp2pcs','wp_to_pcs_pannel');
 }
 
 // 选项和菜单

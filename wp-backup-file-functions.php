@@ -1,5 +1,6 @@
 <?php
 
+/** 使用了新的压缩类，用一个函数就可以解决问题
 // 获取目录下的文件列表，注意，参数$path末尾最好不要带/
 function get_files_in_dir($path){
 	set_time_limit(0); // 延长执行时间，防止读取失败
@@ -27,7 +28,7 @@ function get_files_in_dir_reset(){
 }
 
 // 打包某一个目录，打包的包括它的子目录
-function zip_files_in_dir($zip_dir_path,$zip_file_path){
+function zip_files_in_dir($zip_dir_path,$zip_file_path,$remove_path){
 	// 适用于所有路径，和下面的zip_files_in_dirs不同
 	set_time_limit(0); // 延长执行时间，防止读取失败
 	//ini_set('max_execution_time', 1000);
@@ -56,23 +57,35 @@ function zip_files_in_dir($zip_dir_path,$zip_file_path){
 	$zip->close();//关闭
 	return $zip_file_path;
 }
+**/
 
 // 打包指定目录列表中的文件
-function zip_files_in_dirs($zip_local_paths = array(),$zip_file_path){
+function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
 	// 只适用于ABSPATH开头的路径
 	if(empty($zip_local_paths)){
 		return null;
 	}
+	if(!is_array($zip_local_paths)){
+		if(is_string($zip_local_paths) && (is_file($zip_local_paths) || is_dir($zip_local_paths))){
+			$zip_local_paths = array($zip_local_paths);
+		}else{
+			return false;
+		}
+	}
 	set_time_limit(0);
 	ini_set('memory_limit','200M');
-	date_default_timezone_set("PRC");
 	if(file_exists($zip_file_path)){
 		unlink($zip_file_path);
 	}
+	if(!PHPzip_zip_files($zip_local_paths,$zip_file_path,$remove_path)){
+		return false;
+	}
+	/**
 	$zip = new ZipArchive();
 	if($zip->open($zip_file_path,ZIPARCHIVE::CREATE)!==TRUE){
 		return false;
 	}
+	date_default_timezone_set("PRC");
 	foreach($zip_local_paths as $zip_local_path){
 		$zip_local_path = trim($zip_local_path);
 		$zip_local_path = str_replace('{year}',date('Y'),$zip_local_path);
@@ -97,5 +110,6 @@ function zip_files_in_dirs($zip_local_paths = array(),$zip_file_path){
 		}
 	}
 	$zip->close();//关闭
+	**/
 	return $zip_file_path;
 }

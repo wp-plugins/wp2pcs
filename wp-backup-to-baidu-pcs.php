@@ -55,6 +55,8 @@ function wp_backup_to_pcs_action(){
 		if(trim($_POST['wp_backup_to_pcs_log_dir']) != ''){
 			$log_dir = trailingslashit($_POST['wp_backup_to_pcs_log_dir']);
 			update_option('wp_backup_to_pcs_log_dir',$log_dir);
+		}else{
+			delete_option('wp_backup_to_pcs_log_dir');
 		}
 		// 更新定时日周期
 		$run_date = isset($_POST['wp_backup_to_pcs_run_date']) ? $_POST['wp_backup_to_pcs_run_date'] : false;
@@ -67,13 +69,14 @@ function wp_backup_to_pcs_action(){
 		if(!empty($local_paths)){
 			$local_paths = explode("\n",$local_paths);
 			update_option('wp_backup_to_pcs_local_paths',$local_paths);
+		}else{
+			delete_option('wp_backup_to_pcs_local_paths');
 		}
 		// 立即备份
 		if(isset($_POST['wp_backup_to_pcs_now']) && $_POST['wp_backup_to_pcs_now'] == '马上备份'){
 			set_time_limit(0); // 延长执行时间，防止备份失败
 			ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
-			$upload_dir = wp_upload_dir();
-			$upload_path = trailingslashit($upload_dir['path']);
+			$zip_dir = trailingslashit(WP_CONTENT_DIR);
 			$remote_dir = $root_dir.date('Y.m.d_H.i.s').'/';
 			$access_token = get_option('wp_to_pcs_access_token');
 			$pcs = new BaiduPCS($access_token);
@@ -85,8 +88,7 @@ function wp_backup_to_pcs_action(){
 			
 			// 备份日志
 			if($log_dir){
-				get_files_in_dir_reset();
-				$log_file = zip_files_in_dir($log_dir,$upload_path.'logs.zip');
+				$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
 				if($log_file){
 					wp_backup_to_pcs_send_file($log_file,$remote_dir);
 				}
@@ -94,12 +96,7 @@ function wp_backup_to_pcs_action(){
 			
 			// 备份网站内的所有文件
 			if($local_paths && !empty($local_paths)){
-				get_files_in_dir_reset();
-				if(is_array($local_paths)){
-					$www_file = zip_files_in_dirs($local_paths,$upload_path.'www.zip');
-				}else{
-					$www_file = zip_files_in_dir(ABSPATH,$upload_path.'www.zip');
-				}
+				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
 				if($www_file){
 					wp_backup_to_pcs_send_file($www_file,$remote_dir);
 				}
@@ -150,8 +147,6 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
 	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
 	$access_token = get_option('wp_to_pcs_access_token');
-	$upload_dir = wp_upload_dir();
-	$upload_path = trailingslashit($upload_dir['path']);
 	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
 	$pcs = new BaiduPCS($access_token);
 	
@@ -173,18 +168,14 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
 	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
 	$access_token = get_option('wp_to_pcs_access_token');
-	$upload_dir = wp_upload_dir();
-	$upload_path = trailingslashit($upload_dir['path']);
+	$zip_dir = trailingslashit(WP_CONTENT_DIR);
 	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
 	$pcs = new BaiduPCS($access_token);
 
 	// 备份日志
-	if($log_dir){
-		get_files_in_dir_reset();
-		$log_file = zip_files_in_dir($log_dir,$upload_path.'logs.zip');
-		if($log_file){
-			wp_backup_to_pcs_send_file($log_file,$remote_dir);
-		}
+	$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
+	if($log_file){
+		wp_backup_to_pcs_send_file($log_file,$remote_dir);
 	}
 }
 function wp_backup_to_pcs_corn_task_function_www(){
@@ -200,18 +191,12 @@ function wp_backup_to_pcs_corn_task_function_www(){
 	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
 	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
 	$access_token = get_option('wp_to_pcs_access_token');
-	$upload_dir = wp_upload_dir();
-	$upload_path = trailingslashit($upload_dir['path']);
+	$zip_dir = trailingslashit(WP_CONTENT_DIR);
 	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
 	$pcs = new BaiduPCS($access_token);
 
 	// 备份网站内的所有文件
-	get_files_in_dir_reset();
-	if(is_array($local_paths) && !empty($local_paths)){
-		$www_file = zip_files_in_dirs($local_paths,$upload_path.'www.zip');
-	}else{
-		$www_file = zip_files_in_dir(ABSPATH,$upload_path.'www.zip');
-	}
+	$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
 	if($www_file){
 		wp_backup_to_pcs_send_file($www_file,$remote_dir);
 	}
@@ -345,6 +330,7 @@ function wp_backup_to_pcs_panel(){
 			<input type="submit" value="确定" class="button-primary" />
 			<input type="submit" name="wp_backup_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
 			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
+			<?php if(!class_exists('ZipArchive'))echo '<b>当前服务器不支持插件打包方式，只有数据库可以被备份。</b>'; ?>
 		</p>
 		<input type="hidden" name="action" value="wp_backup_to_pcs_send_file" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
