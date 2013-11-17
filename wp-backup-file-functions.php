@@ -1,6 +1,5 @@
 <?php
 
-/** 使用了新的压缩类，用一个函数就可以解决问题
 // 获取目录下的文件列表，注意，参数$path末尾最好不要带/
 function get_files_in_dir($path){
 	set_time_limit(0); // 延长执行时间，防止读取失败
@@ -57,7 +56,26 @@ function zip_files_in_dir($zip_dir_path,$zip_file_path,$remove_path){
 	$zip->close();//关闭
 	return $zip_file_path;
 }
-**/
+
+// 基于PHPzip类的打包函数，其中第一个函数既可以是路径字串，也可以是路径数组
+function PHPzip_zip_files($files_and_dirs_to_zip,$put_into_zip_file,$remove_path = ''){
+	$faisunZIP = new PHPzip;
+	if($faisunZIP->startfile($put_into_zip_file)){
+		$file_count = 0;
+		if(!is_array($files_and_dirs_to_zip)){
+			$faisunZIP->goTree($files_and_dirs_to_zip,$remove_path);
+		}else{
+			foreach($files_and_dirs_to_zip as $file){
+				$faisunZIP->goTree($file,$remove_path);
+			}
+		}
+		$faisunZIP->createfile();
+	}else{
+		return false;
+	}
+	return $put_into_zip_file;
+}
+
 
 // 打包指定目录列表中的文件
 function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
