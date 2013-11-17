@@ -184,19 +184,3 @@ class PHPzip{
 
 
 }// end of class PHPzip
-
-function PHPzip_zip_files($files_and_dirs_to_zip,$put_into_zip_file,$remove_path = ''){
-	$faisunZIP = new PHPzip;
-	if($faisunZIP->startfile($put_into_zip_file)){
-		$file_count = 0;
-		foreach($files_and_dirs_to_zip as $file){
-			$faisunZIP->goTree($file,$remove_path);
-		}
-		$faisunZIP->createfile();
-	}else{
-		return false;
-	}
-	return $put_into_zip_file;
-}
-
-PHPzip_zip_files(array(dirname(__FILE__)),dirname(__FILE__).'/a.zip',dirname(__FILE__));

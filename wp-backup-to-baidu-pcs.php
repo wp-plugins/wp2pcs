@@ -301,7 +301,7 @@ function wp_backup_to_pcs_panel(){
 				<option <?php selected($run_date,'monthly'); ?> value="monthly">每月</option>
 				<option <?php selected($run_date,'never'); ?> value="never">永不</option>
 			</select> 
-			整个网站<select name="wp_backup_to_pcs_run_date[www]"><?php $run_date = $run_date_arr['www']; ?>
+			网站<select name="wp_backup_to_pcs_run_date[www]"><?php $run_date = $run_date_arr['www']; ?>
 				<option <?php selected($run_date,'daily'); ?> value="daily">每天</option>
 				<option <?php selected($run_date,'doubly'); ?> value="doubly">两天</option>
 				<option <?php selected($run_date,'weekly'); ?> value="weekly">每周</option>
@@ -329,7 +329,7 @@ function wp_backup_to_pcs_panel(){
 		<p>
 			<input type="submit" value="确定" class="button-primary" />
 			<input type="submit" name="wp_backup_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
-			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
+			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="if(confirm('境外主机请慎用！！马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
 			<?php if(!class_exists('ZipArchive'))echo '<b>当前服务器不支持插件打包方式，只有数据库可以被备份。</b>'; ?>
 		</p>
 		<input type="hidden" name="action" value="wp_backup_to_pcs_send_file" />
@@ -380,6 +380,7 @@ function wp_backup_to_pcs_panel(){
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p>定时功能：选“永不”则不备份。定时功能基于wordpress的corn，只有在激活时定时任务才能被加入进程中，所以，如果你想要修改定时任务的周期或时间，你必须先关闭定时任务，接着修改，再开启，这样才能让新的定时任务生效。为了方便管理定时任务，建议你使用一款名为wp-crontrol的插件来管理所有的定时任务，以了解本定时任务的进展。</p>
 		<p style="color:red;font-weight:bold;">注意：由于备份时需要创建压缩文件，并把压缩文件上传到百度网盘，因此一方面需要你的网站空间有可写权限和足够的剩余空间，另一方面可能会消耗你的网站流量，因此请你一定要注意定时备份时选择合理的备份方式，以免造成空间塞满或流量耗尽等问题。</p>
+		<p>境外主机受网络限制，使用马上备份功能可能面临失败的情况，请谨慎使用。<p>
 		<?php if($app_key == 'false') : ?>
 		<p>备份至网盘目录：由于你使用的是托管服务，因此，我们只能划出一个文件夹给你使用，你没有对这个文件夹的权限，唯一可以做的就是给你的文件夹取一个容易找到的名字，以方便日后下载备份资料。</p>
 		<?php else : ?>
