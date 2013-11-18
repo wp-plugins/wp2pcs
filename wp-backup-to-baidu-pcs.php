@@ -86,20 +86,31 @@ function wp_backup_to_pcs_action(){
 		// 压缩下载
 		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载'){
 			$zip_dir = trailingslashit(WP_CONTENT_DIR);
+			// 备份数据库
+			$database_file = $zip_dir.'database.sql';
+			if(file_exists($database_file))unlink($database_file);
+			$database_content = get_database_backup_all_sql();
+			$handle = fopen($database_file,"w+");
+			if(fwrite($handle,$database_content) === false){
+				echo "写入文件 $filename 失败";
+				exit();
+			}
+			fclose($handle);
 			// 备份日志
 			if($log_dir){
 				$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
 			}
+			// 备份网站
 			if($local_paths && !empty($local_paths)){
 				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
 			}
 			if($log_file || $www_file){
 				if($log_file && $www_file){
-					$zip_file = zip_files_in_dirs(array($log_file,$www_file),$zip_dir.'wp2pcs.zip',$zip_dir);
+					$zip_file = zip_files_in_dirs(array($database_file,$log_file,$www_file),$zip_dir.'wp2pcs.zip',$zip_dir);
 				}elseif($log_file){
-					$zip_file = $log_file;
+					$zip_file = zip_files_in_dirs(array($database_file,$log_file),$zip_dir.'wp2pcs.zip',$zip_dir);
 				}elseif($www_file){
-					$zip_file = $www_file;
+					$zip_file = zip_files_in_dirs(array($database_file,$www_file),$zip_dir.'wp2pcs.zip',$zip_dir);
 				}else{
 					wp_die('没有需要打包的文件！');
 					exit;
@@ -116,6 +127,7 @@ function wp_backup_to_pcs_action(){
 				unlink($zip_file);
 				if(file_exists($log_file))unlink($log_file);
 				if(file_exists($www_file))unlink($www_file);
+				unlink($database_file);
 				exit;
 			}
 		}
