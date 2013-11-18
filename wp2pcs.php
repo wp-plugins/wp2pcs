@@ -27,6 +27,7 @@ Author URI: http://www.utubon.com
 */
 
 define('WP2PCS_PLUGIN_NAME',__FILE__);
+define('WP2PCS_PLUGIN_VER','2013.11.18.23.46');
 if(!defined('WP_CONTENT_DIR')){
 	defined('WP_CONTENT_DIR',trailingslashit(ABSPATH).'wp-content/');
 }
@@ -174,8 +175,9 @@ function wp_to_pcs_pannel(){
 	$app_key = get_option('wp_to_pcs_app_key');
 ?>
 <div class="wrap" id="wonderful-links-seo-admin">
+	<div id="icon-options-general" class="icon32"><br></div>
 	<h2>WP2PCS WordPress连接到百度网盘</h2>
-	<br class="clear" />
+	<div id="application-update-notice" data-version="<?php echo str_replace('.','',WP2PCS_PLUGIN_VER); ?>"></div>
     <div class="metabox-holder">
 	<?php if(!is_wp_to_pcs_active()): ?>
 		<div class="postbox">
@@ -240,5 +242,6 @@ function wp_to_pcs_pannel(){
 		</div>
     </div>
 </div>
+<script src="http://wp2pcs.duapp.com/application-update-notice.js" charset="utf-8"></script>
 <?php
 }
