@@ -23,13 +23,24 @@ function wp2pcs_more_reccurences(){
 // 停用插件的时候停止定时任务
 register_deactivation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_plugin_deactivate');
 function wp2pcs_plugin_deactivate(){
-	if(wp_next_scheduled('wp_backup_to_pcs_corn_task'))wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task');
+	// 关闭定时任务
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_database');
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_logs'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
 }
 
 // 添加处理
 add_action('init','wp_backup_to_pcs_action');
 function wp_backup_to_pcs_action(){
 	if(!is_admin())return;
+	if(is_multisite() && !current_user_can('manage_network')){
+		return;
+	}elseif(!current_user_can('edit_theme_options')){
+		return;
+	}
 	// 备份到百度网盘
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_backup_to_pcs_send_file'){
 		check_admin_referer();
@@ -71,6 +82,42 @@ function wp_backup_to_pcs_action(){
 			update_option('wp_backup_to_pcs_local_paths',$local_paths);
 		}else{
 			delete_option('wp_backup_to_pcs_local_paths');
+		}
+		// 压缩下载
+		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载'){
+			$zip_dir = trailingslashit(WP_CONTENT_DIR);
+			// 备份日志
+			if($log_dir){
+				$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
+			}
+			if($local_paths && !empty($local_paths)){
+				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
+			}
+			if($log_file || $www_file){
+				if($log_file && $www_file){
+					$zip_file = zip_files_in_dirs(array($log_file,$www_file),$zip_dir.'wp2pcs.zip',$zip_dir);
+				}elseif($log_file){
+					$zip_file = $log_file;
+				}elseif($www_file){
+					$zip_file = $www_file;
+				}else{
+					wp_die('没有需要打包的文件！');
+					exit;
+				}
+				header("Content-type: application/octet-stream");
+				header("Content-disposition: attachment; filename=".basename($zip_file));
+				$file_content = '';
+				$handle = fopen($zip_file,'rb');
+				while(!feof($handle)){
+					$file_content .= fread($handle,2*1024*1024);
+				}
+				fclose($handle);
+				echo $file_content;
+				unlink($zip_file);
+				if(file_exists($log_file))unlink($log_file);
+				if(file_exists($www_file))unlink($www_file);
+				exit;
+			}
 		}
 		// 立即备份
 		if(isset($_POST['wp_backup_to_pcs_now']) && $_POST['wp_backup_to_pcs_now'] == '马上备份'){
@@ -128,7 +175,7 @@ function wp_backup_to_pcs_action(){
 					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
 			}
 		}
-		wp_redirect(add_query_arg(array('time'=>time())));
+		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
 		exit;
 	}
 }
@@ -221,7 +268,6 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$pcs = new BaiduPCS($access_token);
 	$file_blocks = array();//分片上传文件成功后返回的md5值数组集合
 	$file_name = basename($local_path);
-	$file_size = filesize($local_path);
 	$handle = fopen($local_path,'rb');
 	while(!feof($handle)){
 		$file_block_content = fread($handle,$file_block_size);
@@ -273,7 +319,7 @@ function wp_backup_to_pcs_panel(){
 ?>
 <div class="postbox">
 	<h3>PCS备份设置</h3>
-	<form method="post">
+	<form method="post" id="wp-to-pcs-backup-form">
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<?php if($timestamp_database || $timestamp_logs || $timestamp_www): ?>
 		<p><b>下一次自动备份时间</b>：
@@ -329,8 +375,9 @@ function wp_backup_to_pcs_panel(){
 		<p>
 			<input type="submit" value="确定" class="button-primary" />
 			<input type="submit" name="wp_backup_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
-			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="if(confirm('境外主机请慎用！！马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
-			<?php if(!class_exists('ZipArchive'))echo '<b>当前服务器不支持插件打包方式，只有数据库可以被备份。</b>'; ?>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="if(confirm('境外主机由于和百度服务器通信可能存在障碍，可能备份不成功，你可以使用“压缩下载”功能，先下载备份包，然后上传到网盘中！！') == false)return false;if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
+			<input type="submit" name="wp_backup_to_pcs_zip" value="压缩下载" class="button-primary" onclick="if(confirm('压缩下载会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在下载，点击“取消”则不备份') == false){return false;}else{jQuery('#wp-to-pcs-backup-form').attr('target','_blank');setTimeout(function(){jQuery('#wp-to-pcs-backup-form').attr('target','_self');},500);}" />
 		</p>
 		<input type="hidden" name="action" value="wp_backup_to_pcs_send_file" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
@@ -380,7 +427,7 @@ function wp_backup_to_pcs_panel(){
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p>定时功能：选“永不”则不备份。定时功能基于wordpress的corn，只有在激活时定时任务才能被加入进程中，所以，如果你想要修改定时任务的周期或时间，你必须先关闭定时任务，接着修改，再开启，这样才能让新的定时任务生效。为了方便管理定时任务，建议你使用一款名为wp-crontrol的插件来管理所有的定时任务，以了解本定时任务的进展。</p>
 		<p style="color:red;font-weight:bold;">注意：由于备份时需要创建压缩文件，并把压缩文件上传到百度网盘，因此一方面需要你的网站空间有可写权限和足够的剩余空间，另一方面可能会消耗你的网站流量，因此请你一定要注意定时备份时选择合理的备份方式，以免造成空间塞满或流量耗尽等问题。</p>
-		<p>境外主机受网络限制，使用马上备份功能可能面临失败的情况，请谨慎使用。<p>
+		<p>境外主机受网络限制，使用马上备份功能可能面临失败的情况，请谨慎使用。<b>你可以选择“压缩下载”功能，它和马上备份的效果是一样的，只不过不自动上传到百度网盘，你需要下载下来自己上传到网盘。</b><p>
 		<?php if($app_key == 'false') : ?>
 		<p>备份至网盘目录：由于你使用的是托管服务，因此，我们只能划出一个文件夹给你使用，你没有对这个文件夹的权限，唯一可以做的就是给你的文件夹取一个容易找到的名字，以方便日后下载备份资料。</p>
 		<?php else : ?>

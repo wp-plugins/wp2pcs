@@ -32,9 +32,12 @@ function get_files_in_dir_reset(){
 * 第二个参数为准备作为存放zip文件的路径
 * 第三个参数为zip文件中，准备移除的路径字串
 */
-function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
+function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 	if(empty($zip_local_paths)){
 		return null;
+	}
+	if(file_exists($zip_file_path)){
+		unlink($zip_file_path);
 	}
 	if(!is_array($zip_local_paths)){
 		if(is_string($zip_local_paths) && (is_file($zip_local_paths) || is_dir($zip_local_paths))){
@@ -43,14 +46,7 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
 			return false;
 		}
 	}
-	if(file_exists($zip_file_path)){
-		unlink($zip_file_path);
-	}
-	/* 基于PHPzip打包方法 */
-	if(!PHPzip_zip_files($zip_local_paths,$zip_file_path,$remove_path)){
-		return false;
-	}
-	/* 基于ZipArchive的打包方法
+
 	$zip = new ZipArchive();
 	if($zip->open($zip_file_path,ZIPARCHIVE::CREATE)!==TRUE){
 		return false;
@@ -80,7 +76,7 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path){
 			$zip->addFile($zip_local_path,$file_rename);
 		}
 	}
-	$zip->close();//关闭 */
+	$zip->close();
 
 	return $zip_file_path;
 }

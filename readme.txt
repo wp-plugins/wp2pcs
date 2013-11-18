@@ -4,12 +4,12 @@ Donate link: http://wp2pcs.duapp.com
 Tags: backup, sync, baidu, personal cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
 Tested up to: 3.7.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 备份、同步WordPress到百度网盘，把PCS作为网站后备箱。
-Backup and sync wordpress to baidu PCS.
+Backup and storage wordpress to baidu PCS.
 
 == Description ==
 
@@ -33,6 +33,7 @@ WP2PCS means connect your wordpress to baidu personal cloud storage. With this p
 * 网站空间剩余不足三分之一
 * 没有读写权限或读写权限受限制的空间（如BAE、SAE不能备份网站文件）
 * 服务器memory limit, time limit比较小，又不能自己修改的
+* 主机PHP不支持ZipArchive类
 
 == Installation ==
 
@@ -41,7 +42,8 @@ WP2PCS means connect your wordpress to baidu personal cloud storage. With this p
 3、在“插件-WP2PCS”菜单中，点击授权按钮，等待授权跳转<br />
 在授权过程中，如果你已经登录了百度账号，会直接跳转；如果没有登录百度账号，会要求你登录，登录之后一定要勾选同意授权网盘（PCS）服务，否则无法使用插件中的服务。<br />
 4、如果授权成功，你会进入到插件的使用页面。<br />
-5、初始化所有信息。
+5、初始化所有信息。<br />
+6、如果授权不成功，点击更新按钮重新授权。
 
 == Frequently Asked Questions ==
 
@@ -66,6 +68,11 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 
 == Changelog ==
 
+= 1.0.3 =
+* 去除1.0.2版中的压缩类，因为那个类不支持多条目压缩，网站备份中存在问题
+* 增加“压缩下载”按钮，以解决国外空间“马上备份”时由于通信原因造成的备份不成功问题
+* 修复了几个简单BUG，以免在国外空间页面打不开的问题
+
 = 1.0.2 =
 * 将打包压缩文件的默认目录修改为WP_CONTENT_DIR
 * 使用了新的打包压缩类，提高运行效率
@@ -77,6 +84,12 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 * 基本功能：1、备份到百度网盘；2、保存文件到百度网盘，并可以插入到文章中。
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+-- libs/PHPzip.php
+-+ wp2pcs.php
+-+ wp-backup-file-functions.php
+-+ wp-backup-to-baidu-pcs.php
 
 = 1.0.2 =
 ++ libs/PHPzip.php

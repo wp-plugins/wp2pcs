@@ -14,6 +14,11 @@
 add_action('init','wp_storage_to_pcs_action');
 function wp_storage_to_pcs_action(){
 	if(!is_admin())return;
+	if(is_multisite() && !current_user_can('manage_network')){
+		return;
+	}elseif(!current_user_can('edit_theme_options')){
+		return;
+	}
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_storage_to_pcs_update'){
 		check_admin_referer();
 		$app_key = get_option('wp_to_pcs_app_key');
@@ -37,7 +42,7 @@ function wp_storage_to_pcs_action(){
 			$outlink_type = $_POST['wp_storage_to_pcs_outlink_type'];
 			update_option('wp_storage_to_pcs_outlink_type',$outlink_type);
 		}
-		wp_redirect(add_query_arg(array('time'=>time())));
+		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
 		exit;
 	}
 }
