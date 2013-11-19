@@ -27,13 +27,16 @@ Author URI: http://www.utubon.com
 */
 
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.11.19.00.24');// 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','2013.11.19.20.26');// 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 if(!defined('WP_CONTENT_DIR')){
 	defined('WP_CONTENT_DIR',trailingslashit(ABSPATH).'wp-content/');
 }
 define('WP2PCS_API_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/'); // 应用在网盘中的位置
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/'); // 如果使用WP2PCS托管服务的话
+if(!defined('IS_BAE')){
+	define('IS_BAE',getenv('HTTP_BAE_ENV_APPID'),true);
+}
 
 require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 // 下面是备份功能文件
@@ -101,6 +104,20 @@ function wp_to_pcs_default_settings(){
 	update_option('wp_backup_to_pcs_local_paths',array(ABSPATH));
 }
 
+// 停用插件的时候停止定时任务
+register_deactivation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_plugin_deactivate');
+function wp2pcs_plugin_deactivate(){
+	// 删除授权TOKEN
+	delete_option('wp_to_pcs_access_token');
+	// 关闭定时任务
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_database');
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_logs'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+}
+
 // 添加菜单
 if(is_multisite()){
 	add_action('network_admin_menu','wp_to_pcs_menu');
@@ -156,15 +173,7 @@ function wp_to_pcs_action(){
 	// 更新API KEY
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key_update' && isset($_POST['wp_to_pcs_app_key_update']) && $_POST['wp_to_pcs_app_key_update'] == '更新'){
 		check_admin_referer();
-		// 删除授权TOKEN
-		delete_option('wp_to_pcs_access_token');
-		// 关闭定时任务
-		if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))
-			wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_database');
-		if(wp_next_scheduled('wp_backup_to_pcs_corn_task_logs'))
-			wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
-		if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
-			wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+		wp2pcs_plugin_deactivate();// 更新API KEY跟停用插件是一样的
 		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
 		exit;
 	}
@@ -215,7 +224,7 @@ function wp_to_pcs_pannel(){
 					if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
 						echo '<p style="color:red;"><b>授权失败，请点击下面的“更新”按钮重新授权！</b></p>';
 					}elseif($app_key != 'false'){
-						echo '<p>当前网盘总'.(int)($quota->quota/(1024*1024)).'MB，剩余'.(int)(($quota->quota - $quota->used)/(1024*1024)).'MB。请注意合理使用。</p>';
+						echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
 					}
 				?>
 				<p><input type="submit" name="wp_to_pcs_app_key_update" value="更新" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" /></p>
