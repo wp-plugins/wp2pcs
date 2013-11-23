@@ -23,7 +23,7 @@ function wp2pcs_more_reccurences(){
 // 添加处理
 add_action('init','wp_backup_to_pcs_action');
 function wp_backup_to_pcs_action(){
-	if(!is_admin())return;
+	if(!is_admin() && !current_user_can('edit_theme_options'))return;
 	if(is_multisite() && !current_user_can('manage_network')){
 		return;
 	}elseif(!current_user_can('edit_theme_options')){
@@ -72,7 +72,7 @@ function wp_backup_to_pcs_action(){
 			delete_option('wp_backup_to_pcs_local_paths');
 		}
 		// 压缩下载
-		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载' && !IS_BAE){
+		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载' && IS_WP2PCS_WRITABLE){
 			$zip_dir = trailingslashit(WP_CONTENT_DIR);
 			// 备份数据库
 			$database_file = $zip_dir.'database.sql';
@@ -134,7 +134,7 @@ function wp_backup_to_pcs_action(){
 			$pcs->upload($file_content,$remote_dir,$file_name,'');
 			
 			// 备份日志
-			if($log_dir && !IS_BAE){
+			if($log_dir && IS_WP2PCS_WRITABLE){
 				$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
 				if($log_file){
 					wp_backup_to_pcs_send_file($log_file,$remote_dir);
@@ -142,7 +142,7 @@ function wp_backup_to_pcs_action(){
 			}
 			
 			// 备份网站内的所有文件
-			if($local_paths && !empty($local_paths) && !IS_BAE){
+			if($local_paths && !empty($local_paths) && IS_WP2PCS_WRITABLE){
 				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
 				if($www_file){
 					wp_backup_to_pcs_send_file($www_file,$remote_dir);
@@ -201,7 +201,7 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	$result = $pcs->upload($file_content,$remote_dir,$file_name,'');
 }
 function wp_backup_to_pcs_corn_task_function_logs(){
-	if(IS_BAE){
+	if(!IS_WP2PCS_WRITABLE){
 		return;
 	}
 	if(get_option('wp_backup_to_pcs_future') != '开启定时')
@@ -227,7 +227,7 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	}
 }
 function wp_backup_to_pcs_corn_task_function_www(){
-	if(IS_BAE){
+	if(!IS_WP2PCS_WRITABLE){
 		return;
 	}
 	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')
@@ -343,7 +343,7 @@ function wp_backup_to_pcs_panel(){
 				<option <?php selected($run_date,'monthly'); ?> value="monthly">每月</option>
 				<option <?php selected($run_date,'never'); ?> value="never">永不</option>
 			</select> 
-			<?php if(!IS_BAE) : ?>
+			<?php if(IS_WP2PCS_WRITABLE) : ?>
 			日志<select name="wp_backup_to_pcs_run_date[logs]"><?php $run_date = $run_date_arr['logs']; ?>
 				<option <?php selected($run_date,'daily'); ?> value="daily">每天</option>
 				<option <?php selected($run_date,'doubly'); ?> value="doubly">两天</option>
@@ -373,7 +373,7 @@ function wp_backup_to_pcs_panel(){
 		</p>
 		<?php endif; ?>
 		<p>备份至网盘目录：<?php if($app_key == 'false') : echo WP2PCS_SUB_DIR; ?><input type="text"  class="regular-text" name="wp_backup_to_pcs_root_dir"  value="<?php echo str_replace(WP2PCS_SUB_DIR,'',$root_dir); ?>" /><?php else : echo WP2PCS_ROOT_DIR; ?><input type="text" name="wp_backup_to_pcs_root_dir" class="regular-text" value="<?php echo str_replace(WP2PCS_ROOT_DIR,'',$root_dir); ?>" /><?php endif; ?></p>
-		<?php if(!IS_BAE) : ?>
+		<?php if(IS_WP2PCS_WRITABLE) : ?>
 		<p>当前网站的日志文件夹路径：<input type="text" name="wp_backup_to_pcs_log_dir" class="regular-text" value="<?php echo $log_dir; ?>" /></p>
 		<p>
 			只备份下列文件或目录：（务必阅读下方说明，根路径为：<?php echo ABSPATH; ?>）<br />
@@ -384,11 +384,11 @@ function wp_backup_to_pcs_panel(){
 			<input type="submit" value="确定" class="button-primary" />
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="wp_backup_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
-			<?php if(!IS_BAE) : ?>
+			<?php if(IS_WP2PCS_WRITABLE) : ?>
 			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="if(confirm('境外主机由于和百度服务器通信可能存在障碍，可能备份不成功，你可以使用“压缩下载”功能，先下载备份包，然后上传到网盘中！！') == false)return false;if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
 			<input type="submit" name="wp_backup_to_pcs_zip" value="压缩下载" class="button-primary" onclick="if(confirm('压缩下载会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在下载，点击“取消”则不备份') == false){return false;}else{jQuery('#wp-to-pcs-backup-form').attr('target','_blank');setTimeout(function(){jQuery('#wp-to-pcs-backup-form').attr('target','_self');},500);}" />
+			<?php if(!class_exists('ZipArchive')){echo '<b>当前服务器不支持插件打包方式，只有数据库可以被备份。</b>';} ?>
 			<?php endif; ?>
-			<?php if(!class_exists('ZipArchive'))echo '<b>当前服务器不支持插件打包方式，只有数据库可以被备份。</b>'; ?>
 		</p>
 		<input type="hidden" name="action" value="wp_backup_to_pcs_send_file" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
@@ -436,11 +436,11 @@ function wp_backup_to_pcs_panel(){
 	endif;
 	?>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-		<?php if(IS_BAE) : ?>
-		<p style="color:red"><b>当前使用的是BAE，不能在线打包zip文件，请通过SVN和BCS备份你的网站文件！</b></p>
+		<?php if(!IS_WP2PCS_WRITABLE) : ?>
+		<p style="color:red"><b>当前环境下/wp-content/目录没有可写权限，不能在线打包zip文件，请赋予这个目录可写权限！注：BAE和SAE本身不具备可写权限，因此本插件功能受限。</b></p>
 		<?php endif; ?>
-		<p>定时功能：选“永不”则不备份。定时功能基于wordpress的corn，只有在激活时定时任务才能被加入进程中，所以，如果你想要修改定时任务的周期或时间，你必须先关闭定时任务，接着修改，再开启，这样才能让新的定时任务生效。为了方便管理定时任务，建议你使用一款名为wp-crontrol的插件来管理所有的定时任务，以了解本定时任务的进展。</p>
-		<?php if(!IS_BAE) : ?>
+		<p>定时功能：选“永不”则不备份。定时功能基于wordpress的corn，只有在激活时定时任务才能被加入进程中，所以，如果你想要修改定时任务的周期或时间，你必须先关闭定时任务，接着修改，再开启，这样才能让新的定时任务生效。为了方便管理定时任务，建议你使用一款名为<a href="http://wordpress.org/plugins/wp-crontrol/" target="_blank">wp-crontrol</a>的插件来管理所有的定时任务，以了解本定时任务的进展。</p>
+		<?php if(IS_WP2PCS_WRITABLE) : ?>
 		<p style="color:red;font-weight:bold;">注意：由于备份时需要创建压缩文件，并把压缩文件上传到百度网盘，因此一方面需要你的网站空间有可写权限和足够的剩余空间，另一方面可能会消耗你的网站流量，因此请你一定要注意定时备份时选择合理的备份方式，以免造成空间塞满或流量耗尽等问题。</p>
 		<p>境外主机受网络限制，使用马上备份功能可能面临失败的情况，请谨慎使用。<b>你可以选择“压缩下载”功能，它和马上备份的效果是一样的，只不过不自动上传到百度网盘，你需要下载下来自己上传到网盘。</b><p>
 		<?php endif; ?>
@@ -449,8 +449,10 @@ function wp_backup_to_pcs_panel(){
 		<?php else : ?>
 		<p>备份至网盘目录：你会在百度网盘的“我的应用数据”中看到“wp2pcs”这个目录，你填写“backup/”，就会在你的网盘目录“我的应用数据/wp2pcs/backup/”中找到自己的备份数据。<b>如果你打算把插件用在多个网站中，一定要注意通过设置不同的备份网盘目录，以区分不同的网站。</b></p>
 		<?php endif; ?>
+		<?php if(IS_WP2PCS_WRITABLE) : ?>
 		<p>一般而言，网址的日志是以.log结束的，文件记录了网站被访问、蜘蛛抓取等信息。在上面填写日志文件夹的路径，留空则不备份日志。这个路径不是访问URL，而是相对于服务器的文件路径。你的网站的根路径是“<?php echo ABSPATH; ?>”，一般日志文件都存放在<?php echo ABSPATH; ?>logs/或和public_html目录同一个级别，你需要填写成你自己的。</p>
 		<p>备份特定目录或文件：每行一个，当前年月日分别用{year}{month}{day}代替，不能有空格，末尾带/，必须为网站目录路径（包含路径头<?php echo ABSPATH; ?>）。<b>注意，上级目录将包含下级目录，如<?php echo ABSPATH; ?>wp-content/将包含<?php echo ABSPATH; ?>wp-content/uploads/，因此务必不要重复，两个只能填一个，否则会报错。</b>填写了目录或文件列表之后，只备份填写的列表中的目录或文件。不填，则不备份网站目录下的文件。</p>
+		<?php endif; ?>
 	</div>
 	</form>
 </div>

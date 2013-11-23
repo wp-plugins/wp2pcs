@@ -13,7 +13,7 @@
 // 提交控制面板中的信息时
 add_action('init','wp_storage_to_pcs_action');
 function wp_storage_to_pcs_action(){
-	if(!is_admin())return;
+	if(!is_admin() && !current_user_can('edit_theme_options'))return;
 	if(is_multisite() && !current_user_can('manage_network')){
 		return;
 	}elseif(!current_user_can('edit_theme_options')){

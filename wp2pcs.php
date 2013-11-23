@@ -1,10 +1,10 @@
 <?php
 
 /*
-Plugin Name: WP2PCS (WP TO BAIDU PCS)
+Plugin Name: WP2PCS(WP连接百度网盘)
 Plugin URI: http://wordpress.org/plugins/wp2pcs/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.0.3
+Version: 1.0.4
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -27,16 +27,15 @@ Author URI: http://www.utubon.com
 */
 
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.11.19.20.26');// 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','2013.11.23.13.26');// 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 if(!defined('WP_CONTENT_DIR')){
-	defined('WP_CONTENT_DIR',trailingslashit(ABSPATH).'wp-content/');
+	define('WP_CONTENT_DIR',trailingslashit(ABSPATH).'wp-content/');
 }
+// 判断当前的主机是否有可写权限
+define('IS_WP2PCS_WRITABLE',is_writable(WP_CONTENT_DIR));
 define('WP2PCS_API_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
-define('WP2PCS_ROOT_DIR','/apps/wp2pcs/'); // 应用在网盘中的位置
-define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/'); // 如果使用WP2PCS托管服务的话
-if(!defined('IS_BAE')){
-	define('IS_BAE',getenv('HTTP_BAE_ENV_APPID'),true);
-}
+define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
+define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
 
 require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 // 下面是备份功能文件
@@ -102,6 +101,7 @@ function wp_to_pcs_default_settings(){
 	update_option('wp_storage_to_pcs_download_perfix','download');
 	update_option('wp_storage_to_pcs_outlink_type','200');
 	update_option('wp_backup_to_pcs_local_paths',array(ABSPATH));
+	delete_option('wp_backup_to_pcs_future');
 }
 
 // 停用插件的时候停止定时任务
@@ -134,7 +134,7 @@ if(is_multisite()){
 // 添加更新动作
 add_action('init','wp_to_pcs_action');
 function wp_to_pcs_action(){
-	if(!is_admin())return;
+	if(!is_admin() && !current_user_can('edit_theme_options'))return;
 	if(is_multisite() && !current_user_can('manage_network')){
 		return;
 	}elseif(!current_user_can('edit_theme_options')){
@@ -167,7 +167,7 @@ function wp_to_pcs_action(){
 		$access_token = $_GET['wp_to_pcs_access_token'];
 		update_option('wp_to_pcs_access_token',$access_token);
 		wp_to_pcs_default_settings();
-		wp_redirect(remove_query_arg(array('wp_to_pcs_access_token','_wpnonce')));
+		echo '<meta http-equiv="refresh" content="0; url='.wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time().'" />';
 		exit;
 	}
 	// 更新API KEY
