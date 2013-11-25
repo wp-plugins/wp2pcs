@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接百度网盘)
 Plugin URI: http://wordpress.org/plugins/wp2pcs/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.0.4
+Version: 1.1.0
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -26,17 +26,20 @@ Author URI: http://www.utubon.com
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+// 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.11.23.13.26');// 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
-if(!defined('WP_CONTENT_DIR')){
-	define('WP_CONTENT_DIR',trailingslashit(ABSPATH).'wp-content/');
-}
-// 判断当前的主机是否有可写权限
-define('IS_WP2PCS_WRITABLE',is_writable(WP_CONTENT_DIR));
-define('WP2PCS_API_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
+define('WP2PCS_PLUGIN_VER','2013.11.25.19.29'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
+define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_access_token'));
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
+define('IS_WP2PCS_WRITABLE',is_writable(WP_CONTENT_DIR));
+if(!defined('WP_CONTENT_DIR')){
+	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
+}
 
+// 包含一些必备的函数和类，以提供下面使用
+require(dirname(__FILE__).'/wp2pcs-setup-functions.php');
 require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 // 下面是备份功能文件
 require(dirname(__FILE__).'/wp-backup-database-functions.php');
@@ -48,66 +51,23 @@ require(dirname(__FILE__).'/wp-storage-image-outlink.php');
 require(dirname(__FILE__).'/wp-storage-download-file.php');
 require(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
-// 创建一个函数，判断插件是否已经激活
-function is_wp_to_pcs_active(){
-	$app_key = get_option('wp_to_pcs_app_key');
-	$access_token = get_option('wp_to_pcs_access_token');
-	if(!$app_key || !$access_token){
-		return false;
-	}
-	return true;
-}
-
-// 获取当前访问的URL地址
-function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
-	// http://www.ludou.org/how-to-get-the-current-url-in-wordpress.html
-	global $wp;
-	$home_root = substr_count(home_url(),'/') <= 3 ? true : false;
-	$permalink = trim(get_option('permalink_structure')) != '' ? true : false;
-	if($home_root){
-		$current_url = home_url(add_query_arg(array()));
-	}
-	if(!$home_root && $permalink){
-		$current_url = home_url(add_query_arg(array(),$wp->request));
-	}
-	if(!$home_root && !$permalink){
-		$current_url = add_query_arg($wp->query_string,'',home_url($wp->request));
-	}
-	if($current_url == home_url()){
-		$current_url = home_url('/');
-	}
-	$parse_url = parse_url($current_url);
-	if(is_array($query) && !empty($query)){
-		parse_str($parse_url['query'],$parse_query);
-		$parse_query = array_merge($parse_query,$query);
-		if(!empty($remove))foreach($remove as $key){
-			if(isset($parse_query[$key]))unset($parse_query[$key]);
-		}
-		$parse_query = http_build_query($parse_query);
-		$current_url = str_replace($parse_url['query'],'?'.$parse_query,$current_url);
-	}elseif($query === false){
-		$current_url = str_replace('?'.$parse_url['query'],'',$current_url);
-	}
-	return $current_url;
-}
-
 // 默认设置选项
 function wp_to_pcs_default_settings(){
 	$app_key = get_option('wp_to_pcs_app_key');
-	$root_dir = trailingslashit($app_key == 'false' ? WP2PCS_SUB_DIR : WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME']);
+	$root_dir = trailingslashit($app_key === 'false' ? WP2PCS_SUB_DIR : WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME']);
 	update_option('wp_backup_to_pcs_root_dir',$root_dir.'backup/');
 	update_option('wp_storage_to_pcs_root_dir',$root_dir.'uploads/');
 	update_option('wp_storage_to_pcs_outlink_perfix','image');
 	update_option('wp_storage_to_pcs_download_perfix','download');
 	update_option('wp_storage_to_pcs_outlink_type','200');
 	update_option('wp_backup_to_pcs_local_paths',array(ABSPATH));
-	delete_option('wp_backup_to_pcs_future');
 }
 
 // 停用插件的时候停止定时任务
 register_deactivation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_plugin_deactivate');
 function wp2pcs_plugin_deactivate(){
 	// 删除授权TOKEN
+	delete_option('wp_to_pcs_app_key');
 	delete_option('wp_to_pcs_access_token');
 	// 关闭定时任务
 	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))
@@ -116,9 +76,11 @@ function wp2pcs_plugin_deactivate(){
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
 	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+	// 删除定时备份的按钮信息
+	delete_option('wp_backup_to_pcs_future');
 }
 
-// 添加菜单
+// 添加菜单，分清楚是否开启多站点功能
 if(is_multisite()){
 	add_action('network_admin_menu','wp_to_pcs_menu');
 	function wp_to_pcs_menu(){
@@ -131,7 +93,7 @@ if(is_multisite()){
 	}
 }
 
-// 添加更新动作
+// 添加提交更新动作
 add_action('init','wp_to_pcs_action');
 function wp_to_pcs_action(){
 	if(!is_admin() && !current_user_can('edit_theme_options'))return;
@@ -152,11 +114,11 @@ function wp_to_pcs_action(){
 		$back_url = wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'];
 		$back_url = urlencode(wp_nonce_url($back_url)); // 回调网址
 		$admin_email = urlencode(get_option('admin_email')); // 用以通知更新
-		if($app_key  == 'false'){
+		if($app_key  === 'false'){
 			// 如果托管到WP2PCS官方，将执行下面的操作
-			$token_url = 'http://wp2pcs.duapp.com/apply?from='.$back_url.'&key='.WP2PCS_API_KEY.'&email='.$admin_email;
+			$token_url = 'http://wp2pcs.duapp.com/apply?from='.$back_url.'&key='.WP2PCS_APP_KEY.'&email='.$admin_email;
 		}else{
-			$token_url = 'http://wp2pcs.duapp.com/oauth?from='.$back_url.'&key='.WP2PCS_API_KEY.'&email='.$admin_email;
+			$token_url = 'http://wp2pcs.duapp.com/oauth?from='.$back_url.'&key='.WP2PCS_APP_KEY.'&email='.$admin_email;
 		}
 		wp_redirect($token_url);
 		exit;
@@ -165,9 +127,11 @@ function wp_to_pcs_action(){
 	if(isset($_GET['wp_to_pcs_access_token']) && !empty($_GET['wp_to_pcs_access_token'])){
 		check_admin_referer();
 		$access_token = $_GET['wp_to_pcs_access_token'];
+		$site_id = $_GET['site_id'];
 		update_option('wp_to_pcs_access_token',$access_token);
-		wp_to_pcs_default_settings();
-		echo '<meta http-equiv="refresh" content="0; url='.wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time().'" />';
+		update_option('wp_to_pcs_site_id',$site_id);
+		wp_to_pcs_default_settings();// 初始化各个推荐值
+		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
 	// 更新API KEY
@@ -184,7 +148,7 @@ function wp_to_pcs_pannel(){
 	$app_key = get_option('wp_to_pcs_app_key');
 ?>
 <div class="wrap" id="wonderful-links-seo-admin">
-	<h2>WP2PCS WordPress连接到百度网盘</h2>
+	<h2>WP2PCS WordPress连接到百度网盘<?php if($app_key === 'false'){echo '[WP2PCS官方托管]';} ?></h2>
 	<div id="application-update-notice" data-version="<?php echo str_replace('.','',WP2PCS_PLUGIN_VER); ?>"></div>
     <div class="metabox-holder">
 	<?php if(!is_wp_to_pcs_active()): ?>
@@ -207,18 +171,16 @@ function wp_to_pcs_pannel(){
 		</form>
 		</div>
 	<?php else : ?>
-		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
-		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
 		<div class="postbox">
 		<form method="post" autocomplete="off">
 			<h3>百度授权更新</h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>请及时关注<a href="http://wp2pcs.duapp.com">WP2PCS官方</a>发布的信息，如果官方通知要更新时，请及时更新，否则可能不能使用本插件。</p>
-				<?php if($app_key == 'false') : ?><p>你当前使用的是托管到WP2PCS的服务，如果你已经拥有了自己的网盘，不妨更新授权。但需要注意的是，目前WP2PCS还没有开发一键转移功能，所以这些附件只能通过申请后邮件发送给你。</p><?php endif; ?>
+				<?php if($app_key === 'false') : ?><p>你当前使用的是托管到WP2PCS的服务，如果你已经拥有了自己的网盘，不妨更新授权。但需要注意的是，目前WP2PCS还没有开发一键转移功能，所以这些附件只能通过申请后邮件发送给你。</p><?php endif; ?>
 				<p>更新前请注意：1、更新后老的授权信息会被直接删除；2、如果你开启了定时备份，请先关闭。</p>
 				<?php
 					// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
-					$access_token = get_option('wp_to_pcs_access_token');
+					$access_token = WP2PCS_APP_TOKEN;
 					$pcs = new BaiduPCS($access_token);
 					$quota = json_decode($pcs->getQuota());
 					if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
@@ -234,6 +196,8 @@ function wp_to_pcs_pannel(){
 			</div>
 		</form>
 		</div>
+		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
+		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
 	<?php endif; ?>
 		<div class="postbox">
 			<h3>说明</h3>

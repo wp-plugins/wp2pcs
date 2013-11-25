@@ -1,5 +1,15 @@
 <?php
 
+// 创建一个函数，用来在wordpress中打印图片地址
+function wp2pcs_image_src($image_path){
+	// image_path是指相对于后台保存的存储目录的路径
+	// 例如 $file_path = /test/test.jpg
+	// 注意最前面加/
+	$outlink_perfix = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
+	$image_src = '/'.$outlink_perfix.$image_path;
+	return home_url($image_src);
+}
+
 // 通过对URI的判断来获得图片远程信息
 add_action('init','wp_storage_print_image',-1);
 function wp_storage_print_image(){
@@ -25,10 +35,10 @@ function wp_storage_print_image(){
 				echo '<a href="'.home_url().'">首页</a>';
 				exit;
 			}
-			$root_dir = trim(get_option('wp_storage_to_pcs_root_dir'));
-			$access_token = trim(get_option('wp_to_pcs_access_token'));
+			$root_dir = get_option('wp_storage_to_pcs_root_dir');
+			$access_token = WP2PCS_APP_TOKEN;
 			$image_path = $root_dir.str_replace('/'.$outlink_uri,'',$current_uri);
-			if(get_option('wp_to_pcs_app_key') == 'false')$outlink_type = '200';
+			$image_path = str_replace('//','/',$image_path);
 			if($outlink_type == '200'){
 				// 考虑到流量问题，必须增加缓存能力
 				date_default_timezone_set("PRC");// 把时间控制在中国
@@ -47,7 +57,10 @@ function wp_storage_print_image(){
 				header('Content-type: image/jpeg');
 				echo $result;
 			}else{
-				$image_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/thumbnail?method=generate&access_token='.$access_token.'&path='.$image_path.'&quality=100&width=1600&height=1600';
+				//$image_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/thumbnail?method=generate&access_token='.$access_token.'&path='.$image_path.'&quality=100&width=1600&height=1600';
+				$site_id = get_option('wp_to_pcs_site_id');
+				$access_token = substr($access_token,0,10);
+				$image_outlink = 'http://wp2pcs.duapp.com/img?'.$site_id.'+'.$access_token.'+path='.$image_path;
 				header('Location:'.$image_outlink);
 			}
 			exit;

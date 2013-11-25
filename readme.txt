@@ -4,7 +4,7 @@ Donate link: http://wp2pcs.duapp.com
 Tags: backup, sync, baidu, personal cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
 Tested up to: 3.7.1
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ WP2PCS means connect your wordpress to baidu personal cloud storage. With this p
 
 <strong>说明</strong>
 
-1、版本：本插件同时发行三个版本，当前这个版本为“个人完美版”，另外还有两个版本为“开发者创意版”和“企业专业版”，它们之间的区别可以在主页 http://wp2pcs.duapp.com 了解。大体上，开发者版中，开发者可以使用自己的百度应用API KEY，从而使用自己的PCS API服务，并可以为别人提供这类服务；企业版则没有成形的最终可用产品，而是为企业用户特定项目中的这个服务提供定制开发。<br />
+1、版本：本插件同时发行三个版本，当前这个版本为“个人标准版”，另外还有两个版本为“开发者创意版”和“企业专业版”，它们之间的区别可以在主页 http://wp2pcs.duapp.com 了解。大体上，开发者版中，开发者可以使用自己的百度应用API KEY，从而使用自己的PCS API服务，并可以为别人提供这类服务；企业版则没有成形的最终可用产品，而是为企业用户特定项目中的这个服务提供定制开发。<br />
 2、普通用户使用时是否选择托管？一般而言，只要拥有百度账户，并且开通了网盘服务的百度用户都可以使用本插件，托管服务是专门为那些没有百度网盘的用户提供的，网站数据将被托管到WP2PCS的官方网盘内，具体详情请看插件后台的介绍。<br />
 3、路径设置：对于有一定wordpress经验的用户对此比较了解，对于那些完全不理解路径设置的用户或许需要花一点时间来理解这些概念，如果你不懂路径与URL的区别，请先google学习这些知识。<br />
 4、前缀：在使用插件的图片外链和文件下载功能时，插件要求你填写一个访问URL的前缀，例如你填写image，那么当用户访问yourdomain.com/image/test.jpg时，就能正确显示这张图片了，下载链接的前缀也是同样一个道理。
@@ -68,6 +68,10 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 
 == Changelog ==
 
+= 1.1.0 =
+* 优化了把百度网盘作为存储空间的功能
+* 提供强大的外链功能（保护授权信息）
+
 = 1.0.4 =
 * 修正和调试了1.0.3版本中的一些问题
 * 增加可写权限检查，让备份更适应环境
@@ -89,6 +93,10 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 * 基本功能：1、备份到百度网盘；2、保存文件到百度网盘，并可以插入到文章中。
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+* 优化了把百度网盘作为存储空间的功能
+* 提供强大的外链功能（保护授权信息）
 
 = 1.0.4 =
 +- wp2pcs.php

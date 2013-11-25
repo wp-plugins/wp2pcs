@@ -22,11 +22,42 @@ class BaiduPCS {
 	private $_accessToken = '';
 
 	/**
+	 * 通过远程获取ACCESS TOKEN
+	 * 只有在使用托管服务的时候使用它
+	 */
+	private function get_real_access_token(){
+		if(get_option('wp_to_pcs_app_key') === 'false'){
+			$app_key = WP2PCS_APP_KEY;
+			$access_token = WP2PCS_APP_TOKEN;
+			$site_id = get_option('wp_to_pcs_site_id');
+			$site_domain = $_SERVER['SERVER_NAME'];
+			//$post_data = "site_id=$site_id&app_key=$app_key&token=$access_token&domain=$site_domain";
+			$post_data = array('site_id' => $site_id,'app_key' => $app_key,'token' => $access_token);
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 'http://wp2pcs.duapp.com/application-site-getsk.php');
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+			$data = curl_exec($ch);
+			curl_close($ch);
+
+			$data = json_decode($data,true);
+			if($data['error'] == true){
+				$this->_accessToken = false;
+			}else{
+				$this->_accessToken = $data['msg'];
+			}
+		}	
+	}
+	
+	/**
 	 * 初始化accessToken
 	 * @param string $accessToken
 	 */
 	public function __construct($accessToken) {
 		$this->_accessToken = $accessToken;
+		$this->get_real_access_token();
 	}
 
 	/**
@@ -36,6 +67,7 @@ class BaiduPCS {
 	 */
 	public function setAccessToken($accessToken) {
 		$this->_accessToken = $accessToken;
+		$this->get_real_access_token();
 		return $this;
 	}
 

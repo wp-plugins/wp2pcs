@@ -27,7 +27,7 @@ function wp_storage_to_pcs_action(){
 			wp_die('请填写备份到网盘的目录！');
 			exit;
 		}
-		if($app_key == 'false'){ // 托管在官方
+		if($app_key === 'false'){ // 托管在官方
 			$root_dir = WP2PCS_SUB_DIR.$root_dir;
 		}else{
 			$root_dir = WP2PCS_ROOT_DIR.$root_dir;
@@ -60,15 +60,13 @@ function wp_storage_to_pcs_panel(){
 	<form method="post">
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p>使用网盘中的哪个目录：
-		<?php if($app_key == 'false') : echo WP2PCS_SUB_DIR; ?><input type="text" name="wp_storage_to_pcs_root_dir"  class="regular-text" value="<?php echo str_replace(WP2PCS_SUB_DIR,'',$root_dir); ?>" /><?php else : echo WP2PCS_ROOT_DIR; ?><input type="text" name="wp_storage_to_pcs_root_dir" class="regular-text" value="<?php echo str_replace(WP2PCS_ROOT_DIR,'',$root_dir); ?>" /><?php endif; ?></p>
-		<p>图片外链访问前缀：<input type="text" name="wp_storage_to_pcs_outlink_perfix" value="<?php echo $outlink_perfix; ?>" /></p>
-		<?php if($app_key != 'false') : ?>
-		<p>图片外链访问方式：<select name="wp_storage_to_pcs_outlink_type">
-			<option value="200" <?php selected($outlink_type,200); ?>>直链：耗流量，保护授权信息，利于SEO</option>
-			<option value="302" <?php selected($outlink_type,302); ?>>外链：省流量，泄露授权信息，SEO欠佳</option>
+		<?php if($app_key === 'false') : echo WP2PCS_SUB_DIR; ?><input type="text" name="wp_storage_to_pcs_root_dir"  class="regular-text" value="<?php echo str_replace(WP2PCS_SUB_DIR,'',$root_dir); ?>" /><?php else : echo WP2PCS_ROOT_DIR; ?><input type="text" name="wp_storage_to_pcs_root_dir" class="regular-text" value="<?php echo str_replace(WP2PCS_ROOT_DIR,'',$root_dir); ?>" /><?php endif; ?></p>
+		<p>图片访问前缀：<input type="text" name="wp_storage_to_pcs_outlink_perfix" value="<?php echo $outlink_perfix; ?>" /></p>
+		<p>下载访问前缀：<input type="text" name="wp_storage_to_pcs_download_perfix" value="<?php echo $download_perfix; ?>" /></p>
+		<p>附件访问方式：<select name="wp_storage_to_pcs_outlink_type">
+			<option value="200" <?php selected($outlink_type,200); ?>>直链：耗流量，利于SEO</option>
+			<option value="302" <?php selected($outlink_type,302); ?>>外链：省流量，SEO欠佳</option>
 		</select></p>
-		<?php endif; ?>
-		<p>文件下载访问前缀：<input type="text" name="wp_storage_to_pcs_download_perfix" value="<?php echo $download_perfix; ?>" /></p>
 		<p>
 			<input type="submit" value="确定" class="button-primary" />
 		</p>
@@ -80,7 +78,7 @@ function wp_storage_to_pcs_panel(){
 		<p>使用网盘中的某一个目录作为你存储图片或附件的根目录，例如你填写“/uploads/”，那么到时候就会采用这个目录下的文件作为附件。</p>
 		<p>访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“/uploads/test.jpg”这张图片。为了提高不同空间的兼容性，建议你把这个前缀填写为“?img”的形式。<b>注意</b>，如果你的主机支持重写，最好填写“img”，而不是“?img”，后者将不支持中文文件。</p>
 		<p>图片采取了防盗链的功能，来自网站本身、百度、谷歌以外的其他访问都会被认为是盗链行为，当然如果你懂代码，可以通过修改插件源文件来扩大图片可用范围。</p>
-		<?php if($app_key == 'false') : ?>
+		<?php if($app_key === 'false') : ?>
 		<p>你当前采取的是把附件托管到WP2PCS官方网盘，图片附件等将会以你的域名作为URL前缀，这种方式会消耗你的服务器流量，如果你想节约流量，可以更新授权，选择保存到自己的网盘，然后选择外链形式的图片外链访问方式。</p>
 		<?php else : ?>
 		<p>保护授权信息：如果你使用外链的形式，当用户鼠标右键查看原图时，（高手面前）会泄露你的access token信息，但这样别人就可以任意的使用、删除、下载你的存储空间中的文件，因此，如果你对自己的access token比较看重，可以选择直链。</p>

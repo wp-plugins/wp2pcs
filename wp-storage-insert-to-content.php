@@ -17,20 +17,10 @@ http://codeblow.com/questions/jquery-window-send-to-editor/
 http://wordpress.stackexchange.com/questions/85351/remove-other-tabs-in-new-wordpress-media-gallery
 */
 
-// 创建一个函数，用来判断是否已经授权
-function is_wp_to_pcs_active_for_tab(){
-	$app_key = get_option('wp_to_pcs_app_key');
-	$access_token = get_option('wp_to_pcs_access_token');
-	if(!$app_key || !$access_token){
-		return false;
-	}
-	return true;
-}
-
 // 在新媒体管理界面添加一个百度网盘的选项
 add_filter('media_upload_tabs', 'wp_storage_to_pcs_media_tab' );
 function wp_storage_to_pcs_media_tab($tabs){
-	if(!is_wp_to_pcs_active_for_tab())return;
+	if(!is_wp_to_pcs_active())return;
 	$newtab = array('file_from_pcs' => '百度网盘');
     return array_merge($tabs,$newtab);
 }
@@ -43,8 +33,8 @@ function media_upload_file_from_pcs_iframe() {
 //add_action('media_upload_file_from_pcs','wp_storage_to_pcs_media_tab_box');
 function wp_storage_to_pcs_media_tab_box() {
 	// 当前路径相关信息
-	$root_dir = trim(get_option('wp_storage_to_pcs_root_dir'));	
-	$access_token = trim(get_option('wp_to_pcs_access_token'));
+	$root_dir = get_option('wp_storage_to_pcs_root_dir');	
+	$access_token = WP2PCS_APP_TOKEN;
 	if(isset($_GET['dir']) && !empty($_GET['dir'])){
 		$dir_pcs_path = $_GET['dir'];
 	}else{
@@ -55,6 +45,7 @@ function wp_storage_to_pcs_media_tab_box() {
 	}else{
 		$paged = 1;
 	}
+	$app_key = get_option('wp_to_pcs_app_key');
 ?>
 <style>
 #opt-on-pcs-tabs{padding:2em 1em 1em 1em;border-bottom:1px solid #dedede;margin-bottom:1em;font-size:1.1em;}
@@ -108,9 +99,9 @@ jQuery(function($){
 		window.parent.tb_remove();
 	});
 	$('#upload-to-pcs-submit').click(function(){
-		var $upload_path = '<?php echo urlencode($dir_pcs_path."/"); ?>';
+		var $upload_path = '<?php echo $dir_pcs_path; ?>/',
 			$file_name = $('#upload-to-pcs-input').val().match(/[^\/|\\]*$/)[0],
-			$action = 'https://pcs.baidu.com/rest/2.0/pcs/file?method=upload&path=' + $upload_path + $file_name + '&access_token=<?php echo $access_token; ?>&ondup=newcopy';
+			$action = 'http://wp2pcs.duapp.com/upload?<?php echo get_option("wp_to_pcs_site_id"); ?>+<?php echo substr(get_option("wp_to_pcs_access_token"),0,10); ?>+path=' + $upload_path + $file_name;
 		if($file_name != ''){
 			$('#upload-to-pcs-refresh').addClass('hidden');
 			$('#upload-to-pcs-from').attr('action',$action).submit();
@@ -219,7 +210,7 @@ jQuery(function($){
 			<a href="'.add_query_arg('paged',$paged-1).'">上一页</a>';
 		}?>
 		<?php if($files_count >= $files_per_page)echo '<a href="'.add_query_arg('paged',$paged+1).'">下一页</a>'; ?>
-		<a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_pcs_path; ?>" target="_blank" class="button">管理</a>
+		<?php if($app_key != 'false') : ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_pcs_path; ?>" target="_blank" class="button">管理</a><?php endif; ?>
 		<a href="" class="button">刷新</a>
 		<a href="<?php echo remove_query_arg('dir'); ?>" class="button">返回HOME</a>
 	</p>
@@ -233,7 +224,7 @@ jQuery(function($){
 }
 // 用一个函数来列出PCS中某个目录下的所有文件（夹）
 function wp_storage_to_pcs_media_list_files($dir_pcs_path,$limit){
-	$access_token = trim(get_option('wp_to_pcs_access_token'));
+	$access_token = WP2PCS_APP_TOKEN;
 	$order_by = 'time';
 	$order = 'desc';
 	$pcs = new BaiduPCS($access_token);
@@ -245,7 +236,7 @@ function wp_storage_to_pcs_media_list_files($dir_pcs_path,$limit){
 // 用一个函数来显示这些文件（或目录）
 function wp_storage_to_pcs_media_thumbnail($file_pcs_path,$width = 120,$height = 1600,$quality = 100){
 	$app_key = get_option('wp_to_pcs_app_key');
-	$access_token = get_option('wp_to_pcs_access_token');
+	$access_token = WP2PCS_APP_TOKEN;
 	// 使用直链，有利于快速显示图片
 	$image_outlink_per = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
 	$file_pcs_path = str_replace(trailingslashit(get_option('wp_storage_to_pcs_root_dir')),'/',$file_pcs_path);

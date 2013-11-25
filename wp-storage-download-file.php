@@ -1,5 +1,16 @@
 <?php
 
+// 创建一个函数，用来在wordpress中打印下载地址
+function wp2pcs_download_link($file_path){
+	// file_path是指相对于后台保存的存储目录的路径
+	// 例如 $file_path = /test/test.jpg ，就是使用你的网盘目录 /apps/wp2pcs/...../test/test.jpg
+	// 其中.....是指你填写的用于保存文件的网盘目录，/test/是你在这个目录下随意创建的一个目录，test.jpg就是要打印的图片
+	// 注意最前面加/
+	$download_perfix = trim(get_option('wp_storage_to_pcs_download_perfix'));
+	$download_link = '/'.$down_perfix.$file_path;
+	return home_url($download_link);
+}
+
 // 通过对URI的判断来确定是否是下载文件的链接
 add_action('init','wp_storage_download_file',-1);
 function wp_storage_download_file(){
@@ -21,13 +32,16 @@ function wp_storage_download_file(){
 			if(strpos($_SERVER['HTTP_REFERER'],home_url()) !== 0){
 				header("Content-Type: text/html; charset=utf-8");
 				echo '防盗链！ ';
-				if($outlink_type == '200')echo '<a href="'.home_url($current_uri).'">下载</a> ';
+				echo '<a href="'.home_url($current_uri).'">下载</a> ';
 				echo '<a href="'.home_url().'">首页</a>';
 				exit;
 			}
+			$root_dir = get_option('wp_storage_to_pcs_root_dir');
+			$access_token = WP2PCS_APP_TOKEN;
 			$file_path = $root_dir.str_replace('/'.$outlink_uri,'',$current_uri);
-			$access_token = trim(get_option('wp_to_pcs_access_token'));
-			if(get_option('wp_to_pcs_app_key') == 'false')$outlink_type = '200';
+			$file_path = $root_dir.str_replace('/'.$outlink_uri,'',$current_uri);
+			$file_path = str_replace('//','/',$file_path);
+			//if(get_option('wp_to_pcs_app_key') === 'false')$outlink_type = '200';
 			if($outlink_type == '200'){
 				$root_dir = trim(get_option('wp_storage_to_pcs_root_dir'));
 				$pcs = new BaiduPCS($access_token);
@@ -37,7 +51,10 @@ function wp_storage_download_file(){
 				$result = $pcs->download($file_path);
 				echo $result;
 			}else{
-				$download_link = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.$access_token.'&path='.$file_path;
+				$site_id = get_option('wp_to_pcs_site_id');
+				$access_token = substr($access_token,0,10);
+				//$download_link = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.$access_token.'&path='.$file_path;
+				$download_link = 'http://wp2pcs.duapp.com/dl?'.$site_id.'+'.$access_token.'+path='.$file_path;
 				header('Location:'.$download_link);
 			}
 			exit;
