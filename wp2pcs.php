@@ -28,19 +28,22 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.11.25.19.29'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','2013.11.25.21.21'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
-define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_access_token'));
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
-define('IS_WP2PCS_WRITABLE',is_writable(WP_CONTENT_DIR));
-if(!defined('WP_CONTENT_DIR')){
-	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
-}
 
 // 包含一些必备的函数和类，以提供下面使用
 require(dirname(__FILE__).'/wp2pcs-setup-functions.php');
 require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
+
+// 经过判断或函数运算才能进行定义的常量
+define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_access_token'));
+define('IS_WP2PCS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
+if(!defined('WP_CONTENT_DIR')){
+	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
+}
+
 // 下面是备份功能文件
 require(dirname(__FILE__).'/wp-backup-database-functions.php');
 require(dirname(__FILE__).'/wp-backup-file-functions.php');
