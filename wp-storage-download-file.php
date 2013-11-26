@@ -38,7 +38,7 @@ function wp_storage_download_file(){
 			}
 			$root_dir = get_option('wp_storage_to_pcs_root_dir');
 			$access_token = WP2PCS_APP_TOKEN;
-			$file_path = $root_dir.str_replace('/'.$outlink_uri.'/','/',$current_uri);
+			$file_path = $root_dir.str_replace_first_time('/'.$outlink_uri.'/','/',$current_uri);
 			$file_path = str_replace('//','/',$file_path);
 			//if(get_option('wp_to_pcs_app_key') === 'false')$outlink_type = '200';
 			if($outlink_type == '200'){

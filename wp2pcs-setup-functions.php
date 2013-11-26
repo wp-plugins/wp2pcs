@@ -95,3 +95,15 @@ if ( ! function_exists('is_really_writable'))
         return TRUE;  
     }  
 }
+
+// 替换字符串中第一次出现的子串
+function str_replace_first_time($find,$replace,$string){
+	$position = strpos($string,$find);
+	if($position !== false){
+		$length = strlen($find); 
+		$string = substr_replace($string,$replace,$position,$length);
+		return $string;
+	}else{
+		return false;
+	}
+}
