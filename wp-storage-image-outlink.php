@@ -37,7 +37,7 @@ function wp_storage_print_image(){
 			}
 			$root_dir = get_option('wp_storage_to_pcs_root_dir');
 			$access_token = WP2PCS_APP_TOKEN;
-			$image_path = $root_dir.str_replace('/'.$outlink_uri,'',$current_uri);
+			$image_path = $root_dir.str_replace('/'.$outlink_uri.'/','/',$current_uri);
 			$image_path = str_replace('//','/',$image_path);
 			if($outlink_type == '200'){
 				// 考虑到流量问题，必须增加缓存能力
