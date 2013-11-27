@@ -54,6 +54,7 @@ function wp_storage_print_image(){
 				$pcs = new BaiduPCS($access_token);
 				//$result = $pcs->thumbnail($image_path,1600,3200,100);
 				$result = $pcs->downloadStream($image_path);
+				ob_clean();
 				header('Content-type: image/jpeg');
 				echo $result;
 			}else{

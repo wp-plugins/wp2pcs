@@ -45,6 +45,7 @@ function wp_storage_download_file(){
 				$root_dir = trim(get_option('wp_storage_to_pcs_root_dir'));
 				$pcs = new BaiduPCS($access_token);
 				$file_name = basename($file_path);
+				ob_clean();
 				header('Content-Disposition:attachment;filename="'.$file_name.'"');
 				header('Content-Type:application/octet-stream');
 				$result = $pcs->download($file_path);
