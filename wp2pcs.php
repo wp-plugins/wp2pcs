@@ -187,7 +187,7 @@ function wp_to_pcs_pannel(){
 					$pcs = new BaiduPCS($access_token);
 					$quota = json_decode($pcs->getQuota());
 					if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
-						echo '<p style="color:red;"><b>授权失败，请点击下面的“更新”按钮重新授权！</b></p>';
+						echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良，如果是由于授权问题，请点击下面的“更新”按钮重新授权！</b></p>';
 					}elseif($app_key != 'false'){
 						echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
 					}
@@ -207,12 +207,12 @@ function wp_to_pcs_pannel(){
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>本插件主要用于将WordPress和百度网盘连接起来，把百度网盘作为WordPress的后备箱。</p>
 				<p>本插件主要希望实现以下目标：1、备份WordPress到百度网盘，以免网站数据丢失；2、WordPress中上传的附件等直接上传到百度网盘，并将网盘作为网站的下载空间，实现直链下载、图片外链、音乐视频外链等；3、开发更多的WP2PCS应用，例如可以通过百度网盘手机客户端就可以写文章等创意功能。但明显，功能还不够完善，如果你愿意，可以参与到我们的开发中，请进入下方给出的插件主页和我们联系。</p>
-				<p><b>注意：由于插件使用的是百度PCS API，所以必须要考虑有关问题，使用前最好到<a href="http://wp2pcs.duapp.com">插件主页</a>了解使用方法，以免使用中出错。</b></p>
+				<p><b style="color:red;">注意：由于插件使用的是百度PCS API，所以必须要考虑有关问题，使用前最好到<a href="http://wp2pcs.duapp.com">插件主页</a>了解使用方法，以免使用中出错。</b></p>
 			</div>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>插件处于开发阶段，欢迎站长、博主朋友们向我们反馈，提出宝贵意见。</p>
-				<p>插件主页：http://wp2pcs.duapp.com</p>
-				<p>向插件作者捐赠：<a href="http://me.alipay.com/tangshuang">支付宝</a>、BitCoin（164jDbmE8ncUYbnuLvUzurXKfw9L7aTLGD）</p>
+				<p>插件主页：<a href="http://wp2pcs.duapp.com" target="_blank">http://wp2pcs.duapp.com</a></p>
+				<p>向插件作者捐赠：<a href="http://me.alipay.com/tangshuang" target="_blank">支付宝</a>、BitCoin（164jDbmE8ncUYbnuLvUzurXKfw9L7aTLGD）</p>
 			</div>
 		</div>
     </div>
