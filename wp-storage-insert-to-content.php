@@ -134,22 +134,6 @@ jQuery(function($){
 		$('#upload-to-pcs').hide();
 		$(this).text('上传到这里');
 	});
-	// 插入视频
-	var $insert_video_count = 0;
-	function insert_video_into_editor($video_src,$video_cover){
-		var $script = '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>',
-			$container = '<div id="playercontainer_'+$insert_video_count+'" class="wp2pcs-playercontainer"></div>',
-			$config = '<script type="text/javascript">var player=cyberplayer("playercontainer_'+$insert_video_count+'").setup({width:680,height:400,backcolor:"#FFFFFF",stretching:"uniform",file:"'+$video_src+'",image:"'+$video_cover+'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqF",sk:"67kjwIh3wVLb5UYL"});</script>',
-			$html = '';
-		if(!$insert_video_count){
-			$html += $script;
-		}
-		$html += $container;
-		$html += $config;
-		$('div.selected').removeClass('selected');
-		window.parent.send_to_editor($html);
-		window.parent.tb_remove();
-	}
 });
 </script>
 <div id="opt-on-pcs-tabs">
