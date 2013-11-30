@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接百度网盘)
 Plugin URI: http://wp2pcs.duapp.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.1.1
+Version: 1.1.2
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -28,7 +28,7 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.11.27.16.16'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','2013.11.30.21.20'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
@@ -49,9 +49,9 @@ require(dirname(__FILE__).'/wp-backup-database-functions.php');
 require(dirname(__FILE__).'/wp-backup-file-functions.php');
 require(dirname(__FILE__).'/wp-backup-to-baidu-pcs.php');
 // 下面是存储功能文件
-require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-storage-image-outlink.php');
 require(dirname(__FILE__).'/wp-storage-download-file.php');
+require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
 // 默认设置选项
@@ -97,7 +97,7 @@ if(is_multisite()){
 }
 
 // 添加提交更新动作
-add_action('init','wp_to_pcs_action');
+add_action('admin_init','wp_to_pcs_action');
 function wp_to_pcs_action(){
 	if(!is_admin() && !current_user_can('edit_theme_options'))return;
 	if(is_multisite() && !current_user_can('manage_network')){
@@ -190,6 +190,9 @@ function wp_to_pcs_pannel(){
 						echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良，如果是由于授权问题，请点击下面的“更新”按钮重新授权！</b></p>';
 					}elseif($app_key != 'false'){
 						echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
+					}
+					if(get_php_run_time() > 25){
+						echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了25秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
 					}
 				?>
 				<p><input type="submit" name="wp_to_pcs_app_key_update" value="更新" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" /></p>

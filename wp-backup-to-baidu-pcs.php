@@ -21,7 +21,7 @@ function wp2pcs_more_reccurences(){
 }
 
 // 添加处理
-add_action('init','wp_backup_to_pcs_action');
+add_action('admin_init','wp_backup_to_pcs_action');
 function wp_backup_to_pcs_action(){
 	if(!is_admin() && !current_user_can('edit_theme_options'))return;
 	if(is_multisite() && !current_user_can('manage_network')){

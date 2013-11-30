@@ -66,7 +66,9 @@ function wp_storage_to_pcs_media_tab_box() {
 jQuery(function($){
 	$('#files-on-pcs div.can-select').click(function(){
 		$(this).toggleClass('selected');
-		if($(this).attr('data-file-type') == 'file')$(this).toggleClass('selected-file');
+		if($(this).attr('data-file-type') == 'file'){
+			$(this).toggleClass('selected-file');
+		}
 	});
 	$('#insert-btn').click(function(){
 		if($('div.selected').length > 0){
@@ -102,6 +104,12 @@ jQuery(function($){
 		var $upload_path = '<?php echo $dir_pcs_path; ?>/',
 			$file_name = $('#upload-to-pcs-input').val().match(/[^\/|\\]*$/)[0],
 			$action = 'http://wp2pcs.duapp.com/upload?<?php echo get_option("wp_to_pcs_site_id"); ?>+<?php echo substr(get_option("wp_to_pcs_access_token"),0,10); ?>+path=' + $upload_path + $file_name;
+		<?php if(strpos(get_option('wp_storage_to_pcs_outlink_perfix'),'?') !== false) : ?>
+		if(/.*[\u4e00-\u9fa5]+.*$/.test($file_name)){
+			alert('不支持含有汉字的图片名');
+			return false;
+		}
+		<?php endif; ?>
 		if($file_name != ''){
 			$('#upload-to-pcs-refresh').addClass('hidden');
 			$('#upload-to-pcs-from').attr('action',$action).submit();
@@ -126,6 +134,22 @@ jQuery(function($){
 		$('#upload-to-pcs').hide();
 		$(this).text('上传到这里');
 	});
+	// 插入视频
+	var $insert_video_count = 0;
+	function insert_video_into_editor($video_src,$video_cover){
+		var $script = '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>',
+			$container = '<div id="playercontainer_'+$insert_video_count+'" class="wp2pcs-playercontainer"></div>',
+			$config = '<script type="text/javascript">var player=cyberplayer("playercontainer_'+$insert_video_count+'").setup({width:680,height:400,backcolor:"#FFFFFF",stretching:"uniform",file:"'+$video_src+'",image:"'+$video_cover+'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqF",sk:"67kjwIh3wVLb5UYL"});</script>',
+			$html = '';
+		if(!$insert_video_count){
+			$html += $script;
+		}
+		$html += $container;
+		$html += $config;
+		$('div.selected').removeClass('selected');
+		window.parent.send_to_editor($html);
+		window.parent.tb_remove();
+	}
 });
 </script>
 <div id="opt-on-pcs-tabs">
@@ -146,7 +170,7 @@ jQuery(function($){
 </div>
 <div id="files-on-pcs">
 <?php
-	$files_per_page = 7*10;// 每页7*10个文件
+	$files_per_page = 7*5;// 每行7个，行数可以自己修改
 	$limit = (($paged-1)*$files_per_page).'-'.($paged*$files_per_page-1);
 	$files_on_pcs = wp_storage_to_pcs_media_list_files($dir_pcs_path,$limit);
 	$files_count = count($files_on_pcs);

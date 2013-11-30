@@ -14,50 +14,78 @@ function wp2pcs_download_link($file_path){
 // 通过对URI的判断来确定是否是下载文件的链接
 add_action('init','wp_storage_download_file',-1);
 function wp_storage_download_file(){
-	if(is_admin())return;
-	$home_url = home_url();
-	$home_arr = array_filter(explode('/',$home_url));
-	$current_uri = $_SERVER["REQUEST_URI"];// 和图片外链不同，如果这个地方urldecode，就会造成下载错误
+	// 只用于前台打印图片
+	if(is_admin()){
+		return;
+	}
+	$outlink_perfix = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
+	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
+	// 如果URI中根本不包含$outlink_perfix，那么就不用再往下执行了
+	if(strpos($current_uri,$outlink_perfix) === false){
+		return;
+	}
 	$uri_arr = array_values(array_filter(explode('/',$current_uri)));
-	$download_perfix = trim(get_option('wp_storage_to_pcs_download_perfix'));
-	$install_in_sub_dir = array_intersect($home_arr,$uri_arr);
-	if(!empty($uri_arr)){
-		if(empty($install_in_sub_dir)){
-			$outlink_uri = $uri_arr[0];
-		}else{
-			$outlink_uri = $uri_arr[count($install_in_sub_dir)];
-		}
-		if($outlink_uri == $download_perfix){
-			$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
-			if(strpos($_SERVER['HTTP_REFERER'],home_url()) !== 0){
-				header("Content-Type: text/html; charset=utf-8");
-				echo '防盗链！ ';
-				echo '<a href="'.home_url($current_uri).'">下载</a> ';
-				echo '<a href="'.home_url().'">首页</a>';
-				exit;
-			}
-			$root_dir = get_option('wp_storage_to_pcs_root_dir');
-			$access_token = WP2PCS_APP_TOKEN;
-			$file_path = $root_dir.str_replace_first_time('/'.$outlink_uri.'/','/',$current_uri);
-			$file_path = str_replace('//','/',$file_path);
-			//if(get_option('wp_to_pcs_app_key') === 'false')$outlink_type = '200';
-			if($outlink_type == '200'){
-				$root_dir = trim(get_option('wp_storage_to_pcs_root_dir'));
-				$pcs = new BaiduPCS($access_token);
-				$file_name = basename($file_path);
-				ob_clean();
-				header('Content-Disposition:attachment;filename="'.$file_name.'"');
-				header('Content-Type:application/octet-stream');
-				$result = $pcs->download($file_path);
-				echo $result;
+	// 获取home_url其中的path部分，以此来判断是否安装在子目录中
+	$install_in_sub_dir = parse_url(home_url(),PHP_URL_PATH);
+	if($install_in_sub_dir){
+		$home_dirs = array_filter(explode('/',$install_in_sub_dir));
+		// 下面这个if将安装目录从URI中去除
+		if(!empty($install_in_sub_dir))foreach($home_dirs as $dir){
+			if($uri_arr[0] == $dir){
+				array_shift($uri_arr);
 			}else{
-				$site_id = get_option('wp_to_pcs_site_id');
-				$access_token = substr($access_token,0,10);
-				//$download_link = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.$access_token.'&path='.$file_path;
-				$download_link = 'http://wp2pcs.duapp.com/dl?'.$site_id.'+'.$access_token.'+path='.$file_path;
-				header('Location:'.$download_link);
+				return;
 			}
-			exit;
 		}
 	}
+	// 对于一些特殊的主机，重写规则会写成/index.php/uri，因此需要对此进行判断
+	if($uri_arr[0] == 'index.php'){
+		array_shift($uri_arr);
+	}
+	// 获取去除上述非有用URI后的第一个URI节，用来判断它是否等于$outlink_perfix
+	if($outlink_perfix != $uri_arr[0]){
+		return;
+	}
+	// 去除掉$outlink_perfix，为path做准备
+	array_shift($uri_arr);
+	// 获取图片路径
+	$root_dir = get_option('wp_storage_to_pcs_root_dir');
+	$file_path = trailingslashit($root_dir).implode('/',$uri_arr);
+	$file_path = str_replace('//','/',$file_path);
+	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
+
+	if(strpos($_SERVER['HTTP_REFERER'],home_url()) !== 0){
+		header("Content-Type: text/html; charset=utf-8");
+		echo '防盗链！ ';
+		echo '<a href="'.$current_uri.'">下载</a> ';
+		echo '<a href="'.home_url('/').'">首页</a>';
+		exit;
+	}
+
+	if($outlink_type == '200'){
+		// 考虑到流量问题，必须增加缓存能力
+		date_default_timezone_set("PRC");// 把时间控制在中国
+		session_start(); 
+		header("Cache-Control: private, max-age=10800, pre-check=10800");
+		header("Pragma: private");
+		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
+		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
+			header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
+			exit;
+		}
+		// 打印图片到浏览器
+		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
+		$result = $pcs->download($file_path);
+		$file_name = basename($file_path);
+		ob_clean();
+		header('Content-Disposition:attachment;filename="'.$file_name.'"');
+		header('Content-Type:application/octet-stream');
+		echo $result;
+	}else{
+		$site_id = get_option('wp_to_pcs_site_id');
+		$access_token = substr($access_token,0,10);
+		$download_link = 'http://wp2pcs.duapp.com/dl?'.$site_id.'+'.$access_token.'+path='.$file_path;
+		header('Location:'.$download_link);
+	}
+	exit;
 }
