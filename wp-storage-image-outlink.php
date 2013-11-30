@@ -80,7 +80,7 @@ function wp_storage_print_image(){
 		echo $result;
 	}else{
 		$site_id = get_option('wp_to_pcs_site_id');
-		$access_token = substr($access_token,0,10);
+		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$image_outlink = 'http://wp2pcs.duapp.com/img?'.$site_id.'+'.$access_token.'+path='.$image_path;
 		header('Location:'.$image_outlink);
 	}
