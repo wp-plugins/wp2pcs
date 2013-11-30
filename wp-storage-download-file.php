@@ -83,7 +83,7 @@ function wp_storage_download_file(){
 		echo $result;
 	}else{
 		$site_id = get_option('wp_to_pcs_site_id');
-		$access_token = substr($access_token,0,10);
+		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$download_link = 'http://wp2pcs.duapp.com/dl?'.$site_id.'+'.$access_token.'+path='.$file_path;
 		header('Location:'.$download_link);
 	}
