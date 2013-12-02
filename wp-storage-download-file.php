@@ -18,10 +18,10 @@ function wp_storage_download_file(){
 	if(is_admin()){
 		return;
 	}
-	$outlink_perfix = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
+	$download_perfix = trim(get_option('wp_storage_to_pcs_download_perfix'));
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
-	// 如果URI中根本不包含$outlink_perfix，那么就不用再往下执行了
-	if(strpos($current_uri,$outlink_perfix) === false){
+	// 如果URI中根本不包含$download_perfix，那么就不用再往下执行了
+	if(strpos($current_uri,$download_perfix) === false){
 		return;
 	}
 	$uri_arr = array_values(array_filter(explode('/',$current_uri)));
@@ -42,11 +42,11 @@ function wp_storage_download_file(){
 	if($uri_arr[0] == 'index.php'){
 		array_shift($uri_arr);
 	}
-	// 获取去除上述非有用URI后的第一个URI节，用来判断它是否等于$outlink_perfix
-	if($outlink_perfix != $uri_arr[0]){
+	// 获取去除上述非有用URI后的第一个URI节，用来判断它是否等于$download_perfix
+	if($download_perfix != $uri_arr[0]){
 		return;
 	}
-	// 去除掉$outlink_perfix，为path做准备
+	// 去除掉$download_perfix，为path做准备
 	array_shift($uri_arr);
 	// 获取图片路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
