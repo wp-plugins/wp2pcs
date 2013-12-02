@@ -57,6 +57,7 @@ function wp_storage_to_pcs_media_tab_box() {
 .file-name{line-height:1em;margin-top:3px;}
 .selected{background-color:#008000;color:#fff;}
 .selected-file{background-color:#A30000;}
+.selected-video{background-color:#2E2EFF;}
 .opt-area{margin:0 10px;}
 .alert{color:#D44B25;margin:0 10px;}
 .hidden{display:none;}
@@ -65,9 +66,12 @@ function wp_storage_to_pcs_media_tab_box() {
 <script>
 jQuery(function($){
 	$('#files-on-pcs div.can-select').click(function(){
+		var $file_type = $(this).attr('data-file-type');
 		$(this).toggleClass('selected');
-		if($(this).attr('data-file-type') == 'file'){
+		if($file_type == 'file'){
 			$(this).toggleClass('selected-file');
+		}else if($file_type == 'video'){
+			$(this).toggleClass('selected-video');
 		}
 	});
 	$('#insert-btn').click(function(){
@@ -225,7 +229,7 @@ jQuery(function($){
 </div>
 <div class="alert">
 	<?php if(strpos(get_option('wp_storage_to_pcs_outlink_perfix'),'?') !== false) : ?><p>注意：中文字符串在百度网盘的API调用中无法使用，因此极其强烈要求你不要使用中文名的文件（夹），否则你可能不能得到想要的外链结果。为了防止错误，本插件规定：中文名的文件夹没有任何作用，中文名的图片插入时以下载链接的形式插入。</p><?php endif; ?>
-	<p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的，会插入图片，变红的，会插入链接。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
+	<p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的，会插入图片，变蓝色会插入视频，变红的，会插入链接。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
 	<p>本插件本地上传功能比较弱，会极大的消耗服务器资源。请在网盘中上传（客户端或网页端都可以），完成之后请点击刷新按钮以查看新上传的文件。</p>
 </div>
 <?php
