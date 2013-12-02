@@ -17,7 +17,7 @@ WP2PCS顾名思议就是把WordPress和百度网盘（百度个人云存储，PC
 
 WP2PCS means connect your wordpress to baidu personal cloud storage. With this plugin, you can backup your databaseand website files to PCS avoiding data missing forever. And you can also upload your pictures to PCS, and use thesepictures in wordpress easily.
 
-@@@@ as baidu accounts are always used by Chinese, now I have not support English. If you want to use this plugin,speculate the Chinese words with google translate service.
+<embed src="http://wp2pcs.duapp.com/static/flv.swf" allowfullscreen="true" isautoplay="0" flashvars="vcastr_file=http://bcs.duapp.com/wp2pcs/blog/intro.flv" quality="high" type="application/x-shockwave-flash" width="500" height="400" ></embed>
 
 <strong>说明</strong>
 
