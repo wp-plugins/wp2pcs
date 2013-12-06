@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接百度网盘)
 Plugin URI: http://wp2pcs.duapp.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.1.2
+Version: 1.1.3
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -28,7 +28,7 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.11.30.21.20'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','2013.12.03.15.00'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
@@ -51,6 +51,9 @@ require(dirname(__FILE__).'/wp-backup-to-baidu-pcs.php');
 // 下面是存储功能文件
 require(dirname(__FILE__).'/wp-storage-image-outlink.php');
 require(dirname(__FILE__).'/wp-storage-download-file.php');
+require(dirname(__FILE__).'/wp-storage-video-online.php');
+require(dirname(__FILE__).'/wp-storage-audio-online.php');
+require(dirname(__FILE__).'/wp-storage-media-online.php');
 require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
@@ -60,9 +63,13 @@ function wp_to_pcs_default_settings(){
 	$root_dir = trailingslashit($app_key === 'false' ? WP2PCS_SUB_DIR : WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME']);
 	update_option('wp_backup_to_pcs_root_dir',$root_dir.'backup/');
 	update_option('wp_storage_to_pcs_root_dir',$root_dir.'uploads/');
-	update_option('wp_storage_to_pcs_outlink_perfix','image');
-	update_option('wp_storage_to_pcs_download_perfix','download');
+	update_option('wp_storage_to_pcs_image_perfix','?image');
+	update_option('wp_storage_to_pcs_download_perfix','?download');
+	update_option('wp_storage_to_pcs_video_perfix','index.php/video');
+	update_option('wp_storage_to_pcs_audio_perfix','?audio');
+	update_option('wp_storage_to_pcs_media_perfix','?media');
 	update_option('wp_storage_to_pcs_outlink_type','200');
+	update_option('wp_storage_to_pcs_outlink_protact','true');
 	update_option('wp_backup_to_pcs_local_paths',array(ABSPATH));
 }
 
@@ -137,10 +144,10 @@ function wp_to_pcs_action(){
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
-	// 更新API KEY
-	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key_update' && isset($_POST['wp_to_pcs_app_key_update']) && $_POST['wp_to_pcs_app_key_update'] == '更新'){
+	// 更新授权API KEY
+	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key_update' && isset($_POST['wp_to_pcs_app_key_update']) && $_POST['wp_to_pcs_app_key_update'] == '更新授权'){
 		check_admin_referer();
-		wp2pcs_plugin_deactivate();// 更新API KEY跟停用插件是一样的
+		wp2pcs_plugin_deactivate();// 更新授权API KEY跟停用插件是一样的
 		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
 		exit;
 	}
@@ -178,16 +185,16 @@ function wp_to_pcs_pannel(){
 		<form method="post" autocomplete="off">
 			<h3>百度授权更新</h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-				<p>请及时关注<a href="http://wp2pcs.duapp.com">WP2PCS官方</a>发布的信息，如果官方通知要更新时，请及时更新，否则可能不能使用本插件。</p>
+				<p>请及时关注<a href="http://wp2pcs.duapp.com">WP2PCS官方</a>发布的信息，如果官方通知要更新授权时，请及时更新授权，否则可能不能使用本插件。</p>
 				<?php if($app_key === 'false') : ?><p>你当前使用的是托管到WP2PCS的服务，如果你已经拥有了自己的网盘，不妨更新授权。但需要注意的是，目前WP2PCS还没有开发一键转移功能，所以这些附件只能通过申请后邮件发送给你。</p><?php endif; ?>
-				<p>更新前请注意：1、更新后老的授权信息会被直接删除；2、如果你开启了定时备份，请先关闭。</p>
+				<p>更新授权前请注意：1、更新后老的授权信息会被直接删除；2、如果你开启了定时备份，请先关闭。</p>
 				<?php
 					// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
 					$access_token = WP2PCS_APP_TOKEN;
 					$pcs = new BaiduPCS($access_token);
 					$quota = json_decode($pcs->getQuota());
 					if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
-						echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良，如果是由于授权问题，请点击下面的“更新”按钮重新授权！</b></p>';
+						echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良，如果是由于授权问题，请点击下面的“更新授权”按钮重新授权！</b></p>';
 					}elseif($app_key != 'false'){
 						echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
 					}
@@ -195,7 +202,7 @@ function wp_to_pcs_pannel(){
 						echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了25秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
 					}
 				?>
-				<p><input type="submit" name="wp_to_pcs_app_key_update" value="更新" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" /></p>
+				<p><input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" /></p>
 				<input type="hidden" name="action" value="wp_to_pcs_app_key_update" />
 				<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 				<?php wp_nonce_field(); ?>
@@ -213,9 +220,16 @@ function wp_to_pcs_pannel(){
 				<p><b style="color:red;">注意：由于插件使用的是百度PCS API，所以必须要考虑有关问题，使用前最好到<a href="http://wp2pcs.duapp.com">插件主页</a>了解使用方法，以免使用中出错。</b></p>
 			</div>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-				<p>插件处于开发阶段，欢迎站长、博主朋友们向我们反馈，提出宝贵意见。</p>
-				<p>插件主页：<a href="http://wp2pcs.duapp.com" target="_blank">http://wp2pcs.duapp.com</a></p>
-				<p>向插件作者捐赠：<a href="http://me.alipay.com/tangshuang" target="_blank">支付宝</a>、BitCoin（164jDbmE8ncUYbnuLvUzurXKfw9L7aTLGD）</p>
+				<p>插件同时处于开发中，欢迎站长、博主朋友们向我们反馈，提出宝贵意见。</p>
+				<p>官方网站：<a href="http://wp2pcs.duapp.com" target="_blank">http://wp2pcs.duapp.com</a></p>
+				<p>QQ群：292172954 <a href="http://shang.qq.com/wpa/qunwpa?idkey=97278156f3def92eef226cd5b88d9e7a463e157655650f4800f577472c219786" target="_blank"><img title="WP2PCS官方交流群" alt="WP2PCS官方交流群" src="http://pub.idqqimg.com/wpa/images/group.png" border="0" /></a></p>
+				<p>向插件作者捐赠：<a href="http://me.alipay.com/tangshuang" target="_blank">支付宝</a>、BTC（164jDbmE8ncUYbnuLvUzurXKfw9L7aTLGD）、PPC（PNijEw4YyrWL9DLorGD46AGbRbXHrtfQHx）、XPM（AbDGH5B7zFnKgMJM8ujV3br3R2V31qrF2F）</p>
+			</div>
+			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
+				<p><b>最新动态</b></p>
+				<div style="width:90%;height:260px;overflow:hidden;">
+					<iframe src="http://wp2pcs.duapp.com/category/%e5%8a%a8%e6%80%81%e6%9b%b4%e6%96%b0" frameborder="0" style="width:100%;height:610px;margin-top:-230px;margin-left:-20px;"></iframe>
+				</div>
 			</div>
 		</div>
     </div>

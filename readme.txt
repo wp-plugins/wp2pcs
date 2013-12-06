@@ -4,7 +4,7 @@ Donate link: http://wp2pcs.duapp.com
 Tags: backup, sync, baidu, personal cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
 Tested up to: 3.7.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,8 @@ WP2PCS顾名思议就是把WordPress和百度网盘（百度个人云存储，PC
 
 WP2PCS means connect your wordpress to baidu personal cloud storage. With this plugin, you can backup your databaseand website files to PCS avoiding data missing forever. And you can also upload your pictures to PCS, and use thesepictures in wordpress easily.
 
-@@@@ as baidu accounts are always used by Chinese, now I have not support English. If you want to use this plugin,speculate the Chinese words with google translate service.
+官方网站 http://wp2pcs.duapp.com
+如有疑问请加官方唯一QQ群292172954参与讨论。
 
 <strong>说明</strong>
 
@@ -68,6 +69,9 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 
 == Changelog ==
 
+= 1.1.3 =
+升级附件存储功能，提供在线媒体播放器，直接插入视频播放、音乐播放等
+
 = 1.1.2 =
 * 修复了部分主机无法正常显示图片的问题
 * 增加了一键替换图片地址前缀的功能
@@ -102,38 +106,12 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 
 == Upgrade Notice ==
 
-= 1.1.2 =
-* 修复了部分主机无法正常显示图片的问题
-* 增加了一键替换图片地址前缀的功能
+= 1.1.3 =
+升级附件存储功能，提供在线媒体播放器，直接插入视频播放、音乐播放等
 
-= 1.1.1 =
-* 修复了一些bug
-* 解决了部分网站图片无法正常显示的问题
+= 1.1 =
+修复BUG，提供更加强劲的备份功能，并对附件存储功能进行了升级
 
-= 1.1.0 =
-* 优化了把百度网盘作为存储空间的功能
-* 提供强大的外链功能（保护授权信息）
-
-= 1.0.4 =
-+- wp2pcs.php
-+- wp-backup-to-baidu-pcs.php
-
-= 1.0.3 =
--- libs/PHPzip.php
--+ wp2pcs.php
--+ wp-backup-file-functions.php
--+ wp-backup-to-baidu-pcs.php
-
-= 1.0.2 =
-++ libs/PHPzip.php
--+ wp-backup-file-functions.php
-+- wp2pcs.php
-
-= 1.0.1 =
-修改了一些BUG，更新了备份选项，添加自定义备份，升级到1.1版本。
-备份选项：注意，根据自己的网站情况选择特定的备份周期。
-备份特定目录或文件：每行一个，当前年月日分别用{year}{month}{day}代替，不能有空格，末尾带/，必须为网站目录路径（包含路径头/www/users/xn--sxry05m.xn--fiqs8s/）。注意，上级目录将包含下级目录，如/www/users/xn--sxry05m.xn--fiqs8s/wp-content/将包含/www/users/xn--sxry05m.xn--fiqs8s/wp-content/uploads/，因此务必不要重复，两个只能填一个，否则会报错。填写了目录或文件列表之后，备份时整站将不备份，只备份填写的列表中的目录或文件。
-
-= 1.0.0 =
-实现基本功能
+= 1.0 =
+实现基本功能，包括基本的网站定时备份，网站存储空间、图片外链、文件直链下载等。
 

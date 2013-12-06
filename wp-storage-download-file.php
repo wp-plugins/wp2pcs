@@ -7,54 +7,77 @@ function wp2pcs_download_link($file_path){
 	// 其中.....是指你填写的用于保存文件的网盘目录，/test/是你在这个目录下随意创建的一个目录，test.jpg就是要打印的图片
 	// 注意最前面加/
 	$download_perfix = trim(get_option('wp_storage_to_pcs_download_perfix'));
-	$download_link = '/'.$down_perfix.$file_path;
+	$download_link = "/$down_perfix/".$file_path;
+	$download_link = str_replace('//','/',$download_link);
 	return home_url($download_link);
 }
 
 // 通过对URI的判断来确定是否是下载文件的链接
 add_action('init','wp_storage_download_file',-1);
 function wp_storage_download_file(){
-	// 只用于前台打印图片
+	// 只用于前台下载文件
 	if(is_admin()){
 		return;
 	}
-	$outlink_perfix = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
+
+	$download_perfix = trim(get_option('wp_storage_to_pcs_download_perfix'));
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
-	// 如果URI中根本不包含$outlink_perfix，那么就不用再往下执行了
-	if(strpos($current_uri,$outlink_perfix) === false){
+	$file_uri = $current_uri;
+	$file_path = '';
+
+	// 如果不存在前缀，就不执行了
+	if(!$download_perfix){
 		return;
 	}
-	$uri_arr = array_values(array_filter(explode('/',$current_uri)));
-	// 获取home_url其中的path部分，以此来判断是否安装在子目录中
-	$install_in_sub_dir = parse_url(home_url(),PHP_URL_PATH);
-	if($install_in_sub_dir){
-		$home_dirs = array_filter(explode('/',$install_in_sub_dir));
-		// 下面这个if将安装目录从URI中去除
-		if(!empty($install_in_sub_dir))foreach($home_dirs as $dir){
-			if($uri_arr[0] == $dir){
-				array_shift($uri_arr);
-			}else{
-				return;
-			}
+
+	// 当采用index.php/download时，大部分主机会跳转，丢失index.php，因此这里要做处理
+	if(strpos($download_perfix,'index.php/')===0 && strpos($download_uri,'index.php/')===false){
+		$download_perfix = str_replace('index.php/','',$download_perfix);
+	}
+
+	// 如果URI中根本不包含$download_perfix，那么就不用再往下执行了
+	if(strpos($file_uri,$download_perfix) === false){
+		return;
+	}
+
+	// 获取安装在子目录
+	$install_in_subdir = get_blog_install_in_subdir();
+	if($install_in_subdir){
+		$file_uri = str_replace_first($install_in_subdir,'',$file_uri);
+	}
+
+	// 如果在IIS上面
+	if(get_blog_install_on_iis()){
+		if(strpos($file_uri,'/index.php/') !== 0){
+			return;
 		}
+		if(strpos($download_perfix,'index.php/')===0 && strpos($file_uri,'/index.php/'.$download_perfix)!==0){
+			return;
+		}
+		$file_uri = str_replace_first('/index.php','',$file_uri);		
 	}
-	// 对于一些特殊的主机，重写规则会写成/index.php/uri，因此需要对此进行判断
-	if($uri_arr[0] == 'index.php'){
-		array_shift($uri_arr);
-	}
-	// 获取去除上述非有用URI后的第一个URI节，用来判断它是否等于$outlink_perfix
-	if($outlink_perfix != $uri_arr[0]){
+
+	// 如果URI中根本不包含$download_perfix，那么就不用再往下执行了
+	if(strpos($file_uri,'/'.$download_perfix) !== 0){
 		return;
 	}
-	// 去除掉$outlink_perfix，为path做准备
-	array_shift($uri_arr);
-	// 获取图片路径
+	
+	// 将前缀也去除，获取文件直接路径
+	$file_path = str_replace_first('/'.$download_perfix,'',$file_uri);
+
+	// 如果不存在file_path，也不执行了
+	if(!$file_path){
+		return;
+	}
+
+	// 获取文件真实路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$file_path = trailingslashit($root_dir).implode('/',$uri_arr);
+	$file_path = trailingslashit($root_dir).$file_path;
 	$file_path = str_replace('//','/',$file_path);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 
-	if(strpos($_SERVER['HTTP_REFERER'],home_url()) !== 0){
+	// 防盗链
+	if(strpos($_SERVER['HTTP_REFERER'],home_url()) !== 0 && get_option('wp_storage_to_pcs_outlink_protact')){
 		header("Content-Type: text/html; charset=utf-8");
 		echo '防盗链！ ';
 		echo '<a href="'.$current_uri.'">下载</a> ';
@@ -77,9 +100,9 @@ function wp_storage_download_file(){
 		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 		$result = $pcs->download($file_path);
 		$file_name = basename($file_path);
-		ob_clean();
 		header('Content-Disposition:attachment;filename="'.$file_name.'"');
 		header('Content-Type:application/octet-stream');
+		ob_clean();
 		echo $result;
 	}else{
 		$site_id = get_option('wp_to_pcs_site_id');

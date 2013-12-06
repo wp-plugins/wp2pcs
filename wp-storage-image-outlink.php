@@ -3,10 +3,11 @@
 // 创建一个函数，用来在wordpress中打印图片地址
 function wp2pcs_image_src($image_path){
 	// image_path是指相对于后台保存的存储目录的路径
-	// 例如 $file_path = /test/test.jpg
+	// 例如 $image_path = /test/test.jpg
 	// 注意最前面加/
-	$outlink_perfix = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
-	$image_src = '/'.$outlink_perfix.$image_path;
+	$image_perfix = trim(get_option('wp_storage_to_pcs_image_perfix'));
+	$image_src = "/$image_perfix/".$image_path;
+	$image_src = str_replace('//','/',$image_src);
 	return home_url($image_src);
 }
 
@@ -17,43 +18,65 @@ function wp_storage_print_image(){
 	if(is_admin()){
 		return;
 	}
-	$outlink_perfix = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
+
+	$image_perfix = get_option('wp_storage_to_pcs_image_perfix');
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
-	// 如果URI中根本不包含$outlink_perfix，那么就不用再往下执行了
-	if(strpos($current_uri,$outlink_perfix) === false){
+	$image_uri = $current_uri;
+	$image_path = '';
+
+	// 如果不存在前缀，就不执行了
+	if(!$image_perfix){
 		return;
 	}
-	$uri_arr = array_values(array_filter(explode('/',$current_uri)));
-	// 获取home_url其中的path部分，以此来判断是否安装在子目录中
-	$install_in_sub_dir = parse_url(home_url(),PHP_URL_PATH);
-	if($install_in_sub_dir){
-		$home_dirs = array_filter(explode('/',$install_in_sub_dir));
-		// 下面这个if将安装目录从URI中去除
-		if(!empty($install_in_sub_dir))foreach($home_dirs as $dir){
-			if($uri_arr[0] == $dir){
-				array_shift($uri_arr);
-			}else{
-				return;
-			}
+
+	// 当采用index.php/image时，大部分主机会跳转，丢失index.php，因此这里要做处理
+	if(strpos($image_perfix,'index.php/')===0 && strpos($image_uri,'index.php/')===false){
+		$image_perfix = str_replace_first('index.php/','',$image_perfix);
+	}
+	
+	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
+	if(strpos($image_uri,$image_perfix)===false){
+		return;
+	}
+
+	// 获取安装在子目录
+	$install_in_subdir = get_blog_install_in_subdir();
+	if($install_in_subdir){
+		$image_uri = str_replace_first($install_in_subdir,'',$image_uri);
+	}
+
+	// 如果在IIS上面
+	if(get_blog_install_on_iis()){
+		if(strpos($image_uri,'/index.php/')!==0){
+			return;
 		}
+		if(strpos($image_perfix,'index.php/')===0 && strpos($image_uri,'/index.php/'.$image_perfix)!==0){
+			return;
+		}
+		$image_uri = str_replace_first('/index.php','',$image_uri);		
 	}
-	// 对于一些特殊的主机，重写规则会写成/index.php/uri，因此需要对此进行判断
-	if($uri_arr[0] == 'index.php'){
-		array_shift($uri_arr);
-	}
-	// 获取去除上述非有用URI后的第一个URI节，用来判断它是否等于$outlink_perfix
-	if($outlink_perfix != $uri_arr[0]){
+
+	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
+	if(strpos($image_uri,'/'.$image_perfix)!==0){
 		return;
 	}
-	// 去除掉$outlink_perfix，为path做准备
-	array_shift($uri_arr);
+	
+	// 将前缀也去除，获取文件直接路径
+	$image_path = str_replace_first('/'.$image_perfix,'',$image_uri);
+
+	// 如果不存在image_path，也不执行了
+	if(!$image_path){
+		return;
+	}
+
 	// 获取图片路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$image_path = trailingslashit($root_dir).implode('/',$uri_arr);
+	$image_path = trailingslashit($root_dir).$image_path;
 	$image_path = str_replace('//','/',$image_path);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 
-	if(isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],home_url()) !== 0){
+	// 防盗链
+	if(isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],home_url())!==0 && get_option('wp_storage_to_pcs_outlink_protact')){
 		header("Content-Type: text/html; charset=utf-8");
 		echo '防盗链！ ';
 		echo '<a href="'.$current_uri.'">原图</a> ';
@@ -75,8 +98,8 @@ function wp_storage_print_image(){
 		// 打印图片到浏览器
 		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 		$result = $pcs->downloadStream($image_path);
-		ob_clean();
 		header('Content-type: image/jpeg');
+		ob_clean();
 		echo $result;
 	}else{
 		$site_id = get_option('wp_to_pcs_site_id');

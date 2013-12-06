@@ -21,7 +21,7 @@ function wp_storage_to_pcs_action(){
 	}
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_storage_to_pcs_replace_img_in_post'){
 		global $wpdb;
-		$img_url_base = get_option('wp_storage_to_pcs_outlink_perfix');
+		$img_url_base = get_option('wp_storage_to_pcs_image_perfix');
 		$img_url_new_root = home_url('/'.$img_url_base.'/');
 		$img_url_old_root = trim($_POST['wp_storage_to_pcs_replace_img_old_root']);
 		if(!$img_url_old_root){
@@ -50,14 +50,21 @@ function wp_storage_to_pcs_action(){
 		}
 		$root_dir = trailingslashit($root_dir);
 		update_option('wp_storage_to_pcs_root_dir',$root_dir);
-		$outlink_perfix = trim($_POST['wp_storage_to_pcs_outlink_perfix']);
-		update_option('wp_storage_to_pcs_outlink_perfix',$outlink_perfix);
+		$image_perfix = trim($_POST['wp_storage_to_pcs_image_perfix']);
+		update_option('wp_storage_to_pcs_image_perfix',$image_perfix);
 		$download_perfix = trim($_POST['wp_storage_to_pcs_download_perfix']);
 		update_option('wp_storage_to_pcs_download_perfix',$download_perfix);
-		if(isset($_POST['wp_storage_to_pcs_outlink_type'])){
-			$outlink_type = $_POST['wp_storage_to_pcs_outlink_type'];
-			update_option('wp_storage_to_pcs_outlink_type',$outlink_type);
-		}
+		$video_perfix = trim($_POST['wp_storage_to_pcs_video_perfix']);
+		update_option('wp_storage_to_pcs_video_perfix',$video_perfix);
+		$audio_perfix = trim($_POST['wp_storage_to_pcs_audio_perfix']);
+		update_option('wp_storage_to_pcs_audio_perfix',$audio_perfix);
+		$media_perfix = trim($_POST['wp_storage_to_pcs_media_perfix']);
+		update_option('wp_storage_to_pcs_media_perfix',$media_perfix);
+		$outlink_type = $_POST['wp_storage_to_pcs_outlink_type'];
+		update_option('wp_storage_to_pcs_outlink_type',$outlink_type);
+		$outlink_protact = $_POST['wp_storage_to_pcs_outlink_protact'];
+		if($outlink_protact)update_option('wp_storage_to_pcs_outlink_protact',$outlink_protact);
+		else delete_option('wp_storage_to_pcs_outlink_protact');
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
@@ -67,9 +74,13 @@ function wp_storage_to_pcs_action(){
 function wp_storage_to_pcs_panel(){
 	$app_key = get_option('wp_to_pcs_app_key');
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$outlink_perfix = get_option('wp_storage_to_pcs_outlink_perfix');
+	$image_perfix = get_option('wp_storage_to_pcs_image_perfix');
 	$download_perfix = get_option('wp_storage_to_pcs_download_perfix');
+	$video_perfix = get_option('wp_storage_to_pcs_video_perfix');
+	$audio_perfix = get_option('wp_storage_to_pcs_audio_perfix');
+	$media_perfix = get_option('wp_storage_to_pcs_media_perfix');
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
+	$outlink_protact = get_option('wp_storage_to_pcs_outlink_protact');
 	$img_url_old_root = get_option('wp_storage_to_pcs_replace_img_old_root');
 ?>
 <div class="postbox">
@@ -78,12 +89,16 @@ function wp_storage_to_pcs_panel(){
 	<form method="post">
 		<p>使用网盘中的哪个目录：
 		<?php if($app_key === 'false') : echo WP2PCS_SUB_DIR; ?><input type="text" name="wp_storage_to_pcs_root_dir"  class="regular-text" value="<?php echo str_replace(WP2PCS_SUB_DIR,'',$root_dir); ?>" /><?php else : echo WP2PCS_ROOT_DIR; ?><input type="text" name="wp_storage_to_pcs_root_dir" class="regular-text" value="<?php echo str_replace(WP2PCS_ROOT_DIR,'',$root_dir); ?>" /><?php endif; ?></p>
-		<p>图片访问前缀：<input type="text" name="wp_storage_to_pcs_outlink_perfix" value="<?php echo $outlink_perfix; ?>" /></p>
+		<p>图片访问前缀：<input type="text" name="wp_storage_to_pcs_image_perfix" value="<?php echo $image_perfix; ?>" /></p>
 		<p>下载访问前缀：<input type="text" name="wp_storage_to_pcs_download_perfix" value="<?php echo $download_perfix; ?>" /></p>
+		<p>视频文件前缀：<input type="text" name="wp_storage_to_pcs_video_perfix" value="<?php echo $video_perfix; ?>" /> <a href="http://wp2pcs.duapp.com/198" title="使用说明" target="_blank">?</a></p>
+		<p>音频文件前缀：<input type="text" name="wp_storage_to_pcs_audio_perfix" value="<?php echo $audio_perfix; ?>" /> <a href="http://wp2pcs.duapp.com/202" title="使用说明" target="_blank">?</a></p>
+		<p>流式文件前缀：<input type="text" name="wp_storage_to_pcs_media_perfix" value="<?php echo $media_perfix; ?>" /> <a href="http://wp2pcs.duapp.com/204" title="使用说明" target="_blank">?</a></p>
 		<p>附件访问方式：<select name="wp_storage_to_pcs_outlink_type">
 			<option value="200" <?php selected($outlink_type,200); ?>>直链：耗流量，利于SEO</option>
 			<option value="302" <?php selected($outlink_type,302); ?>>外链：省流量，SEO欠佳</option>
 		</select></p>
+		<P><input type="checkbox" name="wp_storage_to_pcs_outlink_protact" value="true" <?php checked($outlink_protact,'true'); ?> /> 防盗链</p>
 		<p><input type="submit" value="确定" class="button-primary" /></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_update" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
@@ -92,7 +107,7 @@ function wp_storage_to_pcs_panel(){
 	</div>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 	<form method="post">
-		<p><strong>一键更新图片地址前缀功能</strong>：一键将图片从<?php echo home_url('/wp-content/uploads/2013/11/29/xxx.jpg'); ?>替换为<?php echo home_url('/'.$outlink_perfix.'/2013/11/29/xxx.jpg'); ?>。请看下面详细介绍。</p>
+		<p><strong>一键更新图片地址前缀功能</strong>：一键将图片从<?php echo home_url('/wp-content/uploads/2013/11/29/xxx.jpg'); ?>替换为<?php echo home_url('/'.$image_perfix.'/2013/11/29/xxx.jpg'); ?>。请看下面详细介绍。</p>
 		<p>老的图片目录：<input type="text" name="wp_storage_to_pcs_replace_img_old_root" class="regular-text" value="<?php echo $img_url_old_root; ?>" /></p>
 		<p><input type="submit" value="一键替换" onclick="if(confirm('WP2PCS官方提供了更为高级的解决方案，点击确认进行了解，点击取消继续')){window.open('http://wp2pcs.duapp.com/160');return false;}" class="button-primary" /></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_replace_img_in_post" />
