@@ -65,7 +65,8 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 
 1. 让你选择授权方式。the status before you get baidu oauth.
 2. 你可以对插件进行设置，确定备份时间和目录。the settings of the plugin.
-3. 你可以在媒体管理面板上传附件到百度网盘。how to upload to pcs when you post.
+3. 对不同的附件访问URL的方式（前缀）进行自定义。how to visit your image/video/audio...
+4. 你可以在媒体管理面板上传附件到百度网盘。how to upload to pcs when you post.
 
 == Changelog ==
 
