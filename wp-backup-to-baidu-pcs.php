@@ -104,6 +104,8 @@ function wp_backup_to_pcs_action(){
 					wp_die('没有需要打包的文件！');
 					exit;
 				}
+				set_time_limit(0); // 延长执行时间，防止备份失败
+				ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出		// 考虑到流量问题，必须增加缓存能力
 				header("Content-type: application/octet-stream");
 				header("Content-disposition: attachment; filename=".basename($zip_file));
 				$file_content = '';

@@ -25,9 +25,17 @@ function wp_storage_to_pcs_media_tab($tabs){
     return array_merge($tabs,$newtab);
 }
 // 这个地方需要增加一个中间介wp_iframe，这样就可以使用wordpress的脚本和样式
-add_action('media_upload_file_from_pcs', 'media_upload_file_from_pcs_iframe');
-function media_upload_file_from_pcs_iframe() {
+add_action('media_upload_file_from_pcs','media_upload_file_from_pcs_iframe');
+function media_upload_file_from_pcs_iframe(){
 	wp_iframe('wp_storage_to_pcs_media_tab_box');
+}
+// 去除媒体界面的多余脚本
+add_action('admin_init','wp_storage_to_pcs_media_iframe_remove_actions');
+function wp_storage_to_pcs_media_iframe_remove_actions(){
+	if(!isset($_GET['tab']) || $_GET['tab'] != 'file_from_pcs'){
+		return;
+	}
+	remove_all_actions('admin_head');
 }
 // 在上面产生的百度网盘选项中要显示出网盘内的文件
 //add_action('media_upload_file_from_pcs','wp_storage_to_pcs_media_tab_box');

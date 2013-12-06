@@ -86,7 +86,8 @@ function wp_storage_download_file(){
 	}
 
 	if($outlink_type == '200'){
-		// 考虑到流量问题，必须增加缓存能力
+		set_time_limit(0); // 延长执行时间，防止备份失败
+		ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出		// 考虑到流量问题，必须增加缓存能力
 		date_default_timezone_set("PRC");// 把时间控制在中国
 		session_start(); 
 		header("Cache-Control: private, max-age=10800, pre-check=10800");
