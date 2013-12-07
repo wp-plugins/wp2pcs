@@ -36,7 +36,7 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 		return null;
 	}
 	if(file_exists($zip_file_path)){
-		unlink($zip_file_path);
+		@unlink($zip_file_path);
 	}
 	if(!is_array($zip_local_paths)){
 		if(is_string($zip_local_paths) && (is_file($zip_local_paths) || is_dir($zip_local_paths))){

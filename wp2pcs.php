@@ -40,10 +40,19 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 // 经过判断或函数运算才能进行定义的常量
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_access_token'));
 define('IS_WP2PCS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
+if(get_option('wp_to_pcs_debug') == '开启调试'){
+	define('WP2PCS_DEBUG',true);
+}else{
+	define('WP2PCS_DEBUG',false);
+}
 if(!defined('WP_CONTENT_DIR')){
 	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
 }
 
+// 开启调试模式
+if(WP2PCS_DEBUG){
+	include(dirname(__FILE__).'/wp2pcs-debug.php');
+}
 // 下面是备份功能文件
 require(dirname(__FILE__).'/wp-backup-database-functions.php');
 require(dirname(__FILE__).'/wp-backup-file-functions.php');
@@ -70,7 +79,6 @@ function wp_to_pcs_default_settings(){
 	update_option('wp_storage_to_pcs_media_perfix','?media');
 	update_option('wp_storage_to_pcs_outlink_type','200');
 	update_option('wp_storage_to_pcs_outlink_protact','true');
-	update_option('wp_backup_to_pcs_local_paths',array(ABSPATH));
 }
 
 // 停用插件的时候停止定时任务
@@ -151,11 +159,17 @@ function wp_to_pcs_action(){
 		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
 		exit;
 	}
+	// 调试模式
+	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['wp_to_pcs_debug']) && !empty($_POST['wp_to_pcs_debug'])){
+		update_option('wp_to_pcs_debug',$_POST['wp_to_pcs_debug']);
+	}
 }
 
 // 选项和菜单
 function wp_to_pcs_pannel(){
 	$app_key = get_option('wp_to_pcs_app_key');
+	$btn_text = (get_option('wp_to_pcs_debug') == '开启调试' ? '关闭调试' : '开启调试');
+	$btn_class = ($btn_text == '开启调试' ? 'button-primary' : 'button');
 ?>
 <div class="wrap" id="wonderful-links-seo-admin">
 	<h2>WP2PCS WordPress连接到百度网盘<?php if($app_key === 'false'){echo '[WP2PCS官方托管]';} ?></h2>
@@ -202,7 +216,10 @@ function wp_to_pcs_pannel(){
 						echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了25秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
 					}
 				?>
-				<p><input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" /></p>
+				<p>
+					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
+					<input type="submit" name="wp_to_pcs_debug" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" onclick="if(!confirm('开启调试模式之后，前台将不能正常访问，而是会进入调试模式。是否确定？'))return false;"/>
+				</p>
 				<input type="hidden" name="action" value="wp_to_pcs_app_key_update" />
 				<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 				<?php wp_nonce_field(); ?>

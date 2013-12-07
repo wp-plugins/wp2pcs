@@ -76,13 +76,17 @@ function wp_storage_print_video(){
 
 	// 如果在IIS上面
 	if(get_blog_install_software() == 'IIS'){
-		if(strpos($video_uri,'/index.php/')!==0){
-			return;
+		if(
+			(strpos($video_uri,'/index.php/')===0 
+			&& strpos($video_perfix,'index.php/')!==0
+			&& strpos($video_uri,'/index.php/'.$video_perfix)===0)
+			||
+			(strpos($video_uri,'/index.php/index.php/')===0 
+			&& strpos($video_perfix,'index.php/')===0
+			&& strpos($video_uri,'/index.php/'.$video_perfix)===0)
+		){
+			$video_uri = str_replace_first('/index.php','',$video_uri);	
 		}
-		if(strpos($video_perfix,'index.php/')===0 && strpos($video_uri,'/index.php/'.$video_perfix)!==0){
-			return;
-		}
-		$video_uri = str_replace_first('/index.php','',$video_uri);		
 	}
 
 	// 如果URI中根本不包含$video_perfix，那么就不用再往下执行了

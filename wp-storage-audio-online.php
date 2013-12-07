@@ -58,13 +58,17 @@ function wp_storage_print_audio(){
 
 	// 如果在IIS上面
 	if(get_blog_install_software() == 'IIS'){
-		if(strpos($audio_uri,'/index.php/')!==0){
-			return;
+		if(
+			(strpos($audio_uri,'/index.php/')===0 
+			&& strpos($audio_perfix,'index.php/')!==0
+			&& strpos($audio_uri,'/index.php/'.$audio_perfix)===0)
+			||
+			(strpos($audio_uri,'/index.php/index.php/')===0 
+			&& strpos($audio_perfix,'index.php/')===0
+			&& strpos($audio_uri,'/index.php/'.$audio_perfix)===0)
+		){
+			$audio_uri = str_replace_first('/index.php','',$audio_uri);	
 		}
-		if(strpos($audio_perfix,'index.php/')===0 && strpos($audio_uri,'/index.php/'.$audio_perfix)!==0){
-			return;
-		}
-		$audio_uri = str_replace_first('/index.php','',$audio_uri);		
 	}
 
 	// 如果URI中根本不包含$audio_perfix，那么就不用再往下执行了

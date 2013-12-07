@@ -51,13 +51,17 @@ function wp_storage_print_media(){
 
 	// 如果在IIS上面
 	if(get_blog_install_software() == 'IIS'){
-		if(strpos($media_uri,'/index.php/')!==0){
-			return;
+		if(
+			(strpos($media_uri,'/index.php/')===0 
+			&& strpos($media_perfix,'index.php/')!==0
+			&& strpos($media_uri,'/index.php/'.$media_perfix)===0)
+			||
+			(strpos($media_uri,'/index.php/index.php/')===0 
+			&& strpos($media_perfix,'index.php/')===0
+			&& strpos($media_uri,'/index.php/'.$media_perfix)===0)
+		){
+			$media_uri = str_replace_first('/index.php','',$media_uri);	
 		}
-		if(strpos($media_perfix,'index.php/')===0 && strpos($media_uri,'/index.php/'.$media_perfix)!==0){
-			return;
-		}
-		$media_uri = str_replace_first('/index.php','',$media_uri);		
 	}
 
 	// 如果URI中根本不包含$media_perfix，那么就不用再往下执行了

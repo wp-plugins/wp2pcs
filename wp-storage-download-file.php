@@ -48,13 +48,17 @@ function wp_storage_download_file(){
 
 	// 如果在IIS上面
 	if(get_blog_install_software() == 'IIS'){
-		if(strpos($file_uri,'/index.php/') !== 0){
-			return;
+		if(
+			(strpos($download_uri,'/index.php/')===0 
+			&& strpos($download_perfix,'index.php/')!==0
+			&& strpos($download_uri,'/index.php/'.$download_perfix)===0)
+			||
+			(strpos($download_uri,'/index.php/index.php/')===0 
+			&& strpos($download_perfix,'index.php/')===0
+			&& strpos($download_uri,'/index.php/'.$download_perfix)===0)
+		){
+			$download_uri = str_replace_first('/index.php','',$download_uri);	
 		}
-		if(strpos($download_perfix,'index.php/')===0 && strpos($file_uri,'/index.php/'.$download_perfix)!==0){
-			return;
-		}
-		$file_uri = str_replace_first('/index.php','',$file_uri);		
 	}
 
 	// 如果URI中根本不包含$download_perfix，那么就不用再往下执行了

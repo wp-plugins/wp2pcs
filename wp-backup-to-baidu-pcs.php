@@ -76,9 +76,9 @@ function wp_backup_to_pcs_action(){
 			$zip_dir = trailingslashit(WP_CONTENT_DIR);
 			// 备份数据库
 			$database_file = $zip_dir.'database.sql';
-			if(file_exists($database_file))unlink($database_file);
+			if(file_exists($database_file))@unlink($database_file);
 			$database_content = get_database_backup_all_sql();
-			$handle = fopen($database_file,"w+");
+			$handle = @fopen($database_file,"w+");
 			if(fwrite($handle,$database_content) === false){
 				echo "写入文件 $filename 失败";
 				exit();
@@ -108,16 +108,16 @@ function wp_backup_to_pcs_action(){
 				header("Content-type: application/octet-stream");
 				header("Content-disposition: attachment; filename=".basename($zip_file));
 				$file_content = '';
-				$handle = fopen($zip_file,'rb');
-				while(!feof($handle)){
+				$handle = @fopen($zip_file,'rb');
+				while(!@feof($handle)){
 					$file_content .= fread($handle,2*1024*1024);
 				}
 				fclose($handle);
+				@unlink($zip_file);
+				if(file_exists($log_file))@unlink($log_file);
+				if(file_exists($www_file))@unlink($www_file);
+				@unlink($database_file);
 				echo $file_content;
-				unlink($zip_file);
-				if(file_exists($log_file))unlink($log_file);
-				if(file_exists($www_file))unlink($www_file);
-				unlink($database_file);
 				exit;
 			}
 		}
@@ -257,11 +257,11 @@ function wp_backup_to_pcs_send_single_file($local_path,$remote_dir){
 	$pcs = new BaiduPCS($access_token);
 	$file_name = basename($local_path);
 	$file_size = filesize($local_path);
-	$handle = fopen($local_path,'rb');
+	$handle = @fopen($local_path,'rb');
 	$file_content = fread($handle,$file_size);
 	$pcs->upload($file_content,trailingslashit($remote_dir),$file_name,'');
 	fclose($handle);
-	unlink($local_path);
+	@unlink($local_path);
 }
 
 // 超大文件分片上传函数
@@ -270,8 +270,8 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$pcs = new BaiduPCS($access_token);
 	$file_blocks = array();//分片上传文件成功后返回的md5值数组集合
 	$file_name = basename($local_path);
-	$handle = fopen($local_path,'rb');
-	while(!feof($handle)){
+	$handle = @fopen($local_path,'rb');
+	while(!@feof($handle)){
 		$file_block_content = fread($handle,$file_block_size);
 		$temp = $pcs->upload($file_block_content,trailingslashit($remote_dir),$file_name,'',true);
 		if(!is_array($temp)){
@@ -282,7 +282,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 		}
 	}
 	fclose($handle);
-	unlink($local_path);
+	@unlink($local_path);
 	if(count($file_blocks) > 1){
 		$pcs->createSuperFile(trailingslashit($remote_dir),$file_name,$file_blocks,'');
 	}

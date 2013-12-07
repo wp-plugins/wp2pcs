@@ -38,7 +38,21 @@ function get_blog_install_in_subdir(){
 // 判断wordpress是否安装在win主机，并开启了重写
 function get_blog_install_software(){
 	$permalink_structure = get_option('permalink_structure');
-	$install_root = trailingslashit(ABSPATH.get_blog_install_in_subdir());
+	$software = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '';
+	if(strpos($software,'IIS') !== false){
+		$software = 'IIS';
+	}elseif(strpos($software,'Apache') !== false){
+		$software = 'Apache';
+	}elseif(strpos($software,'NginX') !== false){
+		$software = 'NginX';
+	}else{
+		$software = 'Others';
+	}
+	$install_root = ABSPATH;
+	$install_in_subdir = get_blog_install_in_subdir();
+	if($software == 'IIS' && $install_in_subdir){
+		$install_root = str_replace_last($install_in_subdir.'/','',$install_root);
+	}
 	$is_rewrited = false;
 	if($permalink_structure){
 		if(file_exists($install_root.'httpd.ini') || file_exists($install_root.'.htaccess') || file_exists($install_root.'httpd.conf') || file_exists($install_root.'app.conf') || file_exists($install_root.'config.yaml'))
@@ -50,16 +64,6 @@ function get_blog_install_software(){
 	}
 	// 固定链接正确填写
 	else{
-		$software = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '';
-		if(strpos($software,'IIS') !== false){
-			$software = 'IIS';
-		}elseif(strpos($software,'Apache') !== false){
-			$software = 'Apache';
-		}elseif(strpos($software,'NginX') !== false){
-			$software = 'NginX';
-		}else{
-			$software = 'Others';
-		}
 		return $software;
 	}
 }

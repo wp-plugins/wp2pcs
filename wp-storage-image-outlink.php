@@ -47,20 +47,24 @@ function wp_storage_print_image(){
 
 	// 如果在IIS上面
 	if(get_blog_install_software() == 'IIS'){
-		if(strpos($image_uri,'/index.php/')!==0){
-			return;
+		if(
+			(strpos($image_uri,'/index.php/')===0 
+			&& strpos($image_perfix,'index.php/')!==0
+			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
+			||
+			(strpos($image_uri,'/index.php/index.php/')===0 
+			&& strpos($image_perfix,'index.php/')===0
+			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
+		){
+			$image_uri = str_replace_first('/index.php','',$image_uri);	
 		}
-		if(strpos($image_perfix,'index.php/')===0 && strpos($image_uri,'/index.php/'.$image_perfix)!==0){
-			return;
-		}
-		$image_uri = str_replace_first('/index.php','',$image_uri);		
 	}
 
 	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
 	if(strpos($image_uri,'/'.$image_perfix)!==0){
 		return;
 	}
-	
+
 	// 将前缀也去除，获取文件直接路径
 	$image_path = str_replace_first('/'.$image_perfix,'',$image_uri);
 
