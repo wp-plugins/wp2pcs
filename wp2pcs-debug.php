@@ -94,6 +94,15 @@
 	}
 	fclose($handle);
 
+	// 检查是否授权通过
+	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
+	$quota = json_decode($pcs->getQuota());
+	if(!$pcs || !$quota || isset($quota->error_code)){
+		echo '授权失败，也有可能是因为你的主机和百度PCS服务器通信失败';
+	}else{
+		echo '百度PCS授权成功';
+	}
+
 	echo "<br /><br />目前该测试文件只在linux appache上通过测试，如果你使用的是win主机，或者其他主机，请与我联系。<br /><br />";
 
 	/*
