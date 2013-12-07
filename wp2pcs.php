@@ -70,7 +70,6 @@ function wp_to_pcs_default_settings(){
 	update_option('wp_storage_to_pcs_media_perfix','?media');
 	update_option('wp_storage_to_pcs_outlink_type','200');
 	update_option('wp_storage_to_pcs_outlink_protact','true');
-	update_option('wp_backup_to_pcs_local_paths',array(ABSPATH));
 }
 
 // 停用插件的时候停止定时任务
@@ -236,4 +235,14 @@ function wp_to_pcs_pannel(){
 </div>
 <script src="http://wp2pcs.duapp.com/application-update-notice.js?ver=<?php date_default_timezone_set("PRC");echo date('Y-m-d-H'); ?>" charset="utf-8"></script>
 <?php
+}
+
+// 后台全局提示信息
+add_action('admin_notices','wp2pcs_admin_notice');
+function wp2pcs_admin_notice(){
+    ?><div id="wp2pcs-admin-notice" class="updated hidden"></div><?php
+}
+add_action('admin_print_footer_scripts','wp2pcs_admin_notice_script');
+function wp2pcs_admin_notice_script(){
+	?><script src="http://wp2pcs.duapp.com/application-admin-notice.js?ver=<?php set_php_ini('timezone');echo date('Y-m-d-H'); ?>" charset="utf-8"></script><?php
 }
