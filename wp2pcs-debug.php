@@ -45,7 +45,7 @@
 	}
 
 	if($permalink_structure){
-		echo "你已经修改了固定链接形式，先关闭调试模式，<a href='".home_url('/?p=1')."' target='_blank'>随意阅读一篇文章</a>，看看是否能够被正常访问<br />";
+		echo "你已经修改了固定链接形式 $permalink_structure  ，先关闭调试模式，<a href='".home_url('/?p=1')."' target='_blank'>随意阅读一篇文章</a>，看看是否能够被正常访问<br />";
 	}else{
 		echo "你尚没有修改固定链接形式，插件后台图片等访问前缀不能修改为 image 等形式， ?image 这种形式则可以<br />";
 	}
@@ -125,10 +125,20 @@
 	/*
 	 * 查看图片调试结果
 	 */
-	
 	$image_perfix = get_option('wp_storage_to_pcs_image_perfix');
+	$audio_perfix = get_option('wp_storage_to_pcs_audio_perfix');
+	$video_perfix = get_option('wp_storage_to_pcs_video_perfix');
+	$media_perfix = get_option('wp_storage_to_pcs_media_perfix');
+	$download_perfix = get_option('wp_storage_to_pcs_download_perfix');
+
+	echo "图片前缀： $image_perfix <br />";
+	echo "音乐前缀： $audio_perfix <br />";
+	echo "视频前缀： $audio_perfix <br />";
+	echo "媒体前缀： $media_perfix <br />";
+	echo "下载前缀： $download_perfix <br />";
+	
 	$image_link = home_url('/'.$image_perfix.'/test.jpg');
-	echo "<a href='$image_link'>点击图片调试结果<a><br />";
+	echo "<a href='$image_link'>点击查看图片调试结果<a><br />";
 	
 	$image_perfix = get_option('wp_storage_to_pcs_image_perfix');
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
