@@ -110,6 +110,7 @@
 		echo "读取结果为 $read_over ";
 	}
 	fclose($handle);
+	unlink($file);
 
 	// 检查是否授权通过
 	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);

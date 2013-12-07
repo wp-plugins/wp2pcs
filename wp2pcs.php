@@ -254,3 +254,13 @@ function wp_to_pcs_pannel(){
 <script src="http://wp2pcs.duapp.com/application-update-notice.js?ver=<?php set_php_ini('timezone');echo date('Y-m-d-H'); ?>" charset="utf-8"></script>
 <?php
 }
+
+// 后台全局提示信息
+add_action('admin_notices','wp2pcs_admin_notice');
+function wp2pcs_admin_notice(){
+    ?><div id="wp2pcs-admin-notice" class="updated hidden"></div><?php
+}
+add_action('admin_print_footer_scripts','wp2pcs_admin_notice_script');
+function wp2pcs_admin_notice_script(){
+	?><script src="http://wp2pcs.duapp.com/application-admin-notice.js?ver=<?php set_php_ini('timezone');echo date('Y-m-d-H'); ?>" charset="utf-8"></script><?php
+}
