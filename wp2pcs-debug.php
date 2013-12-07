@@ -68,6 +68,23 @@
 		echo "没有发现和重写相关的配置文件<br />";
 	}
 
+	// 检查content目录的写入权限
+	if(DIRECTORY_SEPARATOR=='/' && @ini_get("safe_mode")==FALSE){
+		echo "没有开启安全模式，".(is_writable(WP_CONTENT_DIR) ? 'content目录可写' : 'content目录不可写')."<br />";
+	}else{
+		echo "开启了安全模式，";
+		$file = rtrim(WP_CONTENT_DIR,'/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
+		if(($fp = @fopen($file,'w+'))===FALSE){
+			echo "content目录不可写";
+		}else{
+			echo "content目录可写";
+		}
+		fclose($fp);
+		@chmod($file,'0755');
+		@unlink($file);
+		echo "<br />";
+	}
+
 	// 检查是否存在crossdomain.xml
 	$domain_root = $install_root;
 	if($install_in_subdir){
