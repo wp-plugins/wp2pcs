@@ -46,21 +46,25 @@ function wp_storage_print_image(){
 	}
 
 	// 如果在IIS上面
-	if(get_blog_install_on_iis()){
-		if(strpos($image_uri,'/index.php/')!==0){
-			return;
+	if(get_blog_install_software() == 'IIS'){
+		if(
+			(strpos($image_uri,'/index.php/')===0 
+			&& strpos($image_perfix,'index.php/')!==0
+			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
+			||
+			(strpos($image_uri,'/index.php/index.php/')===0 
+			&& strpos($image_perfix,'index.php/')===0
+			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
+		){
+			$image_uri = str_replace_first('/index.php','',$image_uri);	
 		}
-		if(strpos($image_perfix,'index.php/')===0 && strpos($image_uri,'/index.php/'.$image_perfix)!==0){
-			return;
-		}
-		$image_uri = str_replace_first('/index.php','',$image_uri);		
 	}
 
 	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
 	if(strpos($image_uri,'/'.$image_perfix)!==0){
 		return;
 	}
-	
+
 	// 将前缀也去除，获取文件直接路径
 	$image_path = str_replace_first('/'.$image_perfix,'',$image_uri);
 
@@ -86,8 +90,8 @@ function wp_storage_print_image(){
 
 	if($outlink_type == '200'){
 		// 考虑到流量问题，必须增加缓存能力
-		date_default_timezone_set("PRC");// 把时间控制在中国
-		session_start(); 
+		set_php_ini('timezone');
+		set_php_ini('session');		
 		header("Cache-Control: private, max-age=10800, pre-check=10800");
 		header("Pragma: private");
 		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
@@ -98,6 +102,13 @@ function wp_storage_print_image(){
 		// 打印图片到浏览器
 		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 		$result = $pcs->downloadStream($image_path);
+
+		$meta = json_decode($result,true);
+		if(isset($meta['error_msg'])){
+			echo $meta['error_msg'];
+			exit;
+		}
+
 		header('Content-type: image/jpeg');
 		ob_clean();
 		echo $result;

@@ -50,14 +50,18 @@ function wp_storage_print_media(){
 	}
 
 	// 如果在IIS上面
-	if(get_blog_install_on_iis()){
-		if(strpos($media_uri,'/index.php/')!==0){
-			return;
+	if(get_blog_install_software() == 'IIS'){
+		if(
+			(strpos($media_uri,'/index.php/')===0 
+			&& strpos($media_perfix,'index.php/')!==0
+			&& strpos($media_uri,'/index.php/'.$media_perfix)===0)
+			||
+			(strpos($media_uri,'/index.php/index.php/')===0 
+			&& strpos($media_perfix,'index.php/')===0
+			&& strpos($media_uri,'/index.php/'.$media_perfix)===0)
+		){
+			$media_uri = str_replace_first('/index.php','',$media_uri);	
 		}
-		if(strpos($media_perfix,'index.php/')===0 && strpos($media_uri,'/index.php/'.$media_perfix)!==0){
-			return;
-		}
-		$media_uri = str_replace_first('/index.php','',$media_uri);		
 	}
 
 	// 如果URI中根本不包含$media_perfix，那么就不用再往下执行了
@@ -81,8 +85,8 @@ function wp_storage_print_media(){
 
 	if($outlink_type == '200' && !WP2PCS_AUDIO_HD){
 		// 考虑到流量问题，必须增加缓存能力
-		date_default_timezone_set("PRC");// 把时间控制在中国
-		session_start(); 
+		set_php_ini('timezone');
+		set_php_ini('session');
 		header("Cache-Control: private, max-age=10800, pre-check=10800");
 		header("Pragma: private");
 		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
@@ -94,6 +98,12 @@ function wp_storage_print_media(){
 		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 		$result = $pcs->downloadStream($media_path);
 				
+		$meta = json_decode($result,true);
+		if(isset($meta['error_msg'])){
+			echo $meta['error_msg'];
+			exit;
+		}
+		
 		header("Content-Type: application/octet-stream");
 		header('Content-Disposition:inline;filename="'.basename($media_path).'"');
 		header('Accept-Ranges: bytes');

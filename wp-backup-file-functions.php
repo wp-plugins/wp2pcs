@@ -2,8 +2,7 @@
 
 // 获取目录下的文件列表，注意，参数$path末尾最好不要带/
 function get_files_in_dir($path){
-	set_time_limit(0); // 延长执行时间，防止读取失败
-	ini_set('memory_limit','200M'); // 扩大内存限制，防止读取文件溢出
+	set_php_ini('limit');
 	if(!file_exists($path) || !is_dir($path)){
 		return null;
 	}
@@ -37,7 +36,7 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 		return null;
 	}
 	if(file_exists($zip_file_path)){
-		unlink($zip_file_path);
+		@unlink($zip_file_path);
 	}
 	if(!is_array($zip_local_paths)){
 		if(is_string($zip_local_paths) && (is_file($zip_local_paths) || is_dir($zip_local_paths))){
@@ -51,7 +50,7 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 	if($zip->open($zip_file_path,ZIPARCHIVE::CREATE)!==TRUE){
 		return false;
 	}
-	date_default_timezone_set("PRC");
+	set_php_ini('timezone');
 	foreach($zip_local_paths as $zip_local_path){
 		$zip_local_path = trim($zip_local_path);
 		$zip_local_path = str_replace('{year}',date('Y'),$zip_local_path);

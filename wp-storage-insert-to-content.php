@@ -32,10 +32,15 @@ function media_upload_file_from_pcs_iframe(){
 // 去除媒体界面的多余脚本
 add_action('admin_init','wp_storage_to_pcs_media_iframe_remove_actions');
 function wp_storage_to_pcs_media_iframe_remove_actions(){
+	global $wp_version,$hook_suffix;
+	if(!$hook_suffix!='media-upload.php'){
+		return;
+	}
 	if(!isset($_GET['tab']) || $_GET['tab'] != 'file_from_pcs'){
 		return;
 	}
 	remove_all_actions('admin_head');
+	remove_all_actions('in_admin_header');
 }
 // 在上面产生的百度网盘选项中要显示出网盘内的文件
 //add_action('media_upload_file_from_pcs','wp_storage_to_pcs_media_tab_box');

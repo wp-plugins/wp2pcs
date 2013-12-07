@@ -36,15 +36,35 @@ function get_blog_install_in_subdir(){
 }
 
 // 判断wordpress是否安装在win主机，并开启了重写
-function get_blog_install_on_iis(){
+function get_blog_install_software(){
 	$permalink_structure = get_option('permalink_structure');
+	$software = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '';
+	if(strpos($software,'IIS') !== false){
+		$software = 'IIS';
+	}elseif(strpos($software,'Apache') !== false){
+		$software = 'Apache';
+	}elseif(strpos($software,'NginX') !== false){
+		$software = 'NginX';
+	}else{
+		$software = 'Others';
+	}
+	$install_root = ABSPATH;
+	$install_in_subdir = get_blog_install_in_subdir();
+	if($software == 'IIS' && $install_in_subdir){
+		$install_root = str_replace_last($install_in_subdir.'/','',$install_root);
+	}
+	$is_rewrited = false;
+	if($permalink_structure){
+		if(file_exists($install_root.'httpd.ini') || file_exists($install_root.'.htaccess') || file_exists($install_root.'httpd.conf') || file_exists($install_root.'app.conf') || file_exists($install_root.'config.yaml'))
+			$is_rewrited = true;
+	}
 	// 如果固定链接没有填写，也不存在httpd.ini，那么就直接返回，认为不是在IIS上
-	if(!$permalink_structure && !file_exists(ABSPATH.'httpd.ini')){
+	if(!$is_rewrited){
 		return false;
 	}
 	// 固定链接正确填写
 	else{
-		return (strtoupper(substr(PHP_OS,0,3))==='WIN' ? true : false);
+		return $software;
 	}
 }
 
@@ -104,39 +124,43 @@ function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 
 // 判断文件或目录是否真的有可写权限
 // http://blog.csdn.net/liushuai_andy/article/details/8611433
-if ( ! function_exists('is_really_writable'))  
-{  
-    function is_really_writable($file)  
-    {  
-        // If we're on a Unix server with safe_mode off we call is_writable  
-        if (DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE)  
-        {  
-            return is_writable($file);  
-        }  
-  
-        // For windows servers and safe_mode "on" installations we'll actually  
-        // write a file then read it.  Bah...  
-        if (is_dir($file))  
-        {  
-            $file = rtrim($file, '/').'/'.md5(mt_rand(1,100).mt_rand(1,100));  
-  
-            if (($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)  
-            {  
-                return FALSE;  
-            }  
-  
-            fclose($fp);  
-            @chmod($file, DIR_WRITE_MODE);  
-            @unlink($file);  
-            return TRUE;  
-        }  
-        elseif ( ! is_file($file) OR ($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)  
-        {  
-            return FALSE;  
-        }  
-  
-        fclose($fp);  
-        return TRUE;  
-    }  
+function is_really_writable($file)  {  
+	// 是否开启安全模式
+	if(DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE){
+		return is_writable($file);
+	}
+	// 如果是目录的话
+	if(is_dir($file)){
+		$file = rtrim($file, '/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
+		if(($fp = @fopen($file,'w+')) === FALSE){
+			return FALSE;  
+		}
+		fclose($fp);
+		@chmod($file,'0755');
+		@unlink($file);
+		return TRUE;
+	}
+	// 如果是不是文件，或文件打不开的话
+	elseif(!is_file($file) OR ($fp = @fopen($file,'w+')) === FALSE){
+		return FALSE;
+	}
+	fclose($fp);
+	return TRUE;
 }
 
+
+// 设置全局参数
+function set_php_ini($name){
+	if($name == 'session'){
+		if(is_really_writable(WP_CONTENT_DIR)){
+			ini_set('session.save_path',WP_CONTENT_DIR);// 重新规定session的存储位置
+			session_start();
+		}
+	}elseif($name == 'limit'){
+		define('WP_TEMP_DIR','/tmp');
+		set_time_limit(0); // 延长执行时间，防止备份失败
+		ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出		// 考虑到流量问题，必须增加缓存能力
+	}elseif($name == 'timezone'){
+		date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	}
+}
