@@ -234,6 +234,6 @@ function wp_to_pcs_pannel(){
 		</div>
     </div>
 </div>
-<script src="http://wp2pcs.duapp.com/application-update-notice.js?ver=<?php date_default_timezone_set("PRC");echo date('Y-m-d-H'); ?>" charset="utf-8"></script>
+<script src="http://wp2pcs.duapp.com/application-update-notice.js?ver=<?php set_php_ini('timezone');echo date('Y-m-d-H'); ?>" charset="utf-8"></script>
 <?php
 }

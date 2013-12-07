@@ -32,7 +32,7 @@ function wp_backup_to_pcs_action(){
 	// 备份到百度网盘
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_backup_to_pcs_send_file'){
 		check_admin_referer();
-		date_default_timezone_set("PRC");// 把时间控制在中国
+		set_php_ini('timezone');
 		$app_key = get_option('wp_to_pcs_app_key');
 		// 更新备份到的网盘目录
 		$root_dir = trim($_POST['wp_backup_to_pcs_root_dir']);
@@ -104,8 +104,7 @@ function wp_backup_to_pcs_action(){
 					wp_die('没有需要打包的文件！');
 					exit;
 				}
-				set_time_limit(0); // 延长执行时间，防止备份失败
-				ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出		// 考虑到流量问题，必须增加缓存能力
+				set_php_ini('limit');
 				header("Content-type: application/octet-stream");
 				header("Content-disposition: attachment; filename=".basename($zip_file));
 				$file_content = '';
@@ -124,8 +123,7 @@ function wp_backup_to_pcs_action(){
 		}
 		// 立即备份
 		if(isset($_POST['wp_backup_to_pcs_now']) && $_POST['wp_backup_to_pcs_now'] == '马上备份'){
-			set_time_limit(0); // 延长执行时间，防止备份失败
-			ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
+			set_php_ini('limit');
 			$zip_dir = trailingslashit(WP_CONTENT_DIR);
 			$remote_dir = $root_dir.date('Y.m.d_H.i.s').'/';
 			$access_token = WP2PCS_APP_TOKEN;
@@ -191,9 +189,8 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	$run_date = get_option('wp_backup_to_pcs_run_date');
 	if(!isset($run_date['database']) || $run_date['database'] == 'never')
 		return;
-	set_time_limit(0); // 延长执行时间，防止备份失败
-	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
-	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	set_php_ini('limit');
+	set_php_ini('timezone');
 	$access_token = WP2PCS_APP_TOKEN;
 	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
 	$pcs = new BaiduPCS($access_token);
@@ -215,9 +212,8 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	$run_date = get_option('wp_backup_to_pcs_run_date');
 	if(!isset($run_date['logs']) || $run_date['logs'] == 'never')
 		return;
-	set_time_limit(0); // 延长执行时间，防止备份失败
-	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
-	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	set_php_ini('limit');
+	set_php_ini('timezone');
 	$access_token = WP2PCS_APP_TOKEN;
 	$zip_dir = trailingslashit(WP_CONTENT_DIR);
 	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
@@ -241,9 +237,8 @@ function wp_backup_to_pcs_corn_task_function_www(){
 	$run_date = get_option('wp_backup_to_pcs_run_date');
 	if(!isset($run_date['www']) || $run_date['www'] == 'never')
 		return;
-	set_time_limit(0); // 延长执行时间，防止备份失败
-	ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
-	date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	set_php_ini('limit');
+	set_php_ini('timezone');
 	$access_token = WP2PCS_APP_TOKEN;
 	$zip_dir = trailingslashit(WP_CONTENT_DIR);
 	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
@@ -306,7 +301,7 @@ function wp_backup_to_pcs_send_file($local_path,$remote_dir){
 
 // WP2PCS菜单中，使用下面的函数，打印与备份有关的内容
 function wp_backup_to_pcs_panel(){
-	date_default_timezone_set("PRC");
+	set_php_ini('timezone');
 	$app_key = get_option('wp_to_pcs_app_key');
 	$access_token = WP2PCS_APP_TOKEN;
 	$root_dir = get_option('wp_backup_to_pcs_root_dir');

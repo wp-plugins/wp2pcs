@@ -75,7 +75,7 @@ function wp_storage_print_video(){
 	}
 
 	// 如果在IIS上面
-	if(get_blog_install_on_iis()){
+	if(get_blog_install_software() == 'IIS'){
 		if(strpos($video_uri,'/index.php/')!==0){
 			return;
 		}
@@ -106,8 +106,8 @@ function wp_storage_print_video(){
 
 	if($outlink_type == '200' && !WP2PCS_VIDEO_HD){
 		// 考虑到流量问题，必须增加缓存能力
-		date_default_timezone_set("PRC");// 把时间控制在中国
-		session_start(); 
+		set_php_ini('timezone');
+		set_php_ini('session');
 		header("Cache-Control: private, max-age=10800, pre-check=10800");
 		header("Pragma: private");
 		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
@@ -118,6 +118,13 @@ function wp_storage_print_video(){
 		// 打印视频m3u8到浏览器
 		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 		$result = $pcs->streaming($video_path,'M3U8_854_480');
+
+		$meta = json_decode($result,true);
+		if(isset($meta['error_msg'])){
+			echo $meta['error_msg'];
+			exit;
+		}
+		
 		ob_clean();
 		echo $result;
 	}else{
