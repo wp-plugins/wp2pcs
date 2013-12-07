@@ -25,9 +25,17 @@ function wp_storage_to_pcs_media_tab($tabs){
     return array_merge($tabs,$newtab);
 }
 // 这个地方需要增加一个中间介wp_iframe，这样就可以使用wordpress的脚本和样式
-add_action('media_upload_file_from_pcs', 'media_upload_file_from_pcs_iframe');
-function media_upload_file_from_pcs_iframe() {
+add_action('media_upload_file_from_pcs','media_upload_file_from_pcs_iframe');
+function media_upload_file_from_pcs_iframe(){
 	wp_iframe('wp_storage_to_pcs_media_tab_box');
+}
+// 去除媒体界面的多余脚本
+add_action('admin_init','wp_storage_to_pcs_media_iframe_remove_actions');
+function wp_storage_to_pcs_media_iframe_remove_actions(){
+	if(!isset($_GET['tab']) || $_GET['tab'] != 'file_from_pcs'){
+		return;
+	}
+	remove_all_actions('admin_head');
 }
 // 在上面产生的百度网盘选项中要显示出网盘内的文件
 //add_action('media_upload_file_from_pcs','wp_storage_to_pcs_media_tab_box');
@@ -114,13 +122,13 @@ jQuery(function($){
 	});
 	$('#insert-btn').click(function(){
 		if($('div.selected').length > 0){
-			var $outlink_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_outlink_perfix")); ?>',
+			var $image_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_image_perfix")); ?>',
 				$download_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_download_perfix")); ?>',
 				$video_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_video_perfix")); ?>',
 				$audio_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_audio_perfix")); ?>',
 				$root_dir = '<?php echo trim(get_option("wp_storage_to_pcs_root_dir")); ?>',
 				$home_url = '<?php echo home_url("/"); ?>',
-				$img_root = $home_url + $outlink_perfix + '/',
+				$img_root = $home_url + $image_perfix + '/',
 				$download_root = $home_url + $download_perfix + '/',
 				$video_root = $home_url + $video_perfix + '/',
 				$audio_root = $home_url + $audio_perfix + '/',
@@ -175,7 +183,7 @@ jQuery(function($){
 		var $upload_path = '<?php echo $dir_pcs_path; ?>/',
 			$file_name = $('#upload-to-pcs-input').val().match(/[^\/|\\]*$/)[0],
 			$action = 'http://wp2pcs.duapp.com/upload?<?php echo get_option("wp_to_pcs_site_id"); ?>+<?php echo substr(get_option("wp_to_pcs_access_token"),0,10); ?>+path=' + $upload_path + $file_name;
-		<?php if(strpos(get_option('wp_storage_to_pcs_outlink_perfix'),'?') !== false) : ?>
+		<?php if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false) : ?>
 		if(/.*[\u4e00-\u9fa5]+.*$/.test($file_name)){
 			alert('不支持含有汉字的图片名');
 			return false;
@@ -265,7 +273,7 @@ jQuery(function($){
 			$file_type = 'dir';
 		}
 		// 判断路径中是否包含中文，如果前缀形式中带?，而路径中包含中文，就无法访问到，因此，要去除这种情况
-		if(strpos(get_option('wp_storage_to_pcs_outlink_perfix'),'?') !== false && preg_match('/[一-龥]/u',$file_name)){
+		if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false && preg_match('/[一-龥]/u',$file_name)){
 			$link = false;
 			if($file_type == 'image')$file_type = 'file';
 		}
@@ -307,7 +315,7 @@ jQuery(function($){
 	</p>
 </div>
 <div class="alert">
-	<?php if(strpos(get_option('wp_storage_to_pcs_outlink_perfix'),'?') !== false) : ?><p>注意：中文字符串在百度网盘的API调用中无法使用，因此极其强烈要求你不要使用中文名的文件（夹），否则你可能不能得到想要的外链结果。为了防止错误，本插件规定：中文名的文件夹没有任何作用，中文名的图片插入时以下载链接的形式插入。</p><?php endif; ?>
+	<?php if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false) : ?><p>注意：中文字符串在百度网盘的API调用中无法使用，因此极其强烈要求你不要使用中文名的文件（夹），否则你可能不能得到想要的外链结果。为了防止错误，本插件规定：中文名的文件夹没有任何作用，中文名的图片插入时以下载链接的形式插入。</p><?php endif; ?>
 	<p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
 	<p>本插件提供媒体通用前缀<?php echo get_option('wp_storage_to_pcs_media_perfix'); ?>，调用附件二进制流资源。</p>
 	<?php if(get_option('wp_storage_to_pcs_outlink_type') == 200) : ?>
@@ -335,7 +343,7 @@ function wp_storage_to_pcs_media_thumbnail($file_pcs_path,$width = 120,$height =
 	$app_key = get_option('wp_to_pcs_app_key');
 	$access_token = WP2PCS_APP_TOKEN;
 	// 使用直链，有利于快速显示图片
-	$image_outlink_per = trim(get_option('wp_storage_to_pcs_outlink_perfix'));
+	$image_outlink_per = trim(get_option('wp_storage_to_pcs_image_perfix'));
 	$file_pcs_path = str_replace(trailingslashit(get_option('wp_storage_to_pcs_root_dir')),'/',$file_pcs_path);
 	$thumbnail = home_url('/'.$image_outlink_per.$file_pcs_path);
 	// 原本想使用外链，以节省流量
