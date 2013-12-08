@@ -183,7 +183,7 @@ jQuery(function($){
 		var $upload_path = '<?php echo $dir_pcs_path; ?>/',
 			$file_name = $('#upload-to-pcs-input').val().match(/[^\/|\\]*$/)[0],
 			$action = 'http://wp2pcs.duapp.com/upload?<?php echo get_option("wp_to_pcs_site_id"); ?>+<?php echo substr(get_option("wp_to_pcs_access_token"),0,10); ?>+path=' + $upload_path + $file_name;
-		<?php if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false) : ?>
+		<?php if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false && 0) : // 关闭中文监测 ?>
 		if(/.*[\u4e00-\u9fa5]+.*$/.test($file_name)){
 			alert('不支持含有汉字的图片名');
 			return false;
@@ -238,10 +238,10 @@ jQuery(function($){
 	}else{
 		$paged = 1;
 	}
-	echo $files_per_page = 7*5;// 每行7个，行数可以自己修改
-	echo $limit = (($paged-1)*$files_per_page).'-'.($paged*$files_per_page);
+	$files_per_page = 7*5;// 每行7个，行数可以自己修改
+	$limit = (($paged-1)*$files_per_page).'-'.($paged*$files_per_page);
 	$files_on_pcs = wp_storage_to_pcs_media_list_files($dir_pcs_path,$limit);
-	echo $files_count = count($files_on_pcs);
+	$files_count = count($files_on_pcs);
 	//print_r($files_on_pcs);
 	if(!empty($files_on_pcs))foreach($files_on_pcs as $file){
 		$file_name = explode('/',$file->path);
@@ -277,11 +277,29 @@ jQuery(function($){
 			$link = true;
 			$file_type = 'dir';
 		}
+		/*
 		// 判断路径中是否包含中文，如果前缀形式中带?，而路径中包含中文，就无法访问到，因此，要去除这种情况
-		if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false && preg_match('/[一-龥]/u',$file_name)){
-			$link = false;
-			if($file_type == 'image')$file_type = 'file';
+		$image_perfix = get_option('wp_storage_to_pcs_image_perfix');
+		$download_perfix = get_option('wp_storage_to_pcs_download_perfix');
+		$video_perfix = get_option('wp_storage_to_pcs_video_perfix');
+		$audio_perfix = get_option('wp_storage_to_pcs_audio_perfix');
+		$media_perfix = get_option('wp_storage_to_pcs_media_perfix');
+		if(preg_match('/[一-龥]/u',$file->path)){
+			// 如果文件夹名称中包含中文
+			if($file_type=='dir'){
+				//$link = false;
+			}
+			// 如果是文件名中包含中文
+			elseif(
+				($file_type=='image' && strpos($image_perfix,'?')!==false)
+				|| ($file_type=='audio' && strpos($audio_perfix,'?')!==false)
+				|| ($file_type=='video' && strpos($video_perfix,'?')!==false)
+			){
+				$file_type = 'file';
+				//$thumbnail = false;
+			}
 		}
+		*/
 		echo '<div class="file-on-pcs'.$class.'" data-file-name="'.$file_name.'" data-file-type="'.$file_type.'" data-file-path="'.$file->path.'">';
 		if($link)echo '<a href="'.add_query_arg('dir',$file->path).'">';
 		echo '<div class="file-thumbnail">';
