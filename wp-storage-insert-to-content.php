@@ -53,11 +53,6 @@ function wp_storage_to_pcs_media_tab_box() {
 	}else{
 		$dir_pcs_path = $root_dir;
 	}
-	if(isset($_GET['paged']) && is_numeric($_GET['paged']) && $_GET['paged'] > 1){
-		$paged = $_GET['paged'];
-	}else{
-		$paged = 1;
-	}
 	$app_key = get_option('wp_to_pcs_app_key');
 ?>
 <style>
@@ -238,10 +233,15 @@ jQuery(function($){
 </div>
 <div id="files-on-pcs">
 <?php
-	$files_per_page = 7*5;// 每行7个，行数可以自己修改
-	$limit = (($paged-1)*$files_per_page).'-'.($paged*$files_per_page-1);
+	if(isset($_GET['paged']) && is_numeric($_GET['paged']) && $_GET['paged'] > 1){
+		$paged = $_GET['paged'];
+	}else{
+		$paged = 1;
+	}
+	echo $files_per_page = 7*5;// 每行7个，行数可以自己修改
+	echo $limit = (($paged-1)*$files_per_page).'-'.($paged*$files_per_page);
 	$files_on_pcs = wp_storage_to_pcs_media_list_files($dir_pcs_path,$limit);
-	$files_count = count($files_on_pcs);
+	echo $files_count = count($files_on_pcs);
 	//print_r($files_on_pcs);
 	if(!empty($files_on_pcs))foreach($files_on_pcs as $file){
 		$file_name = explode('/',$file->path);
