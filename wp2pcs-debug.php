@@ -19,6 +19,7 @@
 	// 测试session是否可以用
 	session_start();
 	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
+	session_destroy();
 	
 	// 首先检查php环境
 	echo "你的网站搭建在 ".PHP_OS." 操作系统的服务器上<br />";

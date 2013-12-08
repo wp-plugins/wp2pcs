@@ -117,6 +117,7 @@ function wp_storage_print_video(){
 		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
 			header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
+			session_destroy();
 			exit;
 		}
 		// 打印视频m3u8到浏览器
@@ -126,11 +127,14 @@ function wp_storage_print_video(){
 		$meta = json_decode($result,true);
 		if(isset($meta['error_msg'])){
 			echo $meta['error_msg'];
+			session_destroy();
 			exit;
 		}
 		
 		ob_clean();
 		echo $result;
+		session_destroy();
+		exit;
 	}else{
 		$site_id = get_option('wp_to_pcs_site_id');
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
