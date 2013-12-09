@@ -5,7 +5,7 @@
 define('WP2PCS_VIDEO_HD',false);
 
 // 创建一个函数，用来在wordpress中打印图片地址
-function wp2pcs_video_src($video_path){
+function wp2pcs_video_src($video_path = false){
 	// video_path是指相对于后台保存的存储目录的路径
 	// 例如 $file_path = /test/test.avi
 	// 注意最前面加/
@@ -74,20 +74,8 @@ function wp_storage_print_video(){
 		$video_uri = str_replace_first($install_in_subdir,'',$video_uri);
 	}
 
-	// 如果在IIS上面
-	if(get_blog_install_software() == 'IIS'){
-		if(
-			(strpos($video_uri,'/index.php/')===0 
-			&& strpos($video_perfix,'index.php/')!==0
-			&& strpos($video_uri,'/index.php/'.$video_perfix)===0)
-			||
-			(strpos($video_uri,'/index.php/index.php/')===0 
-			&& strpos($video_perfix,'index.php/')===0
-			&& strpos($video_uri,'/index.php/'.$video_perfix)===0)
-		){
-			$video_uri = str_replace_first('/index.php','',$video_uri);	
-		}
-	}
+	// 返回真正有效的URI
+	$video_uri = get_outlink_real_uri($video_uri,$video_perfix);
 
 	// 如果URI中根本不包含$video_perfix，那么就不用再往下执行了
 	if(strpos($video_uri,'/'.$video_perfix)!==0){

@@ -6,7 +6,7 @@
 define('WP2PCS_AUDIO_HD',false);
 
 // 创建一个函数，用来在wordpress中打印图片地址
-function wp2pcs_audio_src($audio_path){
+function wp2pcs_audio_src($audio_path = false){
 	// audio_path是指相对于后台保存的存储目录的路径
 	// 例如 $file_path = /test/test.avi
 	// 注意最前面加/
@@ -56,20 +56,8 @@ function wp_storage_print_audio(){
 		$audio_uri = str_replace_first($install_in_subdir,'',$audio_uri);
 	}
 
-	// 如果在IIS上面
-	if(get_blog_install_software() == 'IIS'){
-		if(
-			(strpos($audio_uri,'/index.php/')===0 
-			&& strpos($audio_perfix,'index.php/')!==0
-			&& strpos($audio_uri,'/index.php/'.$audio_perfix)===0)
-			||
-			(strpos($audio_uri,'/index.php/index.php/')===0 
-			&& strpos($audio_perfix,'index.php/')===0
-			&& strpos($audio_uri,'/index.php/'.$audio_perfix)===0)
-		){
-			$audio_uri = str_replace_first('/index.php','',$audio_uri);	
-		}
-	}
+	// 返回真正有效的URI
+	$audio_uri = get_outlink_real_uri($audio_uri,$audio_perfix);
 
 	// 如果URI中根本不包含$audio_perfix，那么就不用再往下执行了
 	if(strpos($audio_uri,'/'.$audio_perfix)!==0){

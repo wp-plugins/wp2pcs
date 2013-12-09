@@ -68,6 +68,28 @@ function get_blog_install_software(){
 	}
 }
 
+// 通过一个函数用来计算当前附件的访问的真正有效的uri
+function get_outlink_real_uri($uri,$perfix){
+	// $uri是home_url后面的URL字串，例如当前的uri是http://yourdomain.com/yourblog/?image/test.jpg，那么$uri==/?image/test.jpg
+	// 但在一些特殊情况下，如视频前缀为index.php/video，以及IIS上，$uri就有可能为index.php/?image/test.jpg
+	// $perfix是指要处理的附件的前缀，例如可以是get_option('wp_storage_to_pcs_image_perfix');(图片前缀)
+	// 你要通过这个函数返回真正有效的uri，如上所述$uri==index.php/?image/test.jpg，你应该尽可能的让函数返回/?image/test.jpg
+	if(get_blog_install_software() == 'IIS'){
+		if(
+			(strpos($uri,'/index.php/')===0 
+			&& strpos($perfix,'index.php/')!==0
+			&& strpos($uri,'/index.php/'.$perfix)===0)
+			||
+			(strpos($uri,'/index.php/index.php/')===0 
+			&& strpos($image_perfix,'index.php/')===0
+			&& strpos($uri,'/index.php/'.$perfix)===0)
+		){
+			$uri = str_replace_first('/index.php','',$uri);
+		}
+	}
+	return $uri;
+}
+
 // 创建一个函数，用来获取当前PHP的执行时间
 function get_unix_timestamp(){   
     list($msec,$sec) = explode(' ',microtime());
@@ -152,12 +174,12 @@ function is_really_writable($file)  {
 // 设置全局参数
 function set_php_ini($name){
 	if($name == 'session'){
-		if(is_really_writable(WP_CONTENT_DIR)){
-			ini_set('session.save_path',WP_CONTENT_DIR);// 重新规定session的存储位置
+		if(!defined('WP_TEMP_DIR'))define('WP_TEMP_DIR',sys_get_temp_dir());
+		if(is_really_writable(WP_TEMP_DIR)){
+			ini_set('session.save_path',WP_TEMP_DIR);// 重新规定session的存储位置
 			session_start();
 		}
 	}elseif($name == 'limit'){
-		define('WP_TEMP_DIR','/tmp');
 		set_time_limit(0); // 延长执行时间，防止备份失败
 		ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出		// 考虑到流量问题，必须增加缓存能力
 	}elseif($name == 'timezone'){

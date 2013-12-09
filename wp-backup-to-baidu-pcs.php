@@ -320,7 +320,7 @@ function wp_backup_to_pcs_panel(){
 	$local_paths = (is_array($local_paths) && !empty($local_paths) ? implode("\n",$local_paths) : '');
 ?>
 <div class="postbox">
-	<h3>PCS备份设置</h3>
+	<h3>PCS备份设置 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 	<form method="post" id="wp-to-pcs-backup-form">
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<?php if($timestamp_database || $timestamp_logs || $timestamp_www): ?>
@@ -436,7 +436,7 @@ function wp_backup_to_pcs_panel(){
 		}
 	endif;
 	?>
-	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
+	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<?php if(!IS_WP2PCS_WRITABLE) : ?>
 		<p style="color:red"><b>当前环境下/wp-content/目录没有可写权限，不能在线打包zip文件，请赋予这个目录可写权限！注：BAE和SAE本身不具备可写权限，因此本插件功能受限。</b></p>
 		<?php endif; ?>

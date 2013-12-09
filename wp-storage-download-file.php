@@ -1,7 +1,7 @@
 <?php
 
 // 创建一个函数，用来在wordpress中打印下载地址
-function wp2pcs_download_link($file_path){
+function wp2pcs_download_link($file_path = false){
 	// file_path是指相对于后台保存的存储目录的路径
 	// 例如 $file_path = /test/test.jpg ，就是使用你的网盘目录 /apps/wp2pcs/...../test/test.jpg
 	// 其中.....是指你填写的用于保存文件的网盘目录，/test/是你在这个目录下随意创建的一个目录，test.jpg就是要打印的图片
@@ -46,20 +46,8 @@ function wp_storage_download_file(){
 		$file_uri = str_replace_first($install_in_subdir,'',$file_uri);
 	}
 
-	// 如果在IIS上面
-	if(get_blog_install_software() == 'IIS'){
-		if(
-			(strpos($download_uri,'/index.php/')===0 
-			&& strpos($download_perfix,'index.php/')!==0
-			&& strpos($download_uri,'/index.php/'.$download_perfix)===0)
-			||
-			(strpos($download_uri,'/index.php/index.php/')===0 
-			&& strpos($download_perfix,'index.php/')===0
-			&& strpos($download_uri,'/index.php/'.$download_perfix)===0)
-		){
-			$download_uri = str_replace_first('/index.php','',$download_uri);	
-		}
-	}
+	// 返回真正有效的URI
+	$file_uri = get_outlink_real_uri($file_uri,$file_perfix);
 
 	// 如果URI中根本不包含$download_perfix，那么就不用再往下执行了
 	if(strpos($file_uri,'/'.$download_perfix) !== 0){

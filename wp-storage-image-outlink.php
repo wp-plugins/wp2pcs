@@ -1,7 +1,7 @@
 <?php
 
 // 创建一个函数，用来在wordpress中打印图片地址
-function wp2pcs_image_src($image_path){
+function wp2pcs_image_src($image_path = false){
 	// image_path是指相对于后台保存的存储目录的路径
 	// 例如 $image_path = /test/test.jpg
 	// 注意最前面加/
@@ -45,20 +45,8 @@ function wp_storage_print_image(){
 		$image_uri = str_replace_first($install_in_subdir,'',$image_uri);
 	}
 
-	// 如果在IIS上面
-	if(get_blog_install_software() == 'IIS'){
-		if(
-			(strpos($image_uri,'/index.php/')===0 
-			&& strpos($image_perfix,'index.php/')!==0
-			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
-			||
-			(strpos($image_uri,'/index.php/index.php/')===0 
-			&& strpos($image_perfix,'index.php/')===0
-			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
-		){
-			$image_uri = str_replace_first('/index.php','',$image_uri);	
-		}
-	}
+	// 返回真正有效的URI
+	$image_uri = get_outlink_real_uri($image_uri,$image_perfix);
 
 	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
 	if(strpos($image_uri,'/'.$image_perfix)!==0){

@@ -171,14 +171,14 @@ function wp_to_pcs_pannel(){
 	$btn_text = (get_option('wp_to_pcs_debug') == '开启调试' ? '关闭调试' : '开启调试');
 	$btn_class = ($btn_text == '开启调试' ? 'button-primary' : 'button');
 ?>
-<div class="wrap" id="wonderful-links-seo-admin">
+<div class="wrap" id="wp2pcs-admin-dashbord">
 	<h2>WP2PCS WordPress连接到百度网盘<?php if($app_key === 'false'){echo '[WP2PCS官方托管]';} ?></h2>
 	<div id="application-update-notice" data-version="<?php echo str_replace('.','',WP2PCS_PLUGIN_VER); ?>"></div>
     <div class="metabox-holder">
 	<?php if(!is_wp_to_pcs_active()): ?>
 		<div class="postbox">
 		<form method="post" autocomplete="off">
-			<h3>百度授权</h3>
+			<h3>百度授权 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>
 					<input type="radio" name="wp_to_pcs_app_key" value="true" <?php checked($app_key,'true'); ?> />保存于自己的网盘
@@ -189,7 +189,7 @@ function wp_to_pcs_pannel(){
 				<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 				<?php wp_nonce_field(); ?>
 			</div>
-			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
+			<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>本插件需要你登录自己的百度账号，如果你还没有开通自己的百度网盘，或者不愿意占用自己的网盘空间，可以将自己的资料托管于WP2PCS官方网盘，WP2PCS官方承诺尽最大努力保护你的资料安全。</p>
 			</div>
 		</form>
@@ -197,25 +197,11 @@ function wp_to_pcs_pannel(){
 	<?php else : ?>
 		<div class="postbox">
 		<form method="post" autocomplete="off">
-			<h3>百度授权更新</h3>
+			<h3>百度授权更新 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-				<p>请及时关注<a href="http://wp2pcs.duapp.com">WP2PCS官方</a>发布的信息，如果官方通知要更新授权时，请及时更新授权，否则可能不能使用本插件。</p>
+				<p class="tishi hidden">请及时关注<a href="http://wp2pcs.duapp.com">WP2PCS官方</a>发布的信息，如果官方通知要更新授权时，请及时更新授权，否则可能不能使用本插件。</p>
 				<?php if($app_key === 'false') : ?><p>你当前使用的是托管到WP2PCS的服务，如果你已经拥有了自己的网盘，不妨更新授权。但需要注意的是，目前WP2PCS还没有开发一键转移功能，所以这些附件只能通过申请后邮件发送给你。</p><?php endif; ?>
-				<p>更新授权前请注意：1、更新后老的授权信息会被直接删除；2、如果你开启了定时备份，请先关闭。</p>
-				<?php
-					// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
-					$access_token = WP2PCS_APP_TOKEN;
-					$pcs = new BaiduPCS($access_token);
-					$quota = json_decode($pcs->getQuota());
-					if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
-						echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良，如果是由于授权问题，请点击下面的“更新授权”按钮重新授权！</b></p>';
-					}elseif($app_key != 'false'){
-						echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
-					}
-					if(get_php_run_time() > 25){
-						echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了25秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
-					}
-				?>
+				<p class="tishi hidden" id="wp2pcs-information-pend">更新授权前请注意：1、更新后老的授权信息会被直接删除；2、如果你开启了定时备份，请先关闭。</p>
 				<p>
 					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
 					<input type="submit" name="wp_to_pcs_debug" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" onclick="if(!confirm('开启调试模式之后，前台将不能正常访问，而是会进入调试模式。是否确定？'))return false;"/>
@@ -228,10 +214,31 @@ function wp_to_pcs_pannel(){
 		</div>
 		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
 		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
+		<div id="wp2pcs-information">
+		<?php
+			// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
+			$access_token = WP2PCS_APP_TOKEN;
+			$pcs = new BaiduPCS($access_token);
+			$quota = json_decode($pcs->getQuota());
+			if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
+				echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良，如果是由于授权问题，请点击下面的“更新授权”按钮重新授权！</b></p>';
+			}elseif($app_key != 'false'){
+				echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
+			}
+			if(get_php_run_time() > 25){
+				echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了25秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
+			}
+		?>
+		</div>
+		<script>
+		jQuery(function($){
+			$('#wp2pcs-information').insertAfter('#wp2pcs-information-pend');
+		});
+		</script>
 	<?php endif; ?>
 		<div class="postbox">
-			<h3>说明</h3>
-			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
+			<h3>说明 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
+			<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>本插件主要用于将WordPress和百度网盘连接起来，把百度网盘作为WordPress的后备箱。</p>
 				<p>本插件主要希望实现以下目标：1、备份WordPress到百度网盘，以免网站数据丢失；2、WordPress中上传的附件等直接上传到百度网盘，并将网盘作为网站的下载空间，实现直链下载、图片外链、音乐视频外链等；3、开发更多的WP2PCS应用，例如可以通过百度网盘手机客户端就可以写文章等创意功能。但明显，功能还不够完善，如果你愿意，可以参与到我们的开发中，请进入下方给出的插件主页和我们联系。</p>
 				<p><b style="color:red;">注意：由于插件使用的是百度PCS API，所以必须要考虑有关问题，使用前最好到<a href="http://wp2pcs.duapp.com">插件主页</a>了解使用方法，以免使用中出错。</b></p>
@@ -251,6 +258,17 @@ function wp_to_pcs_pannel(){
 		</div>
     </div>
 </div>
+<script>
+jQuery(function($){
+	$('a.tishi-btn').attr('title','点击了解该功能的具体用途').css('text-decoration','none').toggle(function(){
+		$(this).parent().parent().find('.tishi').show();
+		$(this).text('-');
+	},function(){
+		$(this).parent().parent().find('.tishi').hide();
+		$(this).text('+');
+	});
+});
+</script>
 <script src="http://wp2pcs.duapp.com/application-update-notice.js?ver=<?php set_php_ini('timezone');echo date('Y-m-d-H'); ?>" charset="utf-8"></script>
 <?php
 }
@@ -258,9 +276,12 @@ function wp_to_pcs_pannel(){
 // 后台全局提示信息
 add_action('admin_notices','wp2pcs_admin_notice');
 function wp2pcs_admin_notice(){
-    ?><div id="wp2pcs-admin-notice" class="updated hidden"></div><?php
+	$app_key = get_option('wp_to_pcs_app_key');
+    ?><div id="wp2pcs-admin-notice" class="updated hidden"><p>如果你看到该信息，说明WP2PCS官方不能被正常访问，<?php if($app_key==='false'): ?>你的托管服务将受到限制，赶紧和我们联系吧！<?php elseif(!$app_key): ?>不能正常授权，请稍后再试！<?php else : ?>如果你使用的是附件“外链”访问方式，那么赶紧切换到“直链”访问方式暂时解决！<?php endif; ?></p></div><?php
 }
 add_action('admin_print_footer_scripts','wp2pcs_admin_notice_script');
 function wp2pcs_admin_notice_script(){
-	?><script src="http://wp2pcs.duapp.com/application-admin-notice.js?ver=<?php set_php_ini('timezone');echo date('Y-m-d-H'); ?>" charset="utf-8"></script><?php
+	?><script src="http://wp2pcs.duapp.com/application-admin-notice.js?ver=<?php set_php_ini('timezone');echo date('Y-m-d-H'); ?>" charset="utf-8"></script>
+	<script>jQuery('#wp2pcs-admin-notice').show();</script>
+	<?php
 }

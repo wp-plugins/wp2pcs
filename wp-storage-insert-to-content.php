@@ -81,7 +81,7 @@ jQuery(function($){
 	function insert_video_into_editor($video_src,$video_cover){
 		var $insert_id = new Date().getTime(),
 			$script = '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js">\x3C/script>',
-			$container = '<div id="playercontainer_'+$insert_id+'"><img src="'+$video_cover+'" width="640" height="480" /></div>',
+			$container = '<div id="playercontainer_'+$insert_id+'" class="wp2pcs-video"><img src="'+$video_cover+'" width="640" height="480" /></div>',
 			$config = '<script type="text/javascript">var player=cyberplayer("playercontainer_'+$insert_id+'").setup({width:640,height:480,backcolor:"#FFFFFF",stretching:"bestfit",file:"'+$video_src+'.m3u8",image:"'+$video_cover+'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});\x3C/script>',
 			//  (uniform,fill,exactfit,bestfit,none) http://www.longtailvideo.com/support/forums/jw-player/feature-suggestions/7313/stretching-uniformfillexactfitbestfitnone/
 			$html = '';
@@ -97,7 +97,7 @@ jQuery(function($){
 	function insert_audio_into_editor($audio_src,$audio_name){
 		var $insert_id = new Date().getTime(),
 			$script = '<script type="text/javascript" src="<?php echo plugins_url("asset/audio-player.js",WP2PCS_PLUGIN_NAME); ?>">\x3C/script><script type="text/javascript">AudioPlayer.setup("<?php echo plugins_url("asset/player.swf",WP2PCS_PLUGIN_NAME); ?>",{width:"320",animation:"yes",encode:"no",initialvolume:"60",remaining:"yes",noinfo:"no",buffer:"5",checkpolicy:"no",rtl:"no",bg:"E5E5E5",text:"333333",leftbg:"CCCCCC",lefticon:"333333",volslider:"666666",voltrack:"FFFFFF",rightbg:"B4B4B4",rightbghover:"999999",righticon:"333333",righticonhover:"FFFFFF",track:"FFFFFF",loader:"009900",border:"CCCCCC",tracker:"DDDDDD",skip:"666666",pagebg:"FAFAFA",transparentpagebg:"no"});\x3C/script>',
-			$container = '<div id="audioplayer_'+$insert_id+'"><img src="<?php echo plugins_url("asset/audio.png",WP2PCS_PLUGIN_NAME); ?>" /></div>',
+			$container = '<div id="audioplayer_'+$insert_id+'" class="wp2pcs-audio"><img src="<?php echo plugins_url("asset/audio.png",WP2PCS_PLUGIN_NAME); ?>" /></div>',
 			$config = '<script type="text/javascript">AudioPlayer.embed("audioplayer_'+$insert_id+'",{titles:"'+$audio_name+'",loop:"no",autostart:"no",soundFile:"'+$audio_src+'"});\x3C/script>',
 			$html = '';
 		if(!$insert_audio_count){
@@ -146,7 +146,7 @@ jQuery(function($){
 					$audio_src = $audio_root + $file_touch;
 				// 如果被选择的是图片
 				if($file_type == 'image'){
-					$html += '<img src="' + $img_src + '" />';
+					$html += '<a href="'+$img_src+'" class="wp2pcs-image-link"><img src="'+$img_src+'" class="wp2pcs-image" alt="'+$file_name+'" /></a>';
 				}
 				// 如果被选择的是视频，使用视频播放器
 				else if($file_type == 'video'){
@@ -162,7 +162,7 @@ jQuery(function($){
 				}
 				// 如果是其他文件，就直接给下载链接
 				else{
-					$html += '<a href="' + $file_src + '">' + $file_name + '</a>';
+					$html += '<a href="' + $file_src + '" class="wp2pcs-download">' + $file_name + '</a>';
 				}
 			});
 			$('.selected').removeClass('selected');
@@ -338,7 +338,6 @@ jQuery(function($){
 	</p>
 </div>
 <div class="alert">
-	<?php if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false) : ?><p>注意：中文字符串在百度网盘的API调用中无法使用，因此极其强烈要求你不要使用中文名的文件（夹），否则你可能不能得到想要的外链结果。为了防止错误，本插件规定：中文名的文件夹没有任何作用，中文名的图片插入时以下载链接的形式插入。</p><?php endif; ?>
 	<p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
 	<p>本插件提供媒体通用前缀<?php echo get_option('wp_storage_to_pcs_media_perfix'); ?>，调用附件二进制流资源。</p>
 	<?php if(get_option('wp_storage_to_pcs_outlink_type') == 200) : ?>

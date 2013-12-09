@@ -84,7 +84,7 @@ function wp_storage_to_pcs_panel(){
 	$img_url_old_root = get_option('wp_storage_to_pcs_replace_img_old_root');
 ?>
 <div class="postbox">
-	<h3>PCS存储设置</h3>
+	<h3>PCS存储设置 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 	<form method="post">
 		<p>使用网盘中的哪个目录：
@@ -97,7 +97,7 @@ function wp_storage_to_pcs_panel(){
 		<p>附件访问方式：<select name="wp_storage_to_pcs_outlink_type">
 			<option value="200" <?php selected($outlink_type,200); ?>>直链：耗流量，利于SEO</option>
 			<option value="302" <?php selected($outlink_type,302); ?>>外链：省流量，SEO欠佳</option>
-		</select></p>
+		</select> <a href="http://wp2pcs.duapp.com/242" title="使用说明" target="_blank">?</a></p>
 		<P><input type="checkbox" name="wp_storage_to_pcs_outlink_protact" value="true" <?php checked($outlink_protact,'true'); ?> /> 防盗链</p>
 		<p><input type="submit" value="确定" class="button-primary" /></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_update" />
@@ -107,17 +107,17 @@ function wp_storage_to_pcs_panel(){
 	</div>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 	<form method="post">
-		<p><strong>一键更新图片地址前缀功能</strong>：一键将图片从<?php echo home_url('/wp-content/uploads/2013/11/29/xxx.jpg'); ?>替换为<?php echo home_url('/'.$image_perfix.'/2013/11/29/xxx.jpg'); ?>。请看下面详细介绍。</p>
-		<p>老的图片目录：<input type="text" name="wp_storage_to_pcs_replace_img_old_root" class="regular-text" value="<?php echo $img_url_old_root; ?>" /></p>
-		<p><input type="submit" value="一键替换" onclick="if(confirm('WP2PCS官方提供了更为高级的解决方案，点击确认进行了解，点击取消继续')){window.open('http://wp2pcs.duapp.com/160');return false;}" class="button-primary" /></p>
+		<p class="tishi hidden"><strong>一键更新图片地址前缀功能</strong>：一键将图片从<?php echo home_url('/wp-content/uploads/2013/11/29/xxx.jpg'); ?>替换为<?php echo home_url('/'.$image_perfix.'/2013/11/29/xxx.jpg'); ?>。请看下面详细介绍。</p>
+		<p>老的图片目录：<input type="text" name="wp_storage_to_pcs_replace_img_old_root" class="regular-text" value="<?php echo $img_url_old_root; ?>" /> => <?php echo wp2pcs_image_src(); ?> <a href="http://wp2pcs.duapp.com/160" target="_blank" title="一键替换功能的原理与使用方法">?</a></p>
+		<p><input type="submit" value="一键替换" onclick="if(confirm('请一定要理解该功能的替换原理后再来使用，否则可能造成图片无法显示。WP2PCS官方提供了更为高级的解决方案，点击确认进行了解，点击取消继续')){window.open('http://wp2pcs.duapp.com/160');return false;}" class="button-primary" /></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_replace_img_in_post" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 		<?php wp_nonce_field(); ?>
 	</form>
 	</div>
-	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
+	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p>使用网盘中的某一个目录作为你存储图片或附件的根目录，例如你填写“/uploads/”，那么到时候就会采用这个目录下的文件作为附件。</p>
-		<p>访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“/uploads/test.jpg”这张图片。为了提高不同空间的兼容性，建议你把这个前缀填写为“?img”的形式。<b>注意</b>，如果你的主机支持重写，最好填写“img”，而不是“?img”，后者将不支持中文文件（夹）。</p>
+		<p>访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“/uploads/test.jpg”这张图片。为了提高不同空间的兼容性，建议你把这个前缀填写为“?img”的形式。</p>
 		<p>图片采取了防盗链的功能，来自网站本身以外的其他访问都会被认为是盗链行为，当然如果你懂代码，可以通过修改插件源文件来扩大图片可用范围。</p>
 		<p>直链和外链：直链是指使用你的网站域名打印图片，例如你可以用yourdomain.com/img/test.jpg直接显示这张图片，会消耗你的网站流量；外链是指图片地址会跳转到图片真实地址，例如你仍然访问yourdomain.com/img/test.jpg，但你会发现URL会发生跳转，几乎不消耗你的网站流量。如果你的网站不担心流量问题，最好选择直链方式，更有利于SEO。</p>
 		<p>一键替换：1、你准备把以前存放在网站空间里面的所有<span style="color:red;">图片</a>转移到百度网盘，首先使用ftp等工具先把所有图片下载到本地，一般而言，你直接下载/wp-content/uploads/目录即可，下载完成之后打开uploads目录，把里面的文件上传到百度网盘中存放附件的目录下<?php echo ($root_dir ? "($root_dir)" : ''); ?>，然后在上面填写<?php echo home_url('/wp-content/uploads/'); ?>，点击提交即可。不过有的博客不是WP默认的存储路径，这个时候你必须根据实际情况来确定。2、当你本来使用img作为图片访问前缀，而现在修改为image作为前缀，那么你需要使用这个功能调整文章中的图片地址，否则图片将无法被访问到。如果你的图片存在多种老的路径，可以多次提交，实现最终统一，但在这个过程中一定要注意不要造成覆盖从而引起错误，如果你不能自己完成这项工作，可以<a href="http://wp2pcs.duapp.com/160" target="_blank">获取WP2PCS官方提供的高级解决方案</a>。</p>
