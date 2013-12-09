@@ -4,7 +4,7 @@ Donate link: http://wp2pcs.duapp.com
 Tags: backup, sync, baidu, personal cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
 Tested up to: 3.7.1
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,9 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 
 == Changelog ==
 
+= 1.1.4 =
+修复和升级了附件存储功能，在线媒体功能更强大
+
 = 1.1.3 =
 升级附件存储功能，提供在线媒体播放器，直接插入视频播放、音乐播放等
 
@@ -106,6 +109,9 @@ http://wp2pcs.duapp.com 向我们提出申请，经过身份确认之后邮件�
 * 基本功能：1、备份到百度网盘；2、保存文件到百度网盘，并可以插入到文章中。
 
 == Upgrade Notice ==
+
+= 1.1.4 =
+修复和升级了附件存储功能，在线媒体功能更强大
 
 = 1.1.3 =
 升级附件存储功能，提供在线媒体播放器，直接插入视频播放、音乐播放等
