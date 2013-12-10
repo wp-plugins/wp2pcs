@@ -126,7 +126,7 @@
 		exit;
 	}
 
-	echo "2.前缀设置正常 $image_perfix <br />";
+	echo "2.前缀设置判断通过： $image_perfix <br />";
 
 	// 当采用index.php/image时，大部分主机会跳转，丢失index.php，因此这里要做处理
 	if(strpos($image_perfix,'index.php/')===0 && strpos($image_uri,'index.php/')===false){
@@ -139,55 +139,40 @@
 		exit;
 	}
 
-	echo "3.当前的IMAGE URI为 $image_uri ，包含 $image_perfix <br />";
+	echo "3.URI包含前缀判断通过：当前的URI为 $image_uri ，包含 $image_perfix <br />";
 
 	// 获取安装在子目录
 	$install_in_subdir = get_blog_install_in_subdir();
 	if($install_in_subdir){
+		echo "4.子目录安装通过：wordpress被安装在子目录 $install_in_subdir 中，它将被从URI中删除<br />";
 		$image_uri = str_replace_first($install_in_subdir,'',$image_uri);
-	}
-
-	if($install_in_subdir){
-		echo "4.wordpress被安装在子目录 $install_in_subdir 中<br />";
 	}else{
-		echo "4.你的wordpress安装在根目录下 <br />";
+		echo "4.子目录安装判断结果：你的wordpress安装在根目录下 <br />";
 	}
-	echo "当前的IMAGE URI为 $image_uri <br />";
+	echo "子目录判断后，当前的IMAGE URI为 $image_uri <br />";
 
-	// 如果在IIS上面
-	if(get_blog_install_software() == 'IIS'){
-		if(
-			(strpos($image_uri,'/index.php/')===0 
-			&& strpos($image_perfix,'index.php/')!==0
-			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
-			||
-			(strpos($image_uri,'/index.php/index.php/')===0 
-			&& strpos($image_perfix,'index.php/')===0
-			&& strpos($image_uri,'/index.php/'.$image_perfix)===0)
-		){
-			$image_uri = str_replace_first('/index.php','',$image_uri);	
-		}
-		echo "5.当前服务器软件为IIS，可能面临重写规则与插件不兼容的问题<br />";
-		echo "当前的IMAGE URI为 $image_uri<br />";
-	}
+	// 返回真正有效的URI
+	$image_uri = get_outlink_real_uri($image_uri,$image_perfix);
+	echo "5.IIS上需要对index.php段进行删除，处理后的IMAGE URI为 $image_uri<br />";
 
 	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
 	if(strpos($image_uri,'/'.$image_perfix)!==0){
-		echo "<b>经过计算之后，当前的URI中不以图片访问前缀开头，很有可能是重写机制或其他环境原因造成的，也有可能是你的访问路径本身有问题</b>";
+		echo "<b>IMAGE URI中不以图片访问前缀开头，很有可能是重写机制或其他环境原因造成的，也有可能是你的访问路径本身有问题</b>";
 		exit;
 	}
 
+	echo "如果没有看到5，说明不是安装在IIS上的<br />";
+	
 	// 将前缀也去除，获取文件直接路径
 	$image_path = str_replace_first('/'.$image_perfix,'',$image_uri);
-
-	echo "如果没有看到5，说明不是安装在IIS上的<br />";
-	echo "6.当前的IMAGE URI为 $image_uri 获取到的文件路径为 $image_path<br />";
 
 	// 如果不存在image_path，也不执行了
 	if(!$image_path){
 		echo "<b>图片地址不能为空</b>";
 		exit;
 	}
+
+	echo "6.去除了前缀后，当前的IMAGE URI为 $image_uri 获取到的文件路径为 $image_path<br />";
 
 	// 获取图片路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
