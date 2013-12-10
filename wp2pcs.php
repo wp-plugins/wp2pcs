@@ -223,12 +223,16 @@ function wp_to_pcs_pannel(){
 			$pcs = new BaiduPCS($access_token);
 			$quota = json_decode($pcs->getQuota());
 			if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
-				echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良，如果是由于授权问题，请点击下面的“更新授权”按钮重新授权！</b></p>';
+				if(get_option('wp_to_pcs_site_id')){
+					echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良！</b></p>';
+				}else{
+					echo '<p style="color:red;"><b>可能由于授权问题，你的网站无法连接到百度网盘，点击“更新授权”再授权！</b></p>';				
+				}
 			}elseif($app_key != 'false'){
 				echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
 			}
-			if(get_php_run_time() > 25){
-				echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了25秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
+			if(get_php_run_time() > 15){
+				echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了15秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
 			}
 		?>
 		</div>
@@ -246,7 +250,7 @@ function wp_to_pcs_pannel(){
 				<p><b style="color:red;">注意：由于插件使用的是百度PCS API，所以必须要考虑有关问题，使用前最好到<a href="http://wp2pcs.duapp.com">插件主页</a>了解使用方法，以免使用中出错。</b></p>
 			</div>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-				<p>插件同时处于开发中，欢迎站长、博主朋友们向我们反馈，提出宝贵意见。</p>
+				<p>插件同时处于开发中，欢迎站长、博主朋友们向我们反馈，提出宝贵意见，或加入到开发中。</p>
 				<p>官方网站：<a href="http://wp2pcs.duapp.com" target="_blank">http://wp2pcs.duapp.com</a></p>
 				<p>QQ群：292172954 <a href="http://shang.qq.com/wpa/qunwpa?idkey=97278156f3def92eef226cd5b88d9e7a463e157655650f4800f577472c219786" target="_blank"><img title="WP2PCS官方交流群" alt="WP2PCS官方交流群" src="http://pub.idqqimg.com/wpa/images/group.png" border="0" /></a></p>
 				<p>向插件作者捐赠：<a href="http://me.alipay.com/tangshuang" target="_blank">支付宝</a>、BTC（164jDbmE8ncUYbnuLvUzurXKfw9L7aTLGD）、PPC（PNijEw4YyrWL9DLorGD46AGbRbXHrtfQHx）、XPM（AbDGH5B7zFnKgMJM8ujV3br3R2V31qrF2F） <a href="http://wp2pcs.duapp.com/240" target="_blank" title="WP2PCS为何支持BTC、PPC、XPM捐赠且只支持这三种币？">?</a></p>

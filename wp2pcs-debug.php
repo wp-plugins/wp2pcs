@@ -27,46 +27,12 @@
 	echo "你的网站运行在 $software 服务器上，不同的服务器重写功能会对插件的运行有影响<br />";
 	echo "当前的php版本为 ".PHP_VERSION."<br />";
 
-	// 检查是否支持重写功能
-	$permalink_structure = get_option('permalink_structure');
-	$software = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '';
-	if(strpos($software,'IIS') !== false){
-		$software = 'IIS';
-	}elseif(strpos($software,'Apache') !== false){
-		$software = 'Apache';
-	}elseif(strpos($software,'NginX') !== false){
-		$software = 'NginX';
-	}else{
-		$software = 'Others';
-	}
-	$install_root = ABSPATH;
-	$install_in_subdir = get_blog_install_in_subdir();
-	if($software == 'IIS' && $install_in_subdir){
-		$install_root = str_replace_last($install_in_subdir.'/','',$install_root);
-	}
-
-	if($permalink_structure){
-		echo "你已经修改了固定链接形式 $permalink_structure  ，先关闭调试模式，<a href='".home_url('/?p=1')."' target='_blank'>随意阅读一篇文章</a>，看看是否能够被正常访问<br />";
+	// 检查重写情况
+	$is_rewrite = is_wp_rewrited();
+	if($is_rewrite){
+		echo "你的网站重写状况如下： $is_rewrite ，先关闭调试模式，<a href='".home_url('/?p=1')."' target='_blank'>随意阅读一篇文章</a>，看看是否能够被正常访问<br />";
 	}else{
 		echo "你尚没有修改固定链接形式，插件后台图片等访问前缀不能修改为 image 等形式， ?image 这种形式则可以<br />";
-	}
-	if(file_exists($install_root.'httpd.ini')){
-		echo "你的网站中使用了httpd.ini<br />";
-	}
-	elseif(file_exists($install_root.'.htaccess')){
-		echo "你的网站中使用了.htaccess<br />";
-	}
-	elseif(file_exists($install_root.'httpd.conf')){
-		echo "你的网站中使用了httpd.conf<br />";
-	}
-	elseif(file_exists($install_root.'app.conf')){
-		echo "你的网站中使用了app.conf<br />";
-	}
-	elseif(file_exists($install_root.'config.yaml')){
-		echo "你的网站中使用了config.yaml<br />";
-	}
-	else{
-		echo "没有发现和重写相关的配置文件<br />";
 	}
 
 	// 检查content目录的写入权限
@@ -117,7 +83,11 @@
 	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 	$quota = json_decode($pcs->getQuota());
 	if(!$pcs || !$quota || isset($quota->error_code)){
-		echo '授权失败，也有可能是因为你的主机和百度PCS服务器通信失败';
+		if(get_option('wp_to_pcs_site_id')){
+			echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良！</b></p>';
+		}else{
+			echo '<p style="color:red;"><b>授权失败，无法连接到百度网盘，点击“更新授权”再授权！</b></p>';
+		}
 	}else{
 		echo '百度PCS授权成功';
 	}
@@ -140,7 +110,7 @@
 	echo "下载前缀： $download_perfix <br />";
 	
 	$image_link = home_url('/'.$image_perfix.'/test.jpg');
-	echo "<a href='$image_link'>点击查看图片调试结果<a><br />";
+	echo "<a href='$image_link'>点击查看图片调试完整结果<a><br />";
 	
 	$image_perfix = get_option('wp_storage_to_pcs_image_perfix');
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
@@ -152,7 +122,7 @@
 
 	// 如果不存在前缀，就不执行了
 	if(!$image_perfix){
-		echo "当前插件配置中图片前缀没有填写";
+		echo "<b>当前插件配置中图片前缀没有填写</b>";
 		exit;
 	}
 
@@ -165,7 +135,7 @@
 	
 	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
 	if(strpos($image_uri,$image_perfix)===false){
-		echo "当前URL中不存在图片访问前缀";
+		echo "<b>当前URL中不存在图片访问前缀</b>";
 		exit;
 	}
 
@@ -177,8 +147,12 @@
 		$image_uri = str_replace_first($install_in_subdir,'',$image_uri);
 	}
 
-	if($install_in_subdir)echo "4.wordpress被安装在子目录 $install_in_subdir 中<br />";
-	echo "当前的IMAGE URI为 $image_uri<br />";
+	if($install_in_subdir){
+		echo "4.wordpress被安装在子目录 $install_in_subdir 中<br />";
+	}else{
+		echo "4.你的wordpress安装在根目录下 <br />";
+	}
+	echo "当前的IMAGE URI为 $image_uri <br />";
 
 	// 如果在IIS上面
 	if(get_blog_install_software() == 'IIS'){
@@ -193,13 +167,13 @@
 		){
 			$image_uri = str_replace_first('/index.php','',$image_uri);	
 		}
-		echo "5.当前服务器软件为IIS<br />";
+		echo "5.当前服务器软件为IIS，可能面临重写规则与插件不兼容的问题<br />";
 		echo "当前的IMAGE URI为 $image_uri<br />";
 	}
 
 	// 如果URI中根本不包含$image_perfix，那么就不用再往下执行了
 	if(strpos($image_uri,'/'.$image_perfix)!==0){
-		echo "经过计算之后，当前的URL中不存在图片访问前缀";
+		echo "<b>经过计算之后，当前的URI中不以图片访问前缀开头，很有可能是重写机制或其他环境原因造成的，也有可能是你的访问路径本身有问题</b>";
 		exit;
 	}
 
@@ -211,7 +185,7 @@
 
 	// 如果不存在image_path，也不执行了
 	if(!$image_path){
-		echo "图片地址不能为空";
+		echo "<b>图片地址不能为空</b>";
 		exit;
 	}
 
@@ -229,7 +203,7 @@
 	}
 
 	echo "7.图片最终路径为 $image_path ，附件访问方式为： $outlink_type <br />";
-	echo "如果你能看到这里，说明你的图片（也包括其他附件）应该是可以正常显示的。<br />";
+	echo "<b>如果你能看到这里，说明你的图片（也包括其他附件）应该是可以正常显示的。</b>";
 
 	// 结束调试
 	exit;

@@ -37,7 +37,6 @@ function get_blog_install_in_subdir(){
 
 // 判断wordpress是否安装在win主机，并开启了重写
 function get_blog_install_software(){
-	$permalink_structure = get_option('permalink_structure');
 	$software = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '';
 	if(strpos($software,'IIS') !== false){
 		$software = 'IIS';
@@ -48,11 +47,15 @@ function get_blog_install_software(){
 	}else{
 		$software = 'Others';
 	}
+	// 先判断这个主机的服务器软件
+	return $software;
+	/*
 	$install_root = ABSPATH;
 	$install_in_subdir = get_blog_install_in_subdir();
 	if($software == 'IIS' && $install_in_subdir){
 		$install_root = str_replace_last($install_in_subdir.'/','',$install_root);
 	}
+	$permalink_structure = get_option('permalink_structure');
 	$is_rewrited = false;
 	if($permalink_structure){
 		if(file_exists($install_root.'httpd.ini') || file_exists($install_root.'.htaccess') || file_exists($install_root.'httpd.conf') || file_exists($install_root.'app.conf') || file_exists($install_root.'config.yaml'))
@@ -66,6 +69,33 @@ function get_blog_install_software(){
 	else{
 		return $software;
 	}
+	*/
+}
+
+// 用下面这个函数判断wordpress是否已经开启重写，并且返回开启重写的方式
+function is_wp_rewrited(){
+	$is_rewrited = false;
+	$software = get_blog_install_software();
+	$permalink_structure = get_option('permalink_structure');
+	$install_root = ABSPATH;
+	$install_in_subdir = get_blog_install_in_subdir();
+	if($install_in_subdir){
+		$install_root = str_replace_last($install_in_subdir.'/','',$install_root);
+	}
+	if($permalink_structure){
+		$is_rewrited = "$permalink_structure ";
+		if(file_exists($install_root.'.htaccess'))
+			$is_rewrited .= '.htaccess ';
+		if(file_exists($install_root.'httpd.conf'))
+			$is_rewrited .= 'httpd.conf ';
+		if(file_exists($install_root.'app.conf'))
+			$is_rewrited .= 'app.conf ';
+		if(file_exists($install_root.'config.yaml'))
+			$is_rewrited .= 'config.yaml ';
+		if(file_exists($install_root.'httpd.ini'))
+			$is_rewrited .= 'httpd.ini';
+	}
+	return $is_rewrited;
 }
 
 // 通过一个函数用来计算当前附件的访问的真正有效的uri
@@ -74,17 +104,23 @@ function get_outlink_real_uri($uri,$perfix){
 	// 但在一些特殊情况下，如视频前缀为index.php/video，以及IIS上，$uri就有可能为index.php/?image/test.jpg
 	// $perfix是指要处理的附件的前缀，例如可以是get_option('wp_storage_to_pcs_image_perfix');(图片前缀)
 	// 你要通过这个函数返回真正有效的uri，如上所述$uri==index.php/?image/test.jpg，你应该尽可能的让函数返回/?image/test.jpg
-	if(get_blog_install_software() == 'IIS'){
-		if(
-			(strpos($uri,'/index.php/')===0 
-			&& strpos($perfix,'index.php/')!==0
-			&& strpos($uri,'/index.php/'.$perfix)===0)
-			||
-			(strpos($uri,'/index.php/index.php/')===0 
-			&& strpos($image_perfix,'index.php/')===0
-			&& strpos($uri,'/index.php/'.$perfix)===0)
-		){
-			$uri = str_replace_first('/index.php','',$uri);
+	// 默认情况下，只处理IIS下开启了重写（修改了固定链接）的情况
+	if(get_blog_install_software()=='IIS' && is_wp_rewrited()){
+		// 对于perfix中不包含index.php的情况
+		if(strpos($perfix,'index.php')!==0 && strpos($uri,'/index.php')===0){
+			if(strpos($uri,'/index.php/'.$perfix)===0){
+				$uri = str_replace_first('/index.php/','/',$uri);
+			}elseif(strpos($uri,'/index.php'.$perfix)===0){
+				$uri = str_replace_first('/index.php','/',$uri);
+			}
+		}
+		// 对于perfix中包含index.php的情况
+		elseif(strpos($perfix,'index.php')===0 && strpos($uri,'/index.php')===0){
+			if(strpos($uri,'/index.php/index.php/')===0){
+				$uri = str_replace_first('/index.php/index.php/','/',$uri);
+			}elseif(strpos($uri,'/index.php/index.php')===0){
+				$uri = str_replace_first('/index.php/index.php','/',$uri);
+			}
 		}
 	}
 	return $uri;

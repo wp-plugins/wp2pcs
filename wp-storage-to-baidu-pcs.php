@@ -108,8 +108,8 @@ function wp_storage_to_pcs_panel(){
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 	<form method="post">
 		<p class="tishi hidden"><strong>一键更新图片地址前缀功能</strong>：一键将图片从<?php echo home_url('/wp-content/uploads/2013/11/29/xxx.jpg'); ?>替换为<?php echo home_url('/'.$image_perfix.'/2013/11/29/xxx.jpg'); ?>。请看下面详细介绍。</p>
-		<p>老的图片目录：<input type="text" name="wp_storage_to_pcs_replace_img_old_root" class="regular-text" value="<?php echo $img_url_old_root; ?>" /> => <?php echo wp2pcs_image_src(); ?> <a href="http://wp2pcs.duapp.com/160" target="_blank" title="一键替换功能的原理与使用方法">?</a></p>
-		<p><input type="submit" value="一键替换" onclick="if(confirm('请一定要理解该功能的替换原理后再来使用，否则可能造成图片无法显示。WP2PCS官方提供了更为高级的解决方案，点击确认进行了解，点击取消继续')){window.open('http://wp2pcs.duapp.com/160');return false;}" class="button-primary" /></p>
+		<p>老的图片目录：<input type="text" name="wp_storage_to_pcs_replace_img_old_root" class="regular-text" value="<?php echo $img_url_old_root; ?>" /> <b style='color:#118508;'>-></b> <?php echo wp2pcs_image_src(); ?> <a href="http://wp2pcs.duapp.com/160" target="_blank" title="一键替换功能的原理与使用方法">?</a></p>
+		<p><input type="submit" value="一键替换" onclick="if(!confirm('是否已经备份数据库？请一定要理解该功能的替换原理后再来使用，否则可能造成图片无法显示。')){return false;}if(confirm('WP2PCS官方提供了更为高级的解决方案，点击确认进行了解，点击取消继续')){window.open('http://wp2pcs.duapp.com/160');return false;}" class="button-primary" /></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_replace_img_in_post" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 		<?php wp_nonce_field(); ?>
