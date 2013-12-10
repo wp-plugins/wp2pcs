@@ -115,6 +115,7 @@ function wp_storage_print_audio(){
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$audio_outlink = 'http://wp2pcs.duapp.com/music?'.$site_id.'+'.$access_token.'+path='.$audio_path;
 		header('Location:'.$audio_outlink);
+		exit;
 	}
 	exit;
 }

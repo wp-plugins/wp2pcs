@@ -128,6 +128,7 @@ function wp_storage_print_video(){
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$video_outlink = 'http://wp2pcs.duapp.com/v?'.$site_id.'+'.$access_token.'+path='.$video_path.'.m3u8';
 		header('Location:'.$video_outlink);
+		exit;
 	}
 	exit;
 }

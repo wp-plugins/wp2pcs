@@ -107,6 +107,7 @@ function wp_storage_print_media(){
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$media_outlink = 'http://wp2pcs.duapp.com/media?'.$site_id.'+'.$access_token.'+path='.$media_path;
 		header('Location:'.$media_outlink);
+		exit;
 	}
 	exit;
 }
