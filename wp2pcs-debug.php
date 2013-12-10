@@ -35,6 +35,11 @@
 		echo "你尚没有修改固定链接形式，插件后台图片等访问前缀不能修改为 image 等形式， ?image 这种形式则可以<br />";
 	}
 
+	// 检查是否开启了多站点功能
+	if(is_multisite()){
+		echo "你的WordPress开启了群站（多站点），可能不能充分发挥本插件的功能，使用如出现问题请及时反馈<br />";
+	}
+
 	// 检查content目录的写入权限
 	if(DIRECTORY_SEPARATOR=='/' && @ini_get("safe_mode")==FALSE){
 		echo "没有开启安全模式，".(is_writable(WP_CONTENT_DIR) ? 'content目录可写' : 'content目录不可写')."<br />";
