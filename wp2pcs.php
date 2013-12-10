@@ -282,6 +282,11 @@ jQuery(function($){
 // 后台全局提示信息
 add_action('admin_notices','wp2pcs_admin_notice');
 function wp2pcs_admin_notice(){
+	if(is_multisite()){
+		if(!current_user_can('manage_network'))return;
+	}else{
+		if(!current_user_can('edit_theme_options'))return;
+	}
 	$app_key = get_option('wp_to_pcs_app_key');
     ?><div id="wp2pcs-admin-notice" class="updated hidden"><p>如果你看到该信息，说明WP2PCS官方不能被正常访问，<?php if($app_key==='false'): ?>你的托管服务将受到限制，赶紧和我们联系吧！<?php elseif(!$app_key): ?>不能正常授权，请稍后再试！<?php else : ?>如果你使用的是附件“外链”访问方式，那么赶紧切换到“直链”访问方式暂时解决！<?php endif; ?></p></div><?php
 }
