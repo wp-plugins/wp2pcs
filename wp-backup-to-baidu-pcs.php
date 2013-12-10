@@ -12,6 +12,7 @@
 add_filter('cron_schedules','wp2pcs_more_reccurences');
 function wp2pcs_more_reccurences(){
 	return array(
+		'halfdly' => array('interval' => 3600*12, 'display' => 'Once half a day'),
 		'daily' => array('interval' => 3600*24, 'display' => 'Once a day'),
 		'doubly' => array('interval' => 3600*24*2, 'display' => 'Once two days'),
 		'weekly' => array('interval' => 3600*24*7, 'display' => 'Once a week'),
@@ -162,7 +163,9 @@ function wp_backup_to_pcs_action(){
 				}
 				$run_time = strtotime($run_time);
 				foreach($run_date as $task => $date){
-					if($date != 'never')wp_schedule_event($run_time,$date,'wp_backup_to_pcs_corn_task_'.$task);
+					if($date != 'never'){
+						wp_schedule_event($run_time,$date,'wp_backup_to_pcs_corn_task_'.$task);
+					}
 				}
 			}else{
 				// 关闭定时任务
@@ -172,6 +175,8 @@ function wp_backup_to_pcs_action(){
 					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
 				if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
 					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+				if(wp_next_scheduled('wp_backup_to_pcs_corn_task_delete_file_offline'))
+					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_delete_file_offline');
 			}
 		}
 		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
@@ -270,6 +275,18 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$pcs = new BaiduPCS($access_token);
 	$file_blocks = array();//分片上传文件成功后返回的md5值数组集合
 	$file_name = basename($local_path);
+	
+	// 使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
+	$result = $pcs->addOfflineDownloadTask(trailingslashit($remote_dir),home_url('/wp-content/'.$file_name),1024*1024,3600,'');
+	$result = json_decode($result,true);
+	if(!isset($result['error_msg'])){
+		return;
+	}
+	// 离线下载之后增加一个定时任务，将打包文件删除
+	set_php_ini('timezone');
+	wp_schedule_single_event(time()+3600,'wp_backup_to_pcs_corn_task_delete_file_offline');
+	
+	// 如果离线下载功能失效，那么就接着往下执行
 	$handle = @fopen($local_path,'rb');
 	while(!@feof($handle)){
 		$file_block_content = fread($handle,$file_block_size);
@@ -290,12 +307,36 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 
 // 创建一个函数来确定采取什么上传方式，并执行这种方式的上传
 function wp_backup_to_pcs_send_file($local_path,$remote_dir){
+	$access_token = WP2PCS_APP_TOKEN;
+	$pcs = new BaiduPCS($access_token);
+	$file_name = basename($local_path);
 	$file_size = filesize($local_path);
 	$file_max_size = 2*1024*1024;
 	if($file_size > $file_max_size){
 		wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_max_size);
 	}else{
 		wp_backup_to_pcs_send_single_file($local_path,$remote_dir);
+	}
+}
+
+// 删除这些离线文件必须在晚上结束的时候执行
+add_action('wp_backup_to_pcs_corn_task_delete_file_offline','wp_backup_to_pcs_delete_file_offline');
+function wp_backup_to_pcs_delete_file_offline(){
+	wp_backup_to_pcs_delete_file_offline_by_filename('www.zip');
+	wp_backup_to_pcs_delete_file_offline_by_filename('logs.zip');
+}
+// 创建一个函数，用来查询离线下载是否已经完成，如果完成了，就把要上传的文件都给删除了
+function wp_backup_to_pcs_delete_file_offline_by_filename($file_name){
+	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
+	$result = $pcs->listOfflineDownloadTask(0,1,0,home_url('/wp-content/'.$file_name),'','','',1);
+	$result = json_decode($result,true);
+	if(!isset($result['task_info'][0])){
+		return;
+	}
+	$result = $result['task_info'][0];
+	if($result['status'] == 1){
+		$file = trailingslashit(WP_CONTENT_DIR).$file_name;
+		if(file_exists($file))@unlink($file);
 	}
 }
 
@@ -435,6 +476,19 @@ function wp_backup_to_pcs_panel(){
 			echo '</div>';
 		}
 	endif;
+	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
+	$offline_task = $pcs->listOfflineDownloadTask(0,10,0,'','','',1,1);
+	$offline_task = json_decode($offline_task,true);
+	if(isset($offline_task['task_info'])){
+		$offline_task = $offline_task['task_info'];
+		if(!empty($offline_task)){
+			echo "<div class='inside' style='border-bottom:1px solid #CCC;margin:0;padding:8px 10px;'><p>下列上传任务正在进行，请勿删除wp-content目录下的打包文件：<br />";
+			foreach($offline_task as $task){
+				echo "{$task['source_url']} <b style='color:#118508;'>=></b> {$task['save_path']} <br />";
+			}
+			echo "</p></div>";
+		}
+	}
 	?>
 	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<?php if(!IS_WP2PCS_WRITABLE) : ?>

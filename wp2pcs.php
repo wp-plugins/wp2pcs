@@ -94,6 +94,8 @@ function wp2pcs_plugin_deactivate(){
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
 	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_delete_file_offline'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_delete_file_offline');
 	// 删除定时备份的按钮信息
 	delete_option('wp_backup_to_pcs_future');
 }
