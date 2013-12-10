@@ -197,7 +197,7 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	set_php_ini('limit');
 	set_php_ini('timezone');
 	$access_token = WP2PCS_APP_TOKEN;
-	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
+	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
 	$pcs = new BaiduPCS($access_token);
 	
 	// 备份数据库
@@ -221,7 +221,7 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	set_php_ini('timezone');
 	$access_token = WP2PCS_APP_TOKEN;
 	$zip_dir = trailingslashit(WP_CONTENT_DIR);
-	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
+	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
 	$pcs = new BaiduPCS($access_token);
 
 	// 备份日志
@@ -246,7 +246,7 @@ function wp_backup_to_pcs_corn_task_function_www(){
 	set_php_ini('timezone');
 	$access_token = WP2PCS_APP_TOKEN;
 	$zip_dir = trailingslashit(WP_CONTENT_DIR);
-	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.i.s').'/';
+	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
 	$pcs = new BaiduPCS($access_token);
 
 	// 备份网站内的所有文件
@@ -476,7 +476,7 @@ function wp_backup_to_pcs_panel(){
 			echo '</div>';
 		}
 	endif;
-	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
+	if(!$pcs)$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 	$offline_task = $pcs->listOfflineDownloadTask(0,10,0,'','','',1,1);
 	$offline_task = json_decode($offline_task,true);
 	if(isset($offline_task['task_info'])){
