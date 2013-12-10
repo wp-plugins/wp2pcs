@@ -16,6 +16,33 @@ function wp2pcs_audio_src($audio_path = false){
 	return home_url($audio_src);
 }
 
+// 创建短代码来打印音乐
+function wp2pcs_audio_shortcode($atts){
+	extract(shortcode_atts(array(
+		'src' => '',
+		'name' => 'Powered by WP2PCS',
+		'autostart' => '0',
+		'loop' => 'no'
+	),$atts));
+
+	$name = $name ? $name : 'Powered by WP2PCS';
+	$autostart = $autostart ? $autostart : '0';
+	$loop = $loop ? $loop : 'no';
+
+	$player_id = time();
+	$player = '<div id="audioplayer_'.$player_id.'" class="wp2pcs-audio"></div><script type="text/javascript">AudioPlayer.embed("audioplayer_'.$player_id.'",{titles:"'.$name.'",loop:"'.$loop.'",autostart:"'.$autostart.'",soundFile:"'.$src.'"});</script>';
+
+	return $player;
+}
+add_shortcode('audio','wp2pcs_audio_shortcode');
+
+// 在网页头部输出音乐播放要使用到的javascript
+add_action('wp_head','wp2pcs_audio_player_script');
+function wp2pcs_audio_player_script(){
+	// 如果你不打算让播放器出现在除了文章页之外的页面，如首页、列表页等，那么可以加上if(!is_singular())return;
+	echo '<script type="text/javascript" src="'.plugins_url("asset/audio-player.js",WP2PCS_PLUGIN_NAME).'"></script><script type="text/javascript">AudioPlayer.setup("'.plugins_url("asset/player.swf",WP2PCS_PLUGIN_NAME).'",{width:"320",animation:"yes",encode:"no",initialvolume:"60",remaining:"yes",noinfo:"no",buffer:"5",checkpolicy:"no",rtl:"no",bg:"E5E5E5",text:"333333",leftbg:"CCCCCC",lefticon:"333333",volslider:"666666",voltrack:"FFFFFF",rightbg:"B4B4B4",rightbghover:"999999",righticon:"333333",righticonhover:"FFFFFF",track:"FFFFFF",loader:"009900",border:"CCCCCC",tracker:"DDDDDD",skip:"666666",pagebg:"FAFAFA",transparentpagebg:"no"});</script>';
+}
+
 // 通过对URI的判断来获得图片远程信息
 add_action('init','wp_storage_print_audio',-1);
 function wp_storage_print_audio(){

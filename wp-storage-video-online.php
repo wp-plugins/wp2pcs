@@ -15,6 +15,34 @@ function wp2pcs_video_src($video_path = false){
 	return home_url($video_src);
 }
 
+// 创建短代码来打印视频
+function wp2pcs_video_shortcode($atts){
+	extract(shortcode_atts(array(
+		'src' => '',
+		'cover' => '',
+		'width' => '640',
+		'height' => '480',
+		'stretch' => 'bestfit'
+	),$atts));
+
+	$width = $width ? $width : '640';
+	$height = $height ? $height : '480';
+	$stretch = $stretch ? $stretch : 'bestfit';
+
+	$player_id = time();
+	$player = '<div id="playercontainer_'.$player_id.'" class="wp2pcs-video"></div><script type="text/javascript">var player=cyberplayer("playercontainer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
+
+	return $player;
+}
+add_shortcode('video','wp2pcs_video_shortcode');
+
+// 在网页头部输出音乐播放要使用到的javascript
+add_action('wp_head','wp2pcs_video_player_script');
+function wp2pcs_video_player_script(){
+	// 如果你不打算让播放器出现在除了文章页之外的页面，如首页、列表页等，那么可以加上if(!is_singular())return;
+	echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
+}
+
 // 通过对URI的判断来获得图片远程信息
 add_action('init','wp_storage_print_video',-1);
 function wp_storage_print_video(){
