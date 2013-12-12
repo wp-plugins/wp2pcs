@@ -17,6 +17,12 @@
 	// 输出文字
 	header("Content-Type: text/html; charset=utf-8");
 	
+	// 测试session是否可以用
+	session_start();
+	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
+	session_destroy();
+	
+	// 输出当前插件信息
 	if(!function_exists('get_plugin_data')){
 		include(ABSPATH.'wp-admin/includes/plugin.php');
 	}
@@ -25,11 +31,6 @@
 	$version = WP2PCS_PLUGIN_VER;
 	echo "你当前使用的是开发者版 版本号：$plugin_version 最后更新时间：$version <br />";
 
-	// 测试session是否可以用
-	session_start();
-	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
-	session_destroy();
-	
 	// 首先检查php环境
 	echo "你的网站搭建在 ".PHP_OS." 操作系统的服务器上<br />";
 	$software = get_blog_install_software();

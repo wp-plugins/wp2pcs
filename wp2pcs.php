@@ -155,12 +155,14 @@ function wp_to_pcs_action(){
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key_update' && isset($_POST['wp_to_pcs_app_key_update']) && $_POST['wp_to_pcs_app_key_update'] == '更新授权'){
 		check_admin_referer();
 		wp2pcs_plugin_deactivate();// 更新授权API KEY跟停用插件是一样的
-		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
+		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
 	// 调试模式
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['wp_to_pcs_debug']) && !empty($_POST['wp_to_pcs_debug'])){
 		update_option('wp_to_pcs_debug',$_POST['wp_to_pcs_debug']);
+		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
+		exit;
 	}
 }
 
