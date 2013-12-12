@@ -27,7 +27,7 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.12.10.23.00'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','2013.12.12.17.00'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
