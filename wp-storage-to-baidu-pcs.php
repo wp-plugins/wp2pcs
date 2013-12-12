@@ -19,6 +19,7 @@ function wp_storage_to_pcs_action(){
 	}elseif(!current_user_can('edit_theme_options')){
 		return;
 	}
+	// 替换图片路径
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_storage_to_pcs_replace_img_in_post'){
 		global $wpdb;
 		$img_url_base = get_option('wp_storage_to_pcs_image_perfix');
@@ -35,6 +36,7 @@ function wp_storage_to_pcs_action(){
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
+	// 更新设置
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_storage_to_pcs_update'){
 		check_admin_referer();
 		$app_key = get_option('wp_to_pcs_app_key');

@@ -29,7 +29,7 @@ function wp2pcs_audio_shortcode($atts){
 	$autostart = $autostart ? $autostart : '0';
 	$loop = $loop ? $loop : 'no';
 
-	$player_id = time();
+	$player_id = get_php_run_time();
 	$player = '<div id="audioplayer_'.$player_id.'" class="wp2pcs-audio"></div><script type="text/javascript">AudioPlayer.embed("audioplayer_'.$player_id.'",{titles:"'.$name.'",loop:"'.$loop.'",autostart:"'.$autostart.'",soundFile:"'.$src.'"});</script>';
 
 	return $player;

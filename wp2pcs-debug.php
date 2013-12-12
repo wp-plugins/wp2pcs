@@ -11,11 +11,20 @@
 	}
 
 	// 显示运行错误
-	error_reporting(E_ALL);
+	error_reporting(E_ALL); 
+	ini_set("display_errors", 1);
 
 	// 输出文字
 	header("Content-Type: text/html; charset=utf-8");
 	
+	if(!function_exists('get_plugin_data')){
+		include(ABSPATH.'wp-admin/includes/plugin.php');
+	}
+	$plugin_data = get_plugin_data(WP2PCS_PLUGIN_NAME);
+	$plugin_version = $plugin_data['Version'];
+	$version = WP2PCS_PLUGIN_VER;
+	echo "你当前使用的是开发者版 版本号：$plugin_version 最后更新时间：$version <br />";
+
 	// 测试session是否可以用
 	session_start();
 	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
@@ -26,6 +35,14 @@
 	$software = get_blog_install_software();
 	echo "你的网站运行在 $software 服务器上，不同的服务器重写功能会对插件的运行有影响<br />";
 	echo "当前的php版本为 ".PHP_VERSION."<br />";
+
+	// 检查是否安装在子目录
+	$install_in_subdir = get_blog_install_in_subdir();
+	if($install_in_subdir){
+		echo "你的WordPress安装在子目录 $install_in_subdir 中，注意重写规则<br />";
+	}else{
+		echo "你的网站安装在根目录下<br />";
+	}
 
 	// 检查重写情况
 	$is_rewrite = is_wp_rewrited();
@@ -58,9 +75,10 @@
 	}
 
 	// 检查是否存在crossdomain.xml
+	$install_root = home_url();
 	$domain_root = $install_root;
 	if($install_in_subdir){
-		$domain_root = str_replace_last($install_in_subdir.'/','',$install_root);
+		$domain_root = str_replace_last($install_in_subdir,'',$install_root);
 	}
 	if(file_exists($domain_root.'crossdomain.xml')){
 		echo "存在crossdomain.xml，<a href='http://".$_SERVER['SERVER_NAME']."/crossdomain.xml' target='_blank'>检查一下它是否可以被正常访问</a>，并显示出xml结果<br />";
@@ -147,7 +165,6 @@
 	echo "3.URI包含前缀判断通过：当前的URI为 $image_uri ，包含 $image_perfix <br />";
 
 	// 获取安装在子目录
-	$install_in_subdir = get_blog_install_in_subdir();
 	if($install_in_subdir){
 		echo "4.子目录安装通过：wordpress被安装在子目录 $install_in_subdir 中，它将被从URI中删除<br />";
 		$image_uri = str_replace_first($install_in_subdir,'',$image_uri);
@@ -165,8 +182,6 @@
 		echo "<b>IMAGE URI中不以图片访问前缀开头，很有可能是重写机制或其他环境原因造成的，也有可能是你的访问路径本身有问题</b>";
 		exit;
 	}
-
-	echo "如果没有看到5，说明不是安装在IIS上的<br />";
 	
 	// 将前缀也去除，获取文件直接路径
 	$image_path = str_replace_first('/'.$image_perfix,'',$image_uri);
