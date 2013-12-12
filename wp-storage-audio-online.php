@@ -30,6 +30,15 @@ function wp2pcs_audio_shortcode($atts){
 	$loop = $loop ? $loop : 'no';
 
 	$player_id = get_php_run_time();
+
+	// 处理SRC中存在空格和中文的情况
+	if(preg_match('/[一-龥]/u',$src)){
+		$record_key = '/wp2pcs-music-'.$player_id.'.mp3';
+		$record_value = $src;
+		update_option($record_key,$record_value);
+		$src = wp2pcs_audio_src($record_key);
+	}
+
 	$player = '<div id="audioplayer_'.$player_id.'" class="wp2pcs-audio"></div><script type="text/javascript">AudioPlayer.embed("audioplayer_'.$player_id.'",{titles:"'.$name.'",loop:"'.$loop.'",autostart:"'.$autostart.'",soundFile:"'.$src.'"});</script>';
 
 	return $player;
@@ -99,10 +108,18 @@ function wp_storage_print_audio(){
 		return;
 	}
 
+	// 如果存在一个经过转化的记录的话
+	if(strpos($audio_path,'/wp2pcs-music-')===0){
+		$audio_src = get_option($audio_path);
+		header("Location:$audio_src");
+		exit;
+	}
+
 	// 获取视频路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
 	$audio_path = trailingslashit($root_dir).$audio_path;
 	$audio_path = str_replace('//','/',$audio_path);
+
 	// 获取外链方式
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	
