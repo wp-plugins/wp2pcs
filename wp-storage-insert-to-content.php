@@ -69,10 +69,16 @@ function wp_storage_to_pcs_media_tab_box() {
 .selected-file{background-color:#A30000;color:#fff;}
 .selected-video{background-color:#2E2EFF;color:#fff;}
 .selected-audio{background-color:#FF00FF;color:#000000;}
-.opt-area{margin:0 10px;}
+.opt-area{margin:0 10px;padding-bottom:20px;}
 .alert{color:#D44B25;margin:0 10px;padding-bottom:20px;}
 .hidden{display:none;}
 #upload-to-pcs{text-align:center;padding:5em 0;}
+.page-navi{font-size:14px;text-align:center;background-color:#E62114;}
+.page-navi a{color:#fff;text-decoration:none;}
+#prev-page{padding:5px;}
+#next-page a{padding:5px;display:block;}
+#next-page a:hover{background-color:#1BA933;}
+#rename-file{width:118px;height:16px;line-height:16px;border:0;background:#fff;padding:0;}
 </style>
 <script>
 jQuery(function($){
@@ -109,9 +115,13 @@ jQuery(function($){
 		$insert_audio_count ++;
 		return $html;
 	}
-	$('#files-on-pcs div.can-select').click(function(){
-		var $file_type = $(this).attr('data-file-type');
-		$(this).toggleClass('selected');
+	
+	// 选择要插入的附件
+	$('#files-on-pcs div.can-select').live('click',function(e){
+		var $this = $(this),
+			$file_type = $this.attr('data-file-type');
+		if($('#rename-file').is(":visible"))return;
+		$this.toggleClass('selected');
 		if($file_type == 'file'){
 			$(this).toggleClass('selected-file');
 		}else if($file_type == 'video'){
@@ -120,6 +130,31 @@ jQuery(function($){
 			$(this).toggleClass('selected-audio');
 		}
 	});
+	// 调整图片信息
+	$('.selected .file-name').live('click',function(){
+		var $this = $(this),
+			$text = $this.text();
+		if($('#rename-file').is(":visible"))$text = $('#rename-file').val();
+		$this.html('<input type="text" value="'+$text+'" id="rename-file" />');
+		$('#rename-file').focus();
+	});
+	$('#rename-file').live('focusout',function(){
+		var $this = $('#rename-file'),
+			$fileName = $this.parent(),
+			$text = $this.val();
+		if($text==''){
+			$text = $fileName.parent().attr('data-file-name');
+		}else{
+			$fileName.parent().attr('data-file-name',$text);
+		}
+		$fileName.text($text);
+	}).live('keypress',function(e){
+		var e = document.all ? window.event : e;
+		if(e.keyCode == "13"){
+			$(this).trigger('focusout');
+		}
+	});
+	// 点击插入按钮
 	$('#insert-btn').click(function(){
 		if($('div.selected').length > 0){
 			var $image_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_image_perfix")); ?>',
@@ -180,9 +215,11 @@ jQuery(function($){
 			alert('没有选择任何附件');
 		}
 	});
+	// 点击关闭按钮
 	$('#close-btn').click(function(){
 		window.parent.tb_remove();
 	});
+	// 点击上传按钮
 	$('#upload-to-pcs-submit').click(function(){
 		var $upload_path = '<?php echo $dir_pcs_path; ?>/',
 			$file_name = $('#upload-to-pcs-input').val().match(/[^\/|\\]*$/)[0],
@@ -201,11 +238,14 @@ jQuery(function($){
 				$('#upload-to-pcs-window').load(function(){
 					$('#upload-to-pcs-refresh').removeClass('hidden');
 					$('#upload-to-pcs-processing').addClass('hidden');
+					var $href = window.location.href;
+					window.location.href = $href;
 					clearInterval($is_uploading);
-				});				
+				});
 			},500);
 		}
 	});
+	// 点击切换到上传面板
 	$('#show-upload-area').toggle(function(e){
 		e.preventDefault();
 		$('#files-on-pcs').hide();
@@ -217,10 +257,41 @@ jQuery(function($){
 		$('#upload-to-pcs').hide();
 		$(this).text('上传到这里');
 	});
+	// 点击下一页
+	$('#next-page a').live('click',function(e){
+		e.preventDefault();
+		var $this = $(this),
+			$href = $this.attr('href'),
+			$loading = $this.attr('data-loading');
+		if($loading=='true')return;
+		$.ajax({
+			url:$href,
+			dataType:'html',
+			beforeSend:function(){
+				$this.text('正在加载...');
+				$this.attr('data-loading','true');
+			},
+			success:function(data){
+				var getHtml = $(data),
+					getCode = $('<code></code>').append(getHtml),
+					getList = $('#files-on-pcs',getCode).html(),
+					getNextPage = $('#next-page',getCode),
+					nextPageLink = $('a',getNextPage).attr('href');
+				$('#files-on-pcs').append('<hr style="border:0;background:#ccc;height:2px;margin:10px 0;clear:both;" />' + getList);
+				if(nextPageLink != undefined){
+					$this.attr('href',nextPageLink);
+					$this.text('下一页');
+					$this.attr('data-loading','false');
+				}else{
+					$('#next-page').hide().remove();
+				}
+			}
+		});
+	});
 });
 </script>
 <div id="opt-on-pcs-tabs">
-	当前位置：<a href="<?php echo remove_query_arg('dir'); ?>">HOME</a><?php
+	当前位置：<a href="<?php echo remove_query_arg(array('dir','paged')); ?>">HOME</a><?php
 	if(isset($_GET['dir']) && !empty($_GET['dir'])){
 		$current_path = str_replace($root_dir,'',$dir_pcs_path);
 		$current_dir_string = array();
@@ -315,9 +386,9 @@ jQuery(function($){
 		if($link)echo '</a>';
 		echo '</div>';
 	}
-	echo '<div style="clear:both;"></div>';
 ?>
 </div>
+<div style="clear:both;"></div>
 <div id="upload-to-pcs" style="display:none;">
 	<form name="input" action="#" method="post" target="upload-to-pcs-window" enctype="multipart/form-data" id="upload-to-pcs-from">
 		<input type="file" name="select" id="upload-to-pcs-input" />
@@ -328,22 +399,28 @@ jQuery(function($){
 	<iframe name="upload-to-pcs-window" id="upload-to-pcs-window" style="display:none;"></iframe>
 </div>
 <div class="opt-area">
+	<?php
+	if($paged > 1){
+		echo '<p id="prev-page" class="page-navi">';
+		echo '<a href="'.remove_query_arg('paged').'">第一页</a> 
+		<a href="'.add_query_arg('paged',$paged-1).'">上一页</a>';
+		echo '</p>';
+	}
+	if($files_count >= $files_per_page)echo '<p id="next-page" class="page-navi"><a href="'.add_query_arg('paged',$paged+1).'">下一页</a><p>';
+	?>
 	<p>
 		<button id="insert-btn" class="button-primary">插入</button>
 		<button id="close-btn" class="button">关闭</button>
-		<?php if($paged > 1){
-			echo '<a href="'.remove_query_arg('paged').'">第一页</a> 
-			<a href="'.add_query_arg('paged',$paged-1).'">上一页</a>';
-		}?>
-		<?php if($files_count >= $files_per_page)echo '<a href="'.add_query_arg('paged',$paged+1).'">下一页</a>'; ?>
 		<?php if($app_key != 'false') : ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_pcs_path; ?>" target="_blank" class="button">管理</a><?php endif; ?>
-		<a href="" class="button">刷新</a>
-		<a href="<?php echo remove_query_arg('dir'); ?>" class="button">返回HOME</a>
+		<a href="" class="button" id="reflush">刷新</a>
+		<a href="javascript:void(0)" onclick="jQuery('#show-media-alert').toggle()" class="button">提示帮助</a>
+		<a href="javascript:void(0)" onclick="jQuery('html,body').animate({scrollTop:0},500)" class="button right">顶部</a>
 	</p>
 </div>
-<div class="alert">
+<div class="alert hidden" id="show-media-alert">
 	<p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
 	<p>本插件提供媒体通用前缀<?php echo get_option('wp_storage_to_pcs_media_perfix'); ?>，调用附件二进制流资源。</p>
+	<p>修改文件信息：选中文件之后，在原来的文件名上再点一次即可修改文件名。但修改只对这一次插入有效，并不真正修改文件数据。目前图片不能修改长宽信息，如果要修改长宽信息，先插入图片，然后再使用图片编辑功能修改。</p>
 	<?php if(get_option('wp_storage_to_pcs_outlink_type') == 200) : ?>
 	</p>有些大文件可能消耗巨大的流量，你可以使用直接外链来下载，你的网站的外链前缀是：<?php echo 'http://wp2pcs.duapp.com/media?'.$site_id.'+'.$access_token.'+path='.get_option('wp_storage_to_pcs_root_dir'); ?>，你可以再后面跟上附件在网盘中的位置，直接使用外链来获取附件。</p>
 	<?php endif; ?>
