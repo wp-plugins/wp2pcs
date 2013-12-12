@@ -29,8 +29,8 @@ function wp2pcs_video_shortcode($atts){
 	$height = $height ? $height : '480';
 	$stretch = $stretch ? $stretch : 'bestfit';
 
-	$player_id = time();
-	$player = '<div id="playercontainer_'.$player_id.'" class="wp2pcs-video"></div><script type="text/javascript">var player=cyberplayer("playercontainer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
+	$player_id = get_php_run_time();
+	$player = '<div id="videoplayer_'.$player_id.'" class="wp2pcs-video"></div><script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
 
 	return $player;
 }

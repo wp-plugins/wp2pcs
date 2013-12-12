@@ -157,12 +157,12 @@ jQuery(function($){
 					}
 					$html += insert_video_into_editor($video_src,$video_cover);
 					*/
-					$html += '[video src="'+$video_src+'" cover="" width="" height="" stretch=""]';
+					$html += '[video src="'+$video_src+'" cover="" width="640" height="480" stretch="bestfit"]';
 				}
 				// 如果被选择的是音乐，使用音频播放器
 				else if($file_type == 'audio'){
 					/*$html += insert_audio_into_editor($audio_src,$file_name);*/
-					$html += '[audio src="'+$audio_src+'" name="'+$file_name+'" autostart="" loop=""]';
+					$html += '[audio src="'+$audio_src+'" name="'+$file_name+'" autostart="0" loop="no"]';
 				}
 				// 如果是其他文件，就直接给下载链接
 				else{

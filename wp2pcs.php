@@ -23,7 +23,6 @@ Author URI: http://www.utubon.com
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // 初始化固定值常量
@@ -40,13 +39,13 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 // 经过判断或函数运算才能进行定义的常量
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_access_token'));
 define('IS_WP2PCS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
+if(!defined('WP_CONTENT_DIR')){
+	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
+}
 if(get_option('wp_to_pcs_debug') == '开启调试'){
 	define('WP2PCS_DEBUG',true);
 }else{
 	define('WP2PCS_DEBUG',false);
-}
-if(!defined('WP_CONTENT_DIR')){
-	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
 }
 
 // 开启调试模式
@@ -94,8 +93,6 @@ function wp2pcs_plugin_deactivate(){
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
 	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
-	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_delete_file_offline'))
-		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_delete_file_offline');
 	// 删除定时备份的按钮信息
 	delete_option('wp_backup_to_pcs_future');
 }

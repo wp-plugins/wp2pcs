@@ -12,7 +12,6 @@
 add_filter('cron_schedules','wp2pcs_more_reccurences');
 function wp2pcs_more_reccurences(){
 	return array(
-		'halfdly' => array('interval' => 3600*12, 'display' => 'Once half a day'),
 		'daily' => array('interval' => 3600*24, 'display' => 'Once a day'),
 		'doubly' => array('interval' => 3600*24*2, 'display' => 'Once two days'),
 		'weekly' => array('interval' => 3600*24*7, 'display' => 'Once a week'),
@@ -175,8 +174,6 @@ function wp_backup_to_pcs_action(){
 					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
 				if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
 					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
-				if(wp_next_scheduled('wp_backup_to_pcs_corn_task_delete_file_offline'))
-					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_delete_file_offline');
 			}
 		}
 		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))));
