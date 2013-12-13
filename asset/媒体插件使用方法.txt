@@ -7,7 +7,7 @@ var player = cyberplayer("playercontainer_最好是数字ID").setup({
     width:640,
     height:480,
     backcolor:"#FFFFFF",
-    stretching:"uniform",
+    stretching:"uniform", // uniform,fill,exactfit,bestfit,none
     file:"http://yourdomain.com/media/test.m3u8",
     image:"封面图片",
     autoStart:!1,

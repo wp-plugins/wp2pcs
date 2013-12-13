@@ -123,6 +123,15 @@ function wp_storage_print_audio(){
 	// 获取外链方式
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	
+	// 防盗链
+	if(isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],home_url())!==0 && get_option('wp_storage_to_pcs_outlink_protact')){
+		header("Content-Type: text/html; charset=utf-8");
+		echo '防盗链！ ';
+		echo '<a href="'.$current_uri.'">原音频</a> ';
+		echo '<a href="'.home_url('/').'">首页</a>';
+		exit;
+	}
+
 	if($outlink_type == '200' && !WP2PCS_AUDIO_HD){
 		// 考虑到流量问题，必须增加缓存能力
 		set_php_ini('timezone');

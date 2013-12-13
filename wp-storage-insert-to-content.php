@@ -56,10 +56,11 @@ function wp_storage_to_pcs_media_tab_box() {
 	$app_key = get_option('wp_to_pcs_app_key');
 ?>
 <style>
+html,body{background-color:#fff;}
 #opt-on-pcs-tabs{padding:2em 1em 1em 1em;border-bottom:1px solid #dedede;margin-bottom:1em;font-size:1.1em;}
 #files-on-pcs{margin:10px;}
 .file-on-pcs{width:120px;height:120px;overflow:hidden;float:left;margin:5px;padding:2px;}
-.file-thumbnail{width:120px;height:96px;overflow:hidden;background-color:#f1f1f1;}
+.file-thumbnail{width:120px;height:96px;overflow:hidden;background-color:#ccc;}
 .file-type-dir .file-thumbnail{background-color:#FDCE5F;}
 .file-type-video .file-thumbnail{background-color:#000000;}
 .file-type-audio .file-thumbnail{background-color:#8A285C;}
@@ -251,11 +252,13 @@ jQuery(function($){
 		$('#files-on-pcs').hide();
 		$('#upload-to-pcs').show();
 		$(this).text('返回列表');
+		$('#next-page,#prev-page,#opt-area').hide();
 	},function(e){
 		e.preventDefault();
 		$('#files-on-pcs').show();
 		$('#upload-to-pcs').hide();
 		$(this).text('上传到这里');
+		$('#next-page,#prev-page,#opt-area').show();
 	});
 	// 点击下一页
 	$('#next-page a').live('click',function(e){
@@ -398,7 +401,7 @@ jQuery(function($){
 	</form>
 	<iframe name="upload-to-pcs-window" id="upload-to-pcs-window" style="display:none;"></iframe>
 </div>
-<div class="opt-area">
+<div class="opt-area" id="opt-area">
 	<?php
 	if($paged > 1){
 		echo '<p id="prev-page" class="page-navi">';
