@@ -98,6 +98,7 @@ class BaiduPCS {
 		$url = $this->_pcs_uri_prefixs ['https'] . $apiMethod . ($method == 'GET' ? '&' . $params : '');
 
 		$requestCore = new RequestCore ();
+
 		$requestCore->set_request_url ( $url );
 
 		$requestCore->set_method ( $method );
@@ -111,6 +112,30 @@ class BaiduPCS {
 
 		$requestCore->send_request ();
 		$result = $requestCore->get_response_body ();
+		
+
+		// 如果使用百度的SDK REQUEST无法抓取的话，试试原生的curl抓取
+		$result_check = json_decode($result);
+		if(!$result || !$result_check || isset($result_check->error_code)){
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_HEADER,1);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+			if($method == 'POST'){
+				curl_setopt($ch,CURLOPT_POST,1);
+				curl_setopt($ch,CURLOPT_POSTFIELDS,$params);
+			}
+			if(!empty($headers)){
+				foreach($headers as $key => $value){
+					$headers[$key] = $key.':'.addslashes($value);
+				}
+				curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
+			}
+			curl_setopt($ch,CURLOPT_HEADER,0);
+			curl_setopt($ch,CURLOPT_NOBODY,0);
+			$result = curl_exec($ch);
+			curl_close($ch);
+		}
 
 		return $result;
 	}
