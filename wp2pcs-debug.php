@@ -209,6 +209,11 @@
 	}
 
 	echo "7.图片最终路径为 $image_path ，附件访问方式为： $outlink_type <br />";
+	if(get_option('wp_storage_to_pcs_outlink_protact')){
+		echo "8.防盗链功能已开启<br />";
+	}else{
+		echo "8.没有开启防盗链，任何人都可以使用你的附件<br />";
+	}
 	echo "<b>如果你能看到这里，说明你的图片（也包括其他附件）应该是可以正常显示的。</b>";
 
 	// 结束调试
