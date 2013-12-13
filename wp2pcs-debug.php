@@ -29,13 +29,19 @@
 	$plugin_data = get_plugin_data(WP2PCS_PLUGIN_NAME);
 	$plugin_version = $plugin_data['Version'];
 	$version = WP2PCS_PLUGIN_VER;
-	echo "你当前使用的是开发者版 版本号：$plugin_version 最后更新时间：$version <br />";
+	$user_type = get_option('wp_to_pcs_app_key')==='false'?'托管在WP2PCS官方':'保存在自己的网盘';
+	echo "你当前使用的是个人标准版 [$user_type] 版本号：$plugin_version 最后更新时间：$version <br />";
 
 	// 首先检查php环境
 	echo "你的网站搭建在 ".PHP_OS." 操作系统的服务器上<br />";
 	$software = get_blog_install_software();
 	echo "你的网站运行在 $software 服务器上，不同的服务器重写功能会对插件的运行有影响<br />";
 	echo "当前的php版本为 ".PHP_VERSION."<br />";
+	if(class_exists('ZipArchive')){
+		echo "你的PHP支持ZipArchive类，可以正常打包压缩<br />";
+	}else{
+		echo "你的PHP不支持ZipArchive类，整站备份功能不可用<br />";
+	}
 
 	// 检查是否安装在子目录
 	$install_in_subdir = get_blog_install_in_subdir();
@@ -108,12 +114,14 @@
 	$quota = json_decode($pcs->getQuota());
 	if(!$pcs || !$quota || isset($quota->error_code)){
 		if(get_option('wp_to_pcs_site_id')){
-			echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良！</b></p>';
+			echo '连接失败，有可能和百度网盘通信不良！<br />';
 		}else{
-			echo '<p style="color:red;"><b>授权失败，无法连接到百度网盘，点击“更新授权”再授权！</b></p>';
+			echo '授权失败，无法连接到百度网盘，点击“更新授权”再授权！<br />';
 		}
+	}elseif(get_option('wp_to_pcs_app_key')!=='false'){
+		echo '连接成功！当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。<br />';
 	}else{
-		echo '百度PCS授权成功';
+		echo "连接百度网盘成功！<br />";
 	}
 
 	echo "<br /><br />目前该测试文件只在linux appache上通过测试，如果你使用的是win主机，或者其他主机，请与我联系。<br /><br />";
