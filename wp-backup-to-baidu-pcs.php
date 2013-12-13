@@ -266,6 +266,30 @@ function wp_backup_to_pcs_send_single_file($local_path,$remote_dir){
 	@unlink($local_path);
 }
 
+// 每天早上6:30定时清理可能由于备份失败导致的文件未删除的文件
+function wp_backup_to_pcs_clear_files_task(){
+	$run_time = date('Y-m-d 06:30');
+	if($run_time < date('Y-m-d H:i:s')){
+		$run_time = date('Y-m-d '.$run_time.':00',strtotime('+1 day'));				
+	}else{
+		$run_time = date('Y-m-d '.$run_time.':00');
+	}
+	$run_time = strtotime($run_time);	
+	wp_schedule_event($run_time,'daily','wp_backup_to_pcs_corn_task_clear_files');
+	add_action('wp_backup_to_pcs_corn_task_clear_files','wp_backup_to_pcs_corn_task_function_clear_files');
+}
+function wp_backup_to_pcs_corn_task_function_clear_files(){
+	$zip_dir = trailingslashit(WP_CONTENT_DIR);
+	$zip_www = $zip_dir.'www.zip';
+	$zip_logs = $zip_dir.'logs.zip';
+	$zip_database = $zip_dir.'database.sql';
+	$zip_all = $_SERVER['SERVER_NAME'].'_backup_by_wp2pcs.zip';
+	if(file_exists($zip_www))@unlink($zip_www);
+	if(file_exists($zip_logs))@unlink($zip_logs);
+	if(file_exists($zip_database))@unlink($zip_database);
+	if(file_exists($zip_all))@unlink($zip_all);
+}
+
 // 超大文件分片上传函数
 function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_size){
 	$access_token = WP2PCS_APP_TOKEN;
@@ -273,15 +297,17 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$file_blocks = array();//分片上传文件成功后返回的md5值数组集合
 	$file_name = basename($local_path);
 	
-	// 使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-	$result = $pcs->addOfflineDownloadTask(trailingslashit($remote_dir),home_url('/wp-content/'.$file_name),1024*1024,3600,'');
-	$result = json_decode($result,true);
-	if(!isset($result['error_msg'])){
-		return;
-	}
-	// 离线下载之后增加一个定时任务，将打包文件删除
-	set_php_ini('timezone');
-	wp_schedule_single_event(time()+3600,'wp_backup_to_pcs_corn_task_delete_file_offline');
+	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
+	if(filesize($local_path) > 200*1024*1024):
+		$result = $pcs->addOfflineDownloadTask(trailingslashit($remote_dir),home_url('/wp-content/'.$file_name),10*1024*1024,2*3600,'');
+		$result = json_decode($result,true);
+		if(!isset($result['error_msg'])){
+			return;
+		}
+		// 离线下载之后增加一个定时任务，将打包文件删除
+		set_php_ini('timezone');
+		wp_schedule_single_event(time()+(2*3600),'wp_backup_to_pcs_corn_task_delete_file_offline');
+	endif;
 	
 	// 如果离线下载功能失效，那么就接着往下执行
 	$handle = @fopen($local_path,'rb');

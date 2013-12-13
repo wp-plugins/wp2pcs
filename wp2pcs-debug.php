@@ -17,12 +17,6 @@
 	// 输出文字
 	header("Content-Type: text/html; charset=utf-8");
 	
-	// 测试session是否可以用
-	session_start();
-	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
-	session_destroy();
-	
-	// 输出当前插件信息
 	if(!function_exists('get_plugin_data')){
 		include(ABSPATH.'wp-admin/includes/plugin.php');
 	}
@@ -32,6 +26,11 @@
 	$user_type = get_option('wp_to_pcs_app_key')==='false'?'托管在WP2PCS官方':'保存在自己的网盘';
 	echo "你当前使用的是个人标准版 [$user_type] 版本号：$plugin_version 最后更新时间：$version <br />";
 
+	// 测试session是否可以用
+	session_start();
+	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
+	session_destroy();
+	
 	// 首先检查php环境
 	echo "你的网站搭建在 ".PHP_OS." 操作系统的服务器上<br />";
 	$software = get_blog_install_software();
@@ -40,8 +39,9 @@
 	if(class_exists('ZipArchive')){
 		echo "你的PHP支持ZipArchive类，可以正常打包压缩<br />";
 	}else{
-		echo "你的PHP不支持ZipArchive类，整站备份功能不可用<br />";
+		echo "PHP不存在ZipArchive类，不能正常备份网站的文件<br />";
 	}
+	
 
 	// 检查是否安装在子目录
 	$install_in_subdir = get_blog_install_in_subdir();
@@ -63,6 +63,22 @@
 	if(is_multisite()){
 		echo "你的WordPress开启了群站（多站点），可能不能充分发挥本插件的功能，使用如出现问题请及时反馈<br />";
 	}
+
+	// 测试创建文件及其相关
+	$file = trailingslashit(WP_CONTENT_DIR).'wp2pcs-debug.txt';
+	$handle = fopen($file,"w+");
+	$words_count = fwrite($handle,'你的服务器支持创建和写入文件');
+	if($words_count > 0){
+		echo "创建和写入文件成功，你的服务器支持文件创建和写入<br />";
+	}
+	$file_content = fread($handle,10);
+	$read_over = feof($handle);
+	if($file_content){
+		echo "读取文件成功，你的服务器支持文件读取<br />";
+		echo "读取结果为 $read_over ";
+	}
+	fclose($handle);
+	unlink($file);
 
 	// 检查content目录的写入权限
 	if(DIRECTORY_SEPARATOR=='/' && @ini_get("safe_mode")==FALSE){
@@ -93,35 +109,17 @@
 		echo "不存在crossdomain.xml文件，网盘中的视频将不能被正常播放<br />";
 	}
 
-	// 测试创建文件及其相关
-	$file = trailingslashit(WP_CONTENT_DIR).'wp2pcs-debug.txt';
-	$handle = fopen($file,"w+");
-	$words_count = fwrite($handle,'你的服务器支持创建和写入文件');
-	if($words_count > 0){
-		echo "创建和写入文件成功，你的服务器支持文件创建和写入<br />";
-	}
-	$file_content = fread($handle,10);
-	$read_over = feof($handle);
-	if($file_content){
-		echo "读取文件成功，你的服务器支持文件读取<br />";
-		echo "读取结果为 $read_over ";
-	}
-	fclose($handle);
-	unlink($file);
-
 	// 检查是否授权通过
 	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 	$quota = json_decode($pcs->getQuota());
 	if(!$pcs || !$quota || isset($quota->error_code)){
 		if(get_option('wp_to_pcs_site_id')){
-			echo '连接失败，有可能和百度网盘通信不良！<br />';
+			echo '<p style="color:red;"><b>连接失败，有可能你的网站服务器和百度PCS通信不良！</b></p>';
 		}else{
-			echo '授权失败，无法连接到百度网盘，点击“更新授权”再授权！<br />';
+			echo '<p style="color:red;"><b>授权失败，无法连接到百度网盘，点击“更新授权”再授权！</b></p>';
 		}
-	}elseif(get_option('wp_to_pcs_app_key')!=='false'){
-		echo '连接成功！当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。<br />';
 	}else{
-		echo "连接百度网盘成功！<br />";
+		echo '百度PCS授权成功';
 	}
 
 	echo "<br /><br />目前该测试文件只在linux appache上通过测试，如果你使用的是win主机，或者其他主机，请与我联系。<br /><br />";
@@ -217,11 +215,6 @@
 	}
 
 	echo "7.图片最终路径为 $image_path ，附件访问方式为： $outlink_type <br />";
-	if(get_option('wp_storage_to_pcs_outlink_protact')){
-		echo "8.防盗链功能已开启<br />";
-	}else{
-		echo "8.没有开启防盗链，任何人都可以使用你的附件<br />";
-	}
 	echo "<b>如果你能看到这里，说明你的图片（也包括其他附件）应该是可以正常显示的。</b>";
 
 	// 结束调试

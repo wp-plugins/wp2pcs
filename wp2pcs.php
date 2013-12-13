@@ -93,6 +93,8 @@ function wp2pcs_plugin_deactivate(){
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
 	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
 		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_clear_files'))
+		wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_clear_files');
 	// 删除定时备份的按钮信息
 	delete_option('wp_backup_to_pcs_future');
 }
@@ -203,6 +205,24 @@ function wp_to_pcs_pannel(){
 				<p class="tishi hidden">请及时关注<a href="http://wp2pcs.duapp.com">WP2PCS官方</a>发布的信息，如果官方通知要更新授权时，请及时更新授权，否则可能不能使用本插件。</p>
 				<?php if($app_key === 'false') : ?><p>你当前使用的是托管到WP2PCS的服务，如果你已经拥有了自己的网盘，不妨更新授权。但需要注意的是，目前WP2PCS还没有开发一键转移功能，所以这些附件只能通过申请后邮件发送给你。</p><?php endif; ?>
 				<p class="tishi hidden" id="wp2pcs-information-pend">更新授权前请注意：1、更新后老的授权信息会被直接删除；2、如果你开启了定时备份，请先关闭。</p>
+				<?php
+					// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
+					$access_token = WP2PCS_APP_TOKEN;
+					$pcs = new BaiduPCS($access_token);
+					$quota = json_decode($pcs->getQuota());
+					if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
+						if(get_option('wp_to_pcs_site_id')){
+							echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良！</b></p>';
+						}else{
+							echo '<p style="color:red;"><b>可能由于授权问题，你的网站无法连接到百度网盘，点击“更新授权”再授权！</b></p>';				
+						}
+					}elseif($app_key != 'false'){
+						echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
+					}
+					if(get_php_run_time() > 15){
+						echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了15秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。为了找到缓解该问题的办法，你可以联系我们获得更高级别的服务。</p>';
+					}
+				?>
 				<p>
 					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
 					<input type="submit" name="wp_to_pcs_debug" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" onclick="if(!confirm('开启调试模式之后，前台将不能正常访问，而是会进入调试模式。是否确定？'))return false;"/>
@@ -215,31 +235,6 @@ function wp_to_pcs_pannel(){
 		</div>
 		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
 		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
-		<div id="wp2pcs-information">
-		<?php
-			// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
-			$access_token = WP2PCS_APP_TOKEN;
-			$pcs = new BaiduPCS($access_token);
-			$quota = json_decode($pcs->getQuota());
-			if(!$pcs || !$quota || isset($quota->error_code) || $quota->error_code){
-				if(get_option('wp_to_pcs_site_id')){
-					echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良！</b></p>';
-				}else{
-					echo '<p style="color:red;"><b>可能由于授权问题，你的网站无法连接到百度网盘，点击“更新授权”再授权！</b></p>';				
-				}
-			}elseif($app_key != 'false'){
-				echo '<p>当前网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。请注意合理使用。</p>';
-			}
-			if(get_php_run_time() > 15){
-				echo '<p style="color:red;font-weight:bold;">你当前的服务器和百度PCS连接的时间竟然超过了15秒，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。</p>';
-			}
-		?>
-		</div>
-		<script>
-		jQuery(function($){
-			$('#wp2pcs-information').insertAfter('#wp2pcs-information-pend');
-		});
-		</script>
 	<?php endif; ?>
 		<div class="postbox">
 			<h3>说明 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
