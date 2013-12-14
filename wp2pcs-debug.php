@@ -10,6 +10,12 @@
 		return;
 	}
 
+	// 查看服务器信息
+	if(isset($_GET['phpinfo'])){
+		phpinfo();
+		exit;
+	}
+
 	// 显示运行错误
 	error_reporting(E_ALL); 
 	ini_set("display_errors", 1);
@@ -41,6 +47,7 @@
 	}else{
 		echo "PHP不存在ZipArchive类，不能正常备份网站的文件<br />";
 	}
+	echo '<a href="?phpinfo" target="_blank">点击查看PHPINFO</a><br />';
 	
 
 	// 检查是否安装在子目录
