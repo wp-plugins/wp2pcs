@@ -90,8 +90,8 @@ function wp_storage_download_file(){
 			exit;
 		}
 		// 打印图片到浏览器
-		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
-		$result = $pcs->download($file_path);
+		global $baidupcs;
+		$result = $baidupcs->download($file_path);
 
 		$meta = json_decode($result,true);
 		if(isset($meta['error_msg'])){
@@ -107,10 +107,14 @@ function wp_storage_download_file(){
 		echo $result;
 		session_destroy();
 		exit;
-	}else{
+	}elseif($outlink_type == '302'){
 		$site_id = get_option('wp_to_pcs_site_id');
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$download_link = 'http://wp2pcs.duapp.com/dl?'.$site_id.'+'.$access_token.'+path='.$file_path;
+		header('Location:'.$download_link);
+		exit;
+	}else{
+		$download_link = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$file_path;
 		header('Location:'.$download_link);
 		exit;
 	}

@@ -147,8 +147,8 @@ function wp_storage_print_video(){
 			exit;
 		}
 		// 打印视频m3u8到浏览器
-		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
-		$result = $pcs->streaming($video_path,'M3U8_854_480');
+		global $baidupcs;
+		$result = $baidupcs->streaming($video_path,'M3U8_854_480');
 
 		$meta = json_decode($result,true);
 		if(isset($meta['error_msg'])){
@@ -161,10 +161,14 @@ function wp_storage_print_video(){
 		echo $result;
 		session_destroy();
 		exit;
-	}else{
+	}elseif($outlink_type == '302' || WP2PCS_VIDEO_HD){
 		$site_id = get_option('wp_to_pcs_site_id');
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$video_outlink = 'http://wp2pcs.duapp.com/v?'.$site_id.'+'.$access_token.'+path='.$video_path.'.m3u8';
+		header('Location:'.$video_outlink);
+		exit;
+	}else{
+		$video_outlink = "https://pcs.baidu.com/rest/2.0/pcs/file?method=streaming&access_token=".WP2PCS_APP_TOKEN."&path=$video_path&type=M3U8_854_480";
 		header('Location:'.$video_outlink);
 		exit;
 	}

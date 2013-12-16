@@ -145,8 +145,8 @@ function wp_storage_print_audio(){
 			exit;
 		}
 		// 打印音乐到浏览器
-		$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
-		$result = $pcs->downloadStream($audio_path);
+		global $baidupcs;
+		$result = $baidupcs->downloadStream($audio_path);
 		
 		$meta = json_decode($result,true);
 		if(isset($meta['error_msg'])){
@@ -163,10 +163,14 @@ function wp_storage_print_audio(){
 		echo $result;
 		session_destroy();
 		exit;
-	}else{
+	}elseif($outlink_type == '302' && !WP2PCS_AUDIO_HD){
 		$site_id = get_option('wp_to_pcs_site_id');
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$audio_outlink = 'http://wp2pcs.duapp.com/music?'.$site_id.'+'.$access_token.'+path='.$audio_path;
+		header('Location:'.$audio_outlink);
+		exit;
+	}else{
+		$audio_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$audio_path;
 		header('Location:'.$audio_outlink);
 		exit;
 	}

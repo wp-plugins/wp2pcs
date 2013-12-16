@@ -3,15 +3,15 @@
 // 获取目录下的文件列表，注意，参数$path末尾最好不要带/
 function get_files_in_dir($path){
 	set_php_ini('limit');
-	if(!file_exists($path) || !is_dir($path)){
+	global $file_list;// 这个地方貌似有漏洞，因为之前没有声明过这个参数，这样做是否合理？
+	// 经过验证，确实会遇到这个问题，即如果我两次使用get_files_in_dir函数，那么第一次中保存的$file_list将仍然存在，所以，在第一次使用完get_files_in_dir函数之后，一定要先把$file_list清空才可以。
+	if(!file_exists(trim($path)) || !is_dir($path)){
 		return null;
 	}
 	$dir = opendir($path);
-	global $file_list;// 这个地方貌似有漏洞，因为之前没有声明过这个参数，这样做是否合理？
-	// 经过验证，确实会遇到这个问题，即如果我两次使用get_files_in_dir函数，那么第一次中保存的$file_list将仍然存在，所以，在第一次使用完get_files_in_dir函数之后，一定要先把$file_list清空才可以。
 	while($file = readdir($dir)){
 		if($file == '.' || $file == '..')continue;
-		$file_list[] = $path.'/'.$file;
+		$file_list[] = realpath($path.'/'.$file);
 		if(is_dir($path.'/'.$file)){
 			get_files_in_dir($path.'/'.$file);
 		}
@@ -35,11 +35,11 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 	if(empty($zip_local_paths)){
 		return null;
 	}
-	if(file_exists($zip_file_path)){
+	if(file_exists(trim($zip_file_path))){
 		@unlink($zip_file_path);
 	}
 	if(!is_array($zip_local_paths)){
-		if(is_string($zip_local_paths) && (is_file($zip_local_paths) || is_dir($zip_local_paths))){
+		if(is_string($zip_local_paths) && (is_file(trim($zip_local_paths)) || is_dir($zip_local_paths))){
 			$zip_local_paths = array($zip_local_paths);
 		}else{
 			return false;
@@ -56,7 +56,7 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 		$zip_local_path = str_replace('{year}',date('Y'),$zip_local_path);
 		$zip_local_path = str_replace('{month}',date('m'),$zip_local_path);
 		$zip_local_path = str_replace('{day}',date('d'),$zip_local_path);
-		if(!file_exists($zip_local_path)){
+		if(!file_exists(trim($zip_local_path))){
 			continue;
 		}
 		if(is_dir($zip_local_path)){
@@ -66,11 +66,11 @@ function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 				$file_rename = str_replace($remove_path,'',$file);
 				if(is_dir($file)){
 					$zip->addEmptyDir($file_rename);
-				}elseif(is_file($file)){
+				}elseif(is_file(trim($file))){
 					$zip->addFile($file,$file_rename);
 				}
 			}
-		}elseif(is_file($zip_local_path)){
+		}elseif(is_file(trim($zip_local_path))){
 			$file_rename = str_replace($remove_path,'',$zip_local_path);
 			$zip->addFile($zip_local_path,$file_rename);
 		}

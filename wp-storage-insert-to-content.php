@@ -47,7 +47,6 @@ function wp_storage_to_pcs_media_iframe_remove_actions(){
 function wp_storage_to_pcs_media_tab_box() {
 	// 当前路径相关信息
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');	
-	$access_token = WP2PCS_APP_TOKEN;
 	if(isset($_GET['dir']) && !empty($_GET['dir'])){
 		$dir_pcs_path = $_GET['dir'];
 	}else{
@@ -425,7 +424,7 @@ jQuery(function($){
 	<p>本插件提供媒体通用前缀<?php echo get_option('wp_storage_to_pcs_media_perfix'); ?>，调用附件二进制流资源。</p>
 	<p>修改文件信息：选中文件之后，在原来的文件名上再点一次即可修改文件名。但修改只对这一次插入有效，并不真正修改文件数据。目前图片不能修改长宽信息，如果要修改长宽信息，先插入图片，然后再使用图片编辑功能修改。</p>
 	<?php if(get_option('wp_storage_to_pcs_outlink_type') == 200) : ?>
-	</p>有些大文件可能消耗巨大的流量，你可以使用直接外链来下载，你的网站的外链前缀是：<?php echo 'http://wp2pcs.duapp.com/media?'.$site_id.'+'.$access_token.'+path='.get_option('wp_storage_to_pcs_root_dir'); ?>，你可以再后面跟上附件在网盘中的位置，直接使用外链来获取附件。</p>
+	</p>有些大文件可能消耗巨大的流量，你可以使用直接外链来下载，你的网站的外链前缀是：<?php echo 'http://wp2pcs.duapp.com/media?'.$site_id.'+'.substr(WP2PCS_APP_TOKEN,0,10).'+path='.get_option('wp_storage_to_pcs_root_dir'); ?>，你可以再后面跟上附件在网盘中的位置，直接使用外链来获取附件。</p>
 	<?php endif; ?>
 	<p>本插件的本地上传功能比较弱，会极大的消耗服务器资源。请在网盘中上传（客户端或网页端都可以），完成之后请点击刷新按钮以查看新上传的文件。</p>
 	<p>使用流式文件的实例，用下面的代码来播放flv视频：<?php esc_html_e('<embed src="'.plugins_url( 'asset/flv.swf',WP2PCS_PLUGIN_NAME).'" allowfullscreen="true" isautoplay="0" flashvars="vcastr_file='.wp2pcs_media_src('test.flv').'" quality="high" type="application/x-shockwave-flash" width="500" height="400"></embed>'); ?></p>
@@ -435,11 +434,10 @@ jQuery(function($){
 }
 // 用一个函数来列出PCS中某个目录下的所有文件（夹）
 function wp_storage_to_pcs_media_list_files($dir_pcs_path,$limit){
-	$access_token = WP2PCS_APP_TOKEN;
+	global $baidupcs;
 	$order_by = 'time';
 	$order = 'desc';
-	$pcs = new BaiduPCS($access_token);
-	$results = $pcs->listFiles($dir_pcs_path,$order_by,$order,$limit);
+	$results = $baidupcs->listFiles($dir_pcs_path,$order_by,$order,$limit);
 	$results = json_decode($results);
 	$results = $results->list;
 	return $results;
@@ -447,15 +445,9 @@ function wp_storage_to_pcs_media_list_files($dir_pcs_path,$limit){
 // 用一个函数来显示这些文件（或目录）
 function wp_storage_to_pcs_media_thumbnail($file_pcs_path,$width = 120,$height = 1600,$quality = 100){
 	$app_key = get_option('wp_to_pcs_app_key');
-	$access_token = WP2PCS_APP_TOKEN;
 	// 使用直链，有利于快速显示图片
-	$image_outlink_per = trim(get_option('wp_storage_to_pcs_image_perfix'));
+	$image_outlink_per = get_option('wp_storage_to_pcs_image_perfix');
 	$file_pcs_path = str_replace(trailingslashit(get_option('wp_storage_to_pcs_root_dir')),'/',$file_pcs_path);
 	$thumbnail = home_url('/'.$image_outlink_per.$file_pcs_path);
-	// 原本想使用外链，以节省流量
-	/**
-	$thumbnail = 'https://pcs.baidu.com/rest/2.0/pcs/thumbnail?method=generate&access_token='.$access_token.'&path='.$file_pcs_path.'&quality='.$quality.'&width='.$width.'&height='.$height;
-	}
-	**/
 	return $thumbnail;
 }

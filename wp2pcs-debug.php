@@ -23,6 +23,13 @@
 	// 输出文字
 	header("Content-Type: text/html; charset=utf-8");
 	
+
+	// 测试session是否可以用
+	session_start();
+	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
+	session_destroy();
+	
+	// 输出当前插件信息
 	if(!function_exists('get_plugin_data')){
 		include(ABSPATH.'wp-admin/includes/plugin.php');
 	}
@@ -31,12 +38,7 @@
 	$version = WP2PCS_PLUGIN_VER;
 	$user_type = get_option('wp_to_pcs_app_key')==='false'?'托管在WP2PCS官方':'保存在自己的网盘';
 	echo "你当前使用的是个人标准版 [$user_type] 版本号：$plugin_version 最后更新时间：$version <br />";
-
-	// 测试session是否可以用
-	session_start();
-	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
-	session_destroy();
-	
+		
 	// 首先检查php环境
 	echo "你的网站搭建在 ".PHP_OS." 操作系统的服务器上<br />";
 	$software = get_blog_install_software();
@@ -110,16 +112,16 @@
 	if($install_in_subdir){
 		$domain_root = str_replace_last($install_in_subdir,'',$install_root);
 	}
-	if(file_exists($domain_root.'crossdomain.xml')){
+	if(file_exists(trim($domain_root).'crossdomain.xml')){
 		echo "存在crossdomain.xml，<a href='http://".$_SERVER['SERVER_NAME']."/crossdomain.xml' target='_blank'>检查一下它是否可以被正常访问</a>，并显示出xml结果<br />";
 	}else{
-		echo "不存在crossdomain.xml文件，网盘中的视频将不能被正常播放<br />";
+		echo "不存在<a href='http://".$_SERVER['SERVER_NAME']."/crossdomain.xml' target='_blank'>crossdomain.xml</a>文件，网盘中的视频将不能被正常播放<br />";
 	}
 
 	// 检查是否授权通过
-	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
-	$quota = json_decode($pcs->getQuota());
-	if(!$pcs || !$quota || isset($quota->error_code)){
+	global $baidupcs;
+	$quota = json_decode($baidupcs->getQuota());
+	if(!$baidupcs || !$quota || isset($quota->error_code)){
 		if(get_option('wp_to_pcs_site_id')){
 			echo '<p style="color:red;"><b>连接失败，有可能你的网站服务器和百度PCS通信不良！</b></p>';
 		}else{
@@ -222,6 +224,11 @@
 	}
 
 	echo "7.图片最终路径为 $image_path ，附件访问方式为： $outlink_type <br />";
+	if(get_option('wp_storage_to_pcs_outlink_protact')){
+		echo "8.防盗链功能已开启<br />";
+	}else{
+		echo "8.没有开启防盗链，任何人都可以使用你的附件<br />";
+	}
 	echo "<b>如果你能看到这里，说明你的图片（也包括其他附件）应该是可以正常显示的。</b>";
 
 	// 结束调试

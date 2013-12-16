@@ -97,6 +97,11 @@ class BaiduPCS {
 
 		$url = $this->_pcs_uri_prefixs ['https'] . $apiMethod . ($method == 'GET' ? '&' . $params : '');
 
+		/*
+		 * 如果由于网速或其他原因造成连接极慢，那么就不使用SDK的请求，直接使用原生的CURL
+		 * 但原生的CURL可能没有SDK的兼容性好
+		 */
+		if(!get_option('wp2pcs_connect_too_slow')){
 		$requestCore = new RequestCore ();
 
 		$requestCore->set_request_url ( $url );
@@ -112,11 +117,12 @@ class BaiduPCS {
 
 		$requestCore->send_request ();
 		$result = $requestCore->get_response_body ();
-		
-
+		} // end if 1
+		// 下面开始使用原生的CURL
+		else{
 		// 如果使用百度的SDK REQUEST无法抓取的话，试试原生的curl抓取
-		$result_check = json_decode($result);
-		if(!$result || !$result_check || isset($result_check->error_code)){
+		//$result_check = json_decode($result);
+		//if(!$result || !$result_check || isset($result_check->error_code)){
 			$ch = curl_init();
 			curl_setopt($ch,CURLOPT_URL,$url);
 			curl_setopt($ch,CURLOPT_HEADER,1);
@@ -135,7 +141,8 @@ class BaiduPCS {
 			curl_setopt($ch,CURLOPT_NOBODY,0);
 			$result = curl_exec($ch);
 			curl_close($ch);
-		}
+		//}
+		} // end if 2
 
 		return $result;
 	}
@@ -159,7 +166,7 @@ class BaiduPCS {
 	 * @param boolean $isCreateSuperFile 是否分片上传
 	 * @return string
 	 */
-	public function upload($fileContent, $targetPath, $fileName, $newFileName = null, $isCreateSuperFile = FALSE) {
+	public function upload($fileContent, $targetPath, $fileName, $newCopy = false, $isCreateSuperFile = FALSE) {
 		$boundary = md5 ( time () );
 		$postContent .= "--" . $boundary . "\r\n";
 		$postContent .= "Content-Disposition: form-data; name=\"file\"; filename=\"{$fileName}\"\r\n";
@@ -167,7 +174,7 @@ class BaiduPCS {
 		$postContent .= $fileContent . "\r\n";
 		$postContent .= "--" . $boundary . "\r\n";
 
-		$requestStr = 'file?method=upload&path=' . urlencode ( $targetPath . (empty ( $newFileName ) ? $fileName : $newFileName) ) . '&access_token=' . $this->_accessToken;
+		$requestStr = 'file?method=upload&path='.urlencode($targetPath.$fileName).'&access_token='.$this->_accessToken.'&ondup='.($newCopy ? 'newcopy' : 'overwrite');// 如果$newcopy为真，那么这个文件会被拷贝一个副本，而不是原名上传，最好设置为false
 
 		if ($isCreateSuperFile === TRUE) {
 			$requestStr .= '&type=tmpfile';

@@ -49,27 +49,6 @@ function get_blog_install_software(){
 	}
 	// 先判断这个主机的服务器软件
 	return $software;
-	/*
-	$install_root = ABSPATH;
-	$install_in_subdir = get_blog_install_in_subdir();
-	if($software == 'IIS' && $install_in_subdir){
-		$install_root = str_replace_last($install_in_subdir.'/','',$install_root);
-	}
-	$permalink_structure = get_option('permalink_structure');
-	$is_rewrited = false;
-	if($permalink_structure){
-		if(file_exists($install_root.'httpd.ini') || file_exists($install_root.'.htaccess') || file_exists($install_root.'httpd.conf') || file_exists($install_root.'app.conf') || file_exists($install_root.'config.yaml'))
-			$is_rewrited = true;
-	}
-	// 如果固定链接没有填写，也不存在httpd.ini，那么就直接返回，认为不是在IIS上
-	if(!$is_rewrited){
-		return false;
-	}
-	// 固定链接正确填写
-	else{
-		return $software;
-	}
-	*/
 }
 
 // 用下面这个函数判断wordpress是否已经开启重写，并且返回开启重写的方式
@@ -84,6 +63,7 @@ function is_wp_rewrited(){
 	}
 	if($permalink_structure){
 		$is_rewrited = "$permalink_structure ";
+		$install_root = trim($install_root);
 		if(file_exists($install_root.'.htaccess'))
 			$is_rewrited .= '.htaccess ';
 		if(file_exists($install_root.'httpd.conf'))
@@ -199,7 +179,7 @@ function is_really_writable($file)  {
 		return TRUE;
 	}
 	// 如果是不是文件，或文件打不开的话
-	elseif(!is_file($file) OR ($fp = @fopen($file,'w+')) === FALSE){
+	elseif(!is_file(trim($file)) OR ($fp = @fopen($file,'w+')) === FALSE){
 		return FALSE;
 	}
 	fclose($fp);
@@ -220,5 +200,9 @@ function set_php_ini($name){
 		ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出		// 考虑到流量问题，必须增加缓存能力
 	}elseif($name == 'timezone'){
 		date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	}elseif($name == 'error'){
+		// 显示运行错误
+		error_reporting(E_ALL); 
+		ini_set("display_errors", 1);
 	}
 }
