@@ -23,7 +23,8 @@
 	$plugin_data = get_plugin_data(WP2PCS_PLUGIN_NAME);
 	$plugin_version = $plugin_data['Version'];
 	$version = WP2PCS_PLUGIN_VER;
-	echo "你当前使用的是开发者版 版本号：$plugin_version 最后更新时间：$version <br />";
+	$user_type = get_option('wp_to_pcs_app_key')==='false'?'托管在WP2PCS官方':'保存在自己的网盘';
+	echo "你当前使用的是个人标准版 [$user_type] 版本号：$plugin_version 最后更新时间：$version <br />";
 
 	// 测试session是否可以用
 	session_start();
@@ -57,6 +58,22 @@
 		echo "你的WordPress开启了群站（多站点），可能不能充分发挥本插件的功能，使用如出现问题请及时反馈<br />";
 	}
 
+	// 测试创建文件及其相关
+	$file = trailingslashit(WP_CONTENT_DIR).'wp2pcs-debug.txt';
+	$handle = fopen($file,"w+");
+	$words_count = fwrite($handle,'你的服务器支持创建和写入文件');
+	if($words_count > 0){
+		echo "创建和写入文件成功，你的服务器支持文件创建和写入<br />";
+	}
+	$file_content = fread($handle,10);
+	$read_over = feof($handle);
+	if($file_content){
+		echo "读取文件成功，你的服务器支持文件读取<br />";
+		echo "读取结果为 $read_over ";
+	}
+	fclose($handle);
+	unlink($file);
+
 	// 检查content目录的写入权限
 	if(DIRECTORY_SEPARATOR=='/' && @ini_get("safe_mode")==FALSE){
 		echo "没有开启安全模式，".(is_writable(WP_CONTENT_DIR) ? 'content目录可写' : 'content目录不可写')."<br />";
@@ -86,28 +103,12 @@
 		echo "不存在crossdomain.xml文件，网盘中的视频将不能被正常播放<br />";
 	}
 
-	// 测试创建文件及其相关
-	$file = trailingslashit(WP_CONTENT_DIR).'wp2pcs-debug.txt';
-	$handle = fopen($file,"w+");
-	$words_count = fwrite($handle,'你的服务器支持创建和写入文件');
-	if($words_count > 0){
-		echo "创建和写入文件成功，你的服务器支持文件创建和写入<br />";
-	}
-	$file_content = fread($handle,10);
-	$read_over = feof($handle);
-	if($file_content){
-		echo "读取文件成功，你的服务器支持文件读取<br />";
-		echo "读取结果为 $read_over ";
-	}
-	fclose($handle);
-	unlink($file);
-
 	// 检查是否授权通过
 	$pcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 	$quota = json_decode($pcs->getQuota());
 	if(!$pcs || !$quota || isset($quota->error_code)){
 		if(get_option('wp_to_pcs_site_id')){
-			echo '<p style="color:red;"><b>连接失败，有可能和百度网盘通信不良！</b></p>';
+			echo '<p style="color:red;"><b>连接失败，有可能你的网站服务器和百度PCS通信不良！</b></p>';
 		}else{
 			echo '<p style="color:red;"><b>授权失败，无法连接到百度网盘，点击“更新授权”再授权！</b></p>';
 		}
