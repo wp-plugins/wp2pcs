@@ -291,7 +291,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$file_name = basename($local_path);
 	
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-	if(filesize($local_path) > WP2PCS_BACKUP_OFFLINE_SIZE):
+	if(!get_real_filesize($local_path) || get_real_filesize($local_path)>WP2PCS_BACKUP_OFFLINE_SIZE):
 		$result = $baidupcs->addOfflineDownloadTask(trailingslashit($remote_dir),home_url('/wp-content/'.$file_name),10*1024*1024,2*3600,'');
 		// 离线下载之后增加一个定时任务，将打包文件删除
 		set_php_ini('timezone');
@@ -325,7 +325,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 // 创建一个函数来确定采取什么上传方式，并执行这种方式的上传
 function wp_backup_to_pcs_send_file($local_path,$remote_dir){
 	$file_name = basename($local_path);
-	$file_size = filesize($local_path);
+	$file_size = get_real_filesize($local_path);
 	$file_max_size = 2*1024*1024;
 	if($file_size > $file_max_size){
 		wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_max_size);

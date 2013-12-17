@@ -128,8 +128,11 @@
 			echo '<p style="color:red;"><b>授权失败，无法连接到百度网盘，点击“更新授权”再授权！</b></p>';
 		}
 	}else{
-		echo '百度PCS授权成功';
+		echo '百度PCS授权成功 ID:'.get_option('wp_to_pcs_site_id');
 	}
+
+	// 运行时间，可以看出和百度PCS连接的运行状况
+	echo "运行了：".get_php_run_time();
 
 	echo "<br /><br />目前该测试文件只在linux appache上通过测试，如果你使用的是win主机，或者其他主机，请与我联系。<br /><br />";
 

@@ -237,7 +237,24 @@ function wp_to_pcs_pannel(){
 				<p class="tishi hidden">请及时关注<a href="http://wp2pcs.duapp.com">WP2PCS官方</a>发布的信息，如果官方通知要更新授权时，请及时更新授权，否则可能不能使用本插件。</p>
 				<?php if($app_key === 'false') : ?><p>你当前使用的是托管到WP2PCS的服务，如果你已经拥有了自己的网盘，不妨更新授权。但需要注意的是，目前WP2PCS还没有开发一键转移功能，所以这些附件只能通过申请后邮件发送给你。</p><?php endif; ?>
 				<p class="tishi hidden" id="wp2pcs-information-pend">更新授权前请注意：1、更新后老的授权信息会被直接删除；2、如果你开启了定时备份，请先关闭。</p>
-				<?php
+				<p>
+					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
+					<input type="submit" name="wp_to_pcs_debug" value="<?php echo $btn_text_debug; ?>" class="<?php echo $btn_class_debug; ?>" <?php if($btn_text_debug=='开启调试') : ?>onclick="if(!confirm('开启调试模式之后，前台将不能正常访问，而是会进入调试模式。是否确定？'))return false;"<?php endif; ?>/>
+					<input type="submit" name="wp_to_pcs_speed_control" value="<?php echo $btn_text_speed; ?>" class="<?php echo $btn_class_speed; ?>" />
+				</p>
+				<p class="tishi hidden">开启调试：部分网站在运行wp2pcs的时候，会出现各种各样的问题，为了找到问题产生的根源，首先开启调试模式，这个时候前台无法正常访问，会直接显示调试信息，通过这些信息，可以判断插件的问题出现在什么地方。</p>
+				<p class="tishi hidden">简易加速是针对一些服务器与PCS之间通信不良而设计的，开启简易加速之后，可以删除一些不必要的查询，从而加快插件的访问速度，适用于一些国外空间或访问特别慢的空间。</p>
+				<input type="hidden" name="action" value="wp_to_pcs_app_key_update" />
+				<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
+				<?php wp_nonce_field(); ?>
+			</div>
+		</form>
+		</div>
+		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
+		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_diff_to_pcs_panel(); ?>
+		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
+		<div id="wp2pcs-information-area">
+			<?php
 				if(get_option('wp2pcs_connect_too_slow')=='true'):
 					echo "<p>当前开启了简易加速，对网盘的连接、空间容量、当前正在进行的任务的查询都不会显示，从而节省资源提高访问速度。</p>";
 				else :
@@ -257,23 +274,9 @@ function wp_to_pcs_pannel(){
 						echo '<p style="color:red;font-weight:bold;">你当前的打开速度比较慢，有可能造成备份中断、图片显示慢甚至失败等问题，使用中请注意。为了找到缓解该问题的办法，你可以联系我们获得更高级别的服务。</p>';
 					}
 				endif;
-				?>
-				<p>
-					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
-					<input type="submit" name="wp_to_pcs_debug" value="<?php echo $btn_text_debug; ?>" class="<?php echo $btn_class_debug; ?>" <?php if($btn_text_debug=='开启调试') : ?>onclick="if(!confirm('开启调试模式之后，前台将不能正常访问，而是会进入调试模式。是否确定？'))return false;"<?php endif; ?>/>
-					<input type="submit" name="wp_to_pcs_speed_control" value="<?php echo $btn_text_speed; ?>" class="<?php echo $btn_class_speed; ?>" />
-				</p>
-				<p class="tishi hidden">开启调试：部分网站在运行wp2pcs的时候，会出现各种各样的问题，为了找到问题产生的根源，首先开启调试模式，这个时候前台无法正常访问，会直接显示调试信息，通过这些信息，可以判断插件的问题出现在什么地方。</p>
-				<p class="tishi hidden">简易加速是针对一些服务器与PCS之间通信不良而设计的，开启简易加速之后，可以删除一些不必要的查询，从而加快插件的访问速度，适用于一些国外空间或访问特别慢的空间。</p>
-				<input type="hidden" name="action" value="wp_to_pcs_app_key_update" />
-				<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
-				<?php wp_nonce_field(); ?>
-			</div>
-		</form>
+			?>
 		</div>
-		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
-		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_diff_to_pcs_panel(); ?>
-		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
+		<script>jQuery(function($){$('#wp2pcs-information-area').insertAfter('#wp2pcs-information-pend');});</script>
 	<?php endif; ?>
 		<div class="postbox">
 			<h3>说明 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>

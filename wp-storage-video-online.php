@@ -50,7 +50,7 @@ add_shortcode('video','wp2pcs_video_shortcode');
 add_action('wp_head','wp2pcs_video_player_script');
 function wp2pcs_video_player_script(){
 	// 如果你不打算让播放器出现在除了文章页之外的页面，如首页、列表页等，那么可以加上if(!is_singular())return;
-	echo '<script type="text/javascript" src="'.plugins_url("asset/cyberplayer.min.js",WP2PCS_PLUGIN_NAME).'"></script>';
+	echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
 }
 
 // 通过对URI的判断来获得图片远程信息

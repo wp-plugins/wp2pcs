@@ -206,3 +206,17 @@ function set_php_ini($name){
 		ini_set("display_errors", 1);
 	}
 }
+
+// 有效解决超过2G大文件的文件大小问题
+function get_real_filesize($file) {
+    $size = filesize($file);
+    if($size < 0)
+        if (!(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN'))
+            $size = trim(`stat -c%s $file`);
+        else {
+            $fsobj = new COM("Scripting.FileSystemObject");
+            $f = $fsobj->GetFile($file);
+            $size = $file->Size;
+        }
+    return $size;
+}

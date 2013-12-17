@@ -131,7 +131,7 @@ function wp_diff_to_pcs_corn_function(){
 		$mtime = filemtime($local_file);
 		if($mtime > $diff_time){
 			$file_name = basename($local_file);
-			$file_size = filesize($local_file);
+			$file_size = get_real_filesize($local_file);
 			// 处理一些路径
 			$file_path = str_replace_first(ABSPATH,'/',$local_file);
 			$file_path = str_replace('\\','/',$file_path);
@@ -143,7 +143,7 @@ function wp_diff_to_pcs_corn_function(){
 			$remote_dir = trailingslashit($remote_dir);
 			global $baidupcs;
 			// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-			if($file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
+			if(!$file_size || $file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
 				$result = $baidupcs->addOfflineDownloadTask($remote_dir,$file_local_url,10*1024*1024,2*3600,'');
 			}
 			// 文件大于2M的时候，用分片上传
@@ -196,7 +196,7 @@ function wp2pcs_diff_to_pcs_upload_send($file){
 	$local_file = $file['file'];
 	$file_local_url = $file['url'];
 	$file_name = basename($local_file);
-	$file_size = filesize($local_file);
+	$file_size = get_real_filesize($local_file);
 	// 处理一些路径
 	$file_path = str_replace_first(ABSPATH,'/',$local_file);
 	$file_path = str_replace('\\','/',$file_path);
@@ -207,7 +207,7 @@ function wp2pcs_diff_to_pcs_upload_send($file){
 	$remote_dir = trailingslashit($remote_dir);
 	global $baidupcs;
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-	if($file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
+	if(!$file_size || $file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
 		$result = $baidupcs->addOfflineDownloadTask($remote_dir,$file_local_url,10*1024*1024,2*3600,'');
 	}
 	// 文件大于2M的时候，用分片上传
