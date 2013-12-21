@@ -27,7 +27,7 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','201312211520'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','201312211540'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
@@ -212,7 +212,7 @@ function wp_to_pcs_pannel(){
 ?>
 <div class="wrap" id="wp2pcs-admin-dashbord">
 	<h2>WP2PCS WordPress连接到百度网盘<?php if($app_key === 'false'){echo '[WP2PCS官方托管]';} ?></h2>
-	<div id="application-update-notice" class="updated hidden" data-version="<?php echo WP2PCS_PLUGIN_VER; ?>" data-nonce="<?php echo wp_create_nonce(); ?>" data-admin-url="<?php echo admin_url('/'); ?>"><p>如果你看到该信息，说明WP2PCS官方不能被正常访问，<?php if($app_key==='false'): ?>你的托管服务将受到限制，赶紧和我们联系吧！<?php elseif(!$app_key): ?>不能正常授权，请稍后再试！<?php else : ?>如果你使用的是附件“外链”访问方式，那么赶紧切换到“直链”访问方式暂时解决！<?php endif; ?></p></div>
+	<div id="application-update-notice" class="updated hidden" data-version="<?php echo WP2PCS_PLUGIN_VER; ?>" data-nonce="<?php echo wp_create_nonce('upgrade-plugin_wp2pcs/wp2pcs.php'); ?>" data-admin-url="<?php echo admin_url('/'); ?>"><p>如果你看到该信息，说明WP2PCS官方不能被正常访问，<?php if($app_key==='false'): ?>你的托管服务将受到限制，赶紧和我们联系吧！<?php elseif(!$app_key): ?>不能正常授权，请稍后再试！<?php else : ?>如果你使用的是附件“外链”访问方式，那么赶紧切换到“直链”访问方式暂时解决！<?php endif; ?></p></div>
     <div class="metabox-holder">
 	<?php if(!is_wp_to_pcs_active()): ?>
 		<div class="postbox">
