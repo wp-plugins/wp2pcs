@@ -2,13 +2,13 @@
 
 // 增加schedule,自定义的时间间隔循环的时间间隔 每周一次和每两周一次
 add_filter('cron_schedules','wp2pcs_more_reccurences_for_diff');
-function wp2pcs_more_reccurences_for_diff(){
-	return array(
+function wp2pcs_more_reccurences_for_diff($schedules){
+	return array_merge($schedules,array(
 		'ten_second' => array('interval' => 10, 'display' => '10秒一次'),
 		'tweenty_second' => array('interval' => 20, 'display' => '20秒一次'),
 		'half_minute' => array('interval' => 30, 'display' => '30秒一次'),
 		'minutely' => array('interval' => 60, 'display' => '60秒一次')
-	);
+	));
 }
 
 // 更新设置

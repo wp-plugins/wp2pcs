@@ -10,15 +10,16 @@
 
 // 增加schedule,自定义的时间间隔循环的时间间隔 每周一次和每两周一次
 add_filter('cron_schedules','wp2pcs_more_reccurences_for_backup');
-function wp2pcs_more_reccurences_for_backup(){
-	return array(
+function wp2pcs_more_reccurences_for_backup($schedules){
+	return array_merge($schedules,array(
 		'daily' => array('interval' => 3600*24, 'display' => '每天一次'),
 		'doubly' => array('interval' => 3600*24*2, 'display' => '两天一次'),
 		'weekly' => array('interval' => 3600*24*7, 'display' => '每周一次'),
 		'biweekly' => array('interval' => 3600*24*7*2, 'display' => '两周一次'),
 		'monthly' => array('interval' => 3600*24*30, 'display' => '每月一次'),
-		'yearly' => array('interval' => 3600*24*30*12, 'display' => '每年一次')
-	);
+		'yearly' => array('interval' => 3600*24*30*12, 'display' => '每年一次'),
+		'never' => array('interval' => false, 'display' => '永不备份')
+	));
 }
 
 // 添加处理
@@ -378,9 +379,9 @@ function wp_backup_to_pcs_panel(){
 	$local_paths = (is_array($local_paths) && !empty($local_paths) ? implode("\n",$local_paths) : '');
 	$backup_rate = wp2pcs_more_reccurences_for_backup();
 ?>
-<div class="postbox">
+<div class="postbox" id="wp-to-pcs-backup-form">
 	<h3>PCS备份设置 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
-	<form method="post" id="wp-to-pcs-backup-form">
+	<form method="post">
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<?php if($timestamp_database || $timestamp_logs || $timestamp_www): ?>
 		<p>下一次自动备份时间：
