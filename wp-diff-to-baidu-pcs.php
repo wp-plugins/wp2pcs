@@ -20,6 +20,19 @@ function wp_diff_to_pcs_action(){
 	}elseif(!current_user_can('edit_theme_options')){
 		return;
 	}
+	// 设置上传附件的时候立即备份
+	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_diff_to_pcs_upload_backup'){
+		$upload_backup = $_POST['wp_diff_to_pcs_upload_backup'];
+		if($upload_backup){
+			update_option('wp_diff_to_pcs_upload_backup',$upload_backup);
+		}else{
+			delete_option('wp_diff_to_pcs_upload_backup');
+		}
+		update_option('wp_diff_to_pcs_upload_type',$_POST['wp_diff_to_pcs_upload_type']);
+		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))).'#wp-to-pcs-diff-form');
+		exit;
+	}
+	// 设置增量备份
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_diff_to_pcs_send_file'){
 		check_admin_referer();
 		set_php_ini('timezone');
@@ -50,7 +63,7 @@ function wp_diff_to_pcs_action(){
 		}
 		$run_rate = isset($_POST['wp_diff_to_pcs_run_rate']) ? $_POST['wp_diff_to_pcs_run_rate'] : false;
 		if($run_rate)update_option('wp_diff_to_pcs_run_rate',$run_rate);
-		// 点击更新按钮，将会使所有设置立即生效
+		// 点击更新后，这些设置将在开启定时任务后马上生效
 		if(isset($_POST['wp_diff_to_pcs_reset']) && $_POST['wp_diff_to_pcs_reset']=='更新'){
 			delete_option('wp_diff_to_pcs_last_time');
 			delete_option('wp_diff_to_pcs_local_files_cursor');
@@ -118,6 +131,10 @@ function wp_diff_to_pcs_corn_function(){
 	// 通过对游标的判断，确认上一次同步的文件和这次应该同步第几个文件
 	if(isset($local_files[$diff_cursor])){
 		$local_file = $local_files[$diff_cursor];
+		set_php_ini('timezone');
+		$local_file = str_replace('{year}',date('Y'),$local_file);
+		$local_file = str_replace('{month}',date('m'),$local_file);
+		$local_file = str_replace('{day}',date('d'),$local_file);
 		if(!is_file(trim($local_file)) || is_dir($local_file)){
 			$diff_cursor ++;
 			if(!isset($local_files[$diff_cursor])){
@@ -143,7 +160,7 @@ function wp_diff_to_pcs_corn_function(){
 			$remote_dir = trailingslashit($remote_dir);
 			global $baidupcs;
 			// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-			if(!$file_size || $file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
+			if($file_size>WP2PCS_BACKUP_OFFLINE_SIZE){
 				$result = $baidupcs->addOfflineDownloadTask($remote_dir,$file_local_url,10*1024*1024,2*3600,'');
 			}
 			// 文件大于2M的时候，用分片上传
@@ -191,29 +208,61 @@ function wp_diff_to_pcs_corn_function(){
 }
 
 // 上传新的附件的时候，将附件同步到增量备份目录
-add_filter('wp_handle_upload','wp2pcs_diff_to_pcs_upload_send');
+if(get_option('wp_diff_to_pcs_upload_backup')=='true' && get_option('wp2pcs_connect_too_slow')!='true'){
+	$upload_type = get_option('wp_diff_to_pcs_upload_type');
+	// 只上传原始附件
+	if($upload_type=='1'){
+		add_action('wp_handle_upload','wp2pcs_diff_to_pcs_upload_send');
+	}
+	// 同时上传裁剪出来的图片
+	elseif($upload_type=='2'){
+		add_action('wp_generate_attachment_metadata','wp2pcs_diff_to_pcs_send_attachment_uploaded',10,2);
+	}
+}
 function wp2pcs_diff_to_pcs_upload_send($file){
-	$local_file = $file['file'];
+	$local_file_path = $file['file'];
 	$file_local_url = $file['url'];
-	$file_name = basename($local_file);
-	$file_size = get_real_filesize($local_file);
+	wp2pcs_diff_to_pcs_send_file($local_file_path,$local_file_url);
+	return $file;
+}
+function wp2pcs_diff_to_pcs_send_attachment_uploaded($metas,$att_id){
+	$upload_dir = wp_upload_dir();
+	
+	// 原始附件上传
+	$att_file = $metas['file'];
+	$att_path = $upload_dir['basedir'].'/'.$att_file;
+	$att_url = $upload_dir['baseurl'].'/'.$att_file;
+	wp2pcs_diff_to_pcs_send_file($att_path,$att_url);
+
+	// 经过裁剪后的图片上传
+	if(isset($metas['image_meta']) && isset($metas['sizes']) && !empty($metas['sizes']))foreach($metas['sizes'] as $size){
+		$att_path = $upload_dir['path'].'/'.$size['file'];
+		$att_url = $upload_dir['url'].'/'.$size['file'];
+		wp2pcs_diff_to_pcs_send_file($att_path,$att_url);
+	}
+	return $metas;
+}
+// 创建一个函数用来上传这个立即同步的文件
+function wp2pcs_diff_to_pcs_send_file($local_file_path,$local_file_url){
+	global $baidupcs;
+	$file_name = basename($local_file_path);
+	$file_size = get_real_filesize($local_file_path);
 	// 处理一些路径
-	$file_path = str_replace_first(ABSPATH,'/',$local_file);
+	$file_path = str_replace_first(ABSPATH,'/',$local_file_path);
 	$file_path = str_replace('\\','/',$file_path);
 	$file_local_dir = dirname($file_path);
 	$remote_dir = trailingslashit(get_option('wp_diff_to_pcs_root_dir'));
 	$remote_dir .= $file_local_dir;
 	$remote_dir = str_replace('//','/',$remote_dir);
 	$remote_dir = trailingslashit($remote_dir);
-	global $baidupcs;
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-	if(!$file_size || $file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
+	if($file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
 		$result = $baidupcs->addOfflineDownloadTask($remote_dir,$file_local_url,10*1024*1024,2*3600,'');
 	}
 	// 文件大于2M的时候，用分片上传
 	elseif($file_size > 2*1024*1024){
 		$file_blocks = array();
-		$handle = @fopen($local_file,'rb');
+		$handle = @fopen($local_file_path,'rb');
 		while(!@feof($handle)){
 			$file_block_content = fread($handle,2*1024*1024);
 			$temp = $baidupcs->upload($file_block_content,$remote_dir,$file_name,false,true);
@@ -231,12 +280,11 @@ function wp2pcs_diff_to_pcs_upload_send($file){
 	}
 	// 文件小于2M的时候，直接上传
 	else{
-		$handle = @fopen($local_file,'rb');
+		$handle = @fopen($local_file_path,'rb');
 		$file_content = fread($handle,$file_size);
 		$result = $baidupcs->upload($file_content,$remote_dir,$file_name);
 		fclose($handle);
 	}
-	return $file;
 }
 
 // WP2PCS菜单中，使用下面的函数，打印与备份有关的内容
@@ -251,11 +299,13 @@ function wp_diff_to_pcs_panel(){
 	$local_paths = get_option('wp_diff_to_pcs_local_paths');
 	$local_paths = (is_array($local_paths) && !empty($local_paths) ? implode("\n",$local_paths) : '');
 	$diff_timestamp = wp_next_scheduled('wp_diff_to_pcs_corn_task');
+	$upload_backup = get_option('wp_diff_to_pcs_upload_backup');
+	$upload_type = get_option('wp_diff_to_pcs_upload_type');
 ?>
-<div class="postbox">
-	<h3>PCS增量备份 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
+<div class="postbox" id="wp-to-pcs-diff-form">
+	<h3>PCS增量备份 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-	<form method="post" id="wp-to-pcs-diff-form">
+	<form method="post">
 		<?php if($diff_timestamp) : ?>
 		<?php
 		$local_files = get_option('wp_diff_to_pcs_local_files');
@@ -303,9 +353,27 @@ function wp_diff_to_pcs_panel(){
 		<?php wp_nonce_field(); ?>
 	</form>
 	</div>
+	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
+	<form method="post">
+		<p>
+			<input type="checkbox" name="wp_diff_to_pcs_upload_backup" value="true" <?php checked($upload_backup,'true'); ?> /> 
+			<select name="wp_diff_to_pcs_upload_type">
+				<option value="1" <?php selected($upload_type,'1'); ?>>只同步原附件</option>
+				<option value="2" <?php selected($upload_type,'2'); ?>>裁剪图也同步</option>
+			</select>
+			本地上传时马上备份（不能开启“简易加速”）
+		</p>
+		<p class="tishi hidden">开启之后，在你每次上传图片的时候就会马上将这张图片上传到增量备份设置的对应目录下，从而不用担心本地附件丢失。但由于上传一张图片就要和PCS连接一次，这样就会消耗大量的资源，所以上传速度会变慢。</p>
+		<p><input type="submit" value="确定" class="button-primary" /></p>
+		<input type="hidden" name="action" value="wp_diff_to_pcs_upload_backup" />
+		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
+		<?php wp_nonce_field(); ?>
+	</form>
+	</div>
 	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p>什么是增量备份：严格意义上讲，wp2pcs提供的该功能为类似增量备份功能，即通过对文件检查，只上传经过修改的文件，已经备份过的，但没有发生变化的文件不进行备份，从而节省了大量资源。</p>
 		<p>wp2pcs提供的增量备份功能性能上受限于当前主机，如果你发现备份似乎不尽人意，建议开启简易加速，以尽快备份完你的文件。开启简易加速后，每次进入后台都会触发一次备份请求，URL会多出一个参数，前台不受影响。</p>
+		<p style="color:red">增量备份几乎一直在消耗流量（把网站内的文件上传到PCS），因此请一定要合理使用，以防流量超出你的限额。</p>
 	</div>
 </div>
 <?php

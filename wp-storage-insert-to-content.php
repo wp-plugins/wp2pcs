@@ -55,9 +55,18 @@ function wp_storage_to_pcs_media_tab_box() {
 	$app_key = get_option('wp_to_pcs_app_key');
 ?>
 <style>
-html,body{background-color:#fff;}
-#opt-on-pcs-tabs{padding:2em 1em 1em 1em;border-bottom:1px solid #dedede;margin-bottom:1em;font-size:1.1em;}
-#files-on-pcs{margin:10px;}
+html,body{background-color:#fff;background-attachment:fixed;}
+#opt-on-pcs-tabs{padding:0 1em 0 1em;border-bottom:1px solid #dedede;margin-bottom:1em;font-size:1.1em;
+	width:100%;
+	position:fixed;
+	_position:absolute;
+	left:0;
+	top:0;
+	_top:expression(documentElement.scrollTop);
+	background:#fff;
+}
+#opt-on-pcs-tabs .right{margin-right:3em;}
+#files-on-pcs{margin:10px;padding-top:90px;}
 .file-on-pcs{width:120px;height:120px;overflow:hidden;float:left;margin:5px;padding:2px;}
 .file-thumbnail{width:120px;height:96px;overflow:hidden;background-color:#ccc;}
 .file-type-dir .file-thumbnail{background-color:#FDCE5F;}
@@ -219,6 +228,13 @@ jQuery(function($){
 	$('#close-btn').click(function(){
 		window.parent.tb_remove();
 	});
+	// 清除选择的图片
+	$('#clear-btn').click(function(){
+		$('.selected').removeClass('selected');
+		$('.selected-video').removeClass('selected-video');
+		$('.selected-audio').removeClass('selected-audio');
+		$('.selected-file').removeClass('selected-file');
+	});
 	// 点击上传按钮
 	$('#upload-to-pcs-submit').click(function(){
 		var $upload_path = '<?php echo $dir_pcs_path; ?>/',
@@ -293,7 +309,7 @@ jQuery(function($){
 });
 </script>
 <div id="opt-on-pcs-tabs">
-	当前位置：<a href="<?php echo remove_query_arg(array('dir','paged')); ?>">HOME</a><?php
+	<p>当前位置：<a href="<?php echo remove_query_arg(array('dir','paged')); ?>">HOME</a><?php
 	if(isset($_GET['dir']) && !empty($_GET['dir'])){
 		$current_path = str_replace($root_dir,'',$dir_pcs_path);
 		$current_dir_string = array();
@@ -306,7 +322,17 @@ jQuery(function($){
 			echo $current_dir_link;
 		}
 	}
-	?> <a href="#upload-to-pcs" class="button" id="show-upload-area">上传到这里</a>
+	?> <a href="#upload-to-pcs" class="button" id="show-upload-area">上传到这里</a></p>
+	<p>
+		<button id="insert-btn" class="button-primary">插入</button>
+		<button id="clear-btn" class="button">清除</button>
+		<button id="close-btn" class="button">关闭</button>
+		<?php if($app_key != 'false') : ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_pcs_path; ?>" target="_blank" class="button">管理</a><?php endif; ?>
+		<a href="" class="button" id="reflush">刷新</a>
+		<a href="javascript:void(0)" onclick="jQuery('#show-media-alert').toggle();jQuery('html,body').animate({scrollTop:jQuery('#show-media-alert').offset().top},500);" class="button">提示帮助</a>
+		<a href="javascript:void(0)" onclick="jQuery('html,body').animate({scrollTop:0},500)" class="button right">顶部</a>
+	</p>
+	<div class="clear"></div>
 </div>
 <div id="files-on-pcs">
 <?php
@@ -382,7 +408,7 @@ jQuery(function($){
 		echo '<div class="file-thumbnail">';
 		if($thumbnail)echo '<img src="'.$thumbnail.'" />';
 		echo '</div>';
-		echo '<div class="file-name">';
+		echo '<div class="file-name" title="点击名称可以修改本次插入的附件名">';
 		echo $file_name;
 		echo '</div>';
 		if($link)echo '</a>';
@@ -410,14 +436,6 @@ jQuery(function($){
 	}
 	if($files_count >= $files_per_page)echo '<p id="next-page" class="page-navi"><a href="'.add_query_arg('paged',$paged+1).'">下一页</a><p>';
 	?>
-	<p>
-		<button id="insert-btn" class="button-primary">插入</button>
-		<button id="close-btn" class="button">关闭</button>
-		<?php if($app_key != 'false') : ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_pcs_path; ?>" target="_blank" class="button">管理</a><?php endif; ?>
-		<a href="" class="button" id="reflush">刷新</a>
-		<a href="javascript:void(0)" onclick="jQuery('#show-media-alert').toggle()" class="button">提示帮助</a>
-		<a href="javascript:void(0)" onclick="jQuery('html,body').animate({scrollTop:0},500)" class="button right">顶部</a>
-	</p>
 </div>
 <div class="alert hidden" id="show-media-alert">
 	<p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>

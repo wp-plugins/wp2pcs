@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接百度网盘)
 Plugin URI: http://wp2pcs.duapp.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.1.5
+Version: 1.2.0
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -27,7 +27,7 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','2013.12.16.20.30'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','2013.12.21.11.00'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
@@ -85,8 +85,8 @@ function wp_to_pcs_default_settings(){
 	$app_key = get_option('wp_to_pcs_app_key');
 	$root_dir = trailingslashit($app_key === 'false' ? WP2PCS_SUB_DIR : WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME']);
 	if(!get_option('wp_backup_to_pcs_root_dir'))update_option('wp_backup_to_pcs_root_dir',$root_dir.'backup/');
-	if(!get_option('wp_diff_to_pcs_root_dir'))update_option('wp_diff_to_pcs_root_dir',$root_dir.'wordpress/');
-	if(!get_option('wp_storage_to_pcs_root_dir'))update_option('wp_storage_to_pcs_root_dir',$root_dir.'uploads/');
+	if(!get_option('wp_diff_to_pcs_root_dir'))update_option('wp_diff_to_pcs_root_dir',$root_dir);
+	if(!get_option('wp_storage_to_pcs_root_dir'))update_option('wp_storage_to_pcs_root_dir',$root_dir.'wp-content/uploads/');
 	if(!get_option('wp_storage_to_pcs_image_perfix'))update_option('wp_storage_to_pcs_image_perfix','?image');
 	if(!get_option('wp_storage_to_pcs_download_perfix'))update_option('wp_storage_to_pcs_download_perfix','?download');
 	if(!get_option('wp_storage_to_pcs_video_perfix'))update_option('wp_storage_to_pcs_video_perfix','index.php/video');
@@ -97,7 +97,7 @@ function wp_to_pcs_default_settings(){
 }
 
 // 停用插件的时候停止定时任务
-register_deactivation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_plugin_deactivate');
+//register_deactivation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_plugin_deactivate');
 function wp2pcs_plugin_deactivate(){
 	// 删除授权TOKEN
 	delete_option('wp_to_pcs_app_key');
@@ -154,6 +154,10 @@ function wp_to_pcs_action(){
 			$token_url = 'http://wp2pcs.duapp.com/apply?from='.$back_url.'&key='.WP2PCS_APP_KEY.'&email='.$admin_email;
 		}else{
 			$token_url = 'http://wp2pcs.duapp.com/oauth?from='.$back_url.'&key='.WP2PCS_APP_KEY.'&email='.$admin_email;
+		}
+		$site_id = get_option('wp_to_pcs_site_id');
+		if($site_id){
+			$token_url .= "&site=$site_id";
 		}
 		wp_redirect($token_url);
 		exit;
@@ -214,6 +218,24 @@ function wp_to_pcs_pannel(){
 		<div class="postbox">
 		<form method="post" autocomplete="off">
 			<h3>百度授权 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
+			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
+				<p style="color:#008000;"><?php
+					// 首先检查php环境
+					echo "你的网站搭建在 ".PHP_OS." 操作系统的服务器上，WIN主机对插件支持欠佳，详细请阅读<a href='http://wp2pcs.duapp.com/270' target='_blank'>这篇文章</a>。<br />";
+					$software = get_blog_install_software();
+					if($software=='IIS'){
+						echo "你的网站运行在 $software 服务器上，对插件支持欠佳，详细请阅读<a href='http://wp2pcs.duapp.com/270' target='_blank'>这篇文章</a>。<br />";	
+					}
+					if(!class_exists('ZipArchive')){
+						echo "PHP不存在ZipArchive类，插件不能打包压缩，不能正常备份网站的文件，简易联系主机商启用它。<br />";
+					}
+					if(!function_exists('curl_exec')){
+						echo "curl_exec函数不被支持，插件无法和PCS服务器通信，联系主机商启用完整的CURL模块。<br />";
+					}
+					echo "如果你的网站放在海外主机，很有可能运行缓慢，甚至运行错误。建议使用亚洲范围内的主机。<br />";
+					echo "开启插件后建议先打开调试模式，进入前台，阅读你的网站的调试信息，以确保能够正常使用。";
+				?></p>
+			</div>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>
 					<input type="radio" name="wp_to_pcs_app_key" value="true" <?php checked($app_key,'true'); ?> />保存于自己的网盘

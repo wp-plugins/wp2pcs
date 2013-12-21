@@ -2,7 +2,7 @@
 
 // true强制采用外链，false则根据后台的设置来，视频采用m3u8格式输出，流量其实不大
 // 由于百度网盘视频转码不是能解码所有文件，所以建议只使用avi/rm/mkv等主流视频格式，flv格式都有可能效果不佳
-define('WP2PCS_VIDEO_HD',false);
+define('WP2PCS_VIDEO_HD',get_option('wp_storage_to_pcs_video_hd'));
 
 // 创建一个函数，用来在wordpress中打印图片地址
 function wp2pcs_video_src($video_path = false){
@@ -40,7 +40,7 @@ function wp2pcs_video_shortcode($atts){
 	$src = implode('/',$src_arr);
 
 	$player_id = get_php_run_time();
-	$player = '<div id="videoplayer_'.$player_id.'" class="wp2pcs-video"></div><script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script><div style="clear:both;padding-top:30px;"></div>';
+	$player = '<div id="videoplayer_'.$player_id.'" class="wp2pcs-video"></div><script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
 
 	return $player;
 }
@@ -50,7 +50,19 @@ add_shortcode('video','wp2pcs_video_shortcode');
 add_action('wp_head','wp2pcs_video_player_script');
 function wp2pcs_video_player_script(){
 	// 如果你不打算让播放器出现在除了文章页之外的页面，如首页、列表页等，那么可以加上if(!is_singular())return;
-	echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
+	global $wp_query;
+	$has_video = false;
+	if($wp_query->posts){
+		$count = count($wp_query->posts);
+		for($i=0;$i<$count;$i++){
+			if(preg_match('/\[video([^\]]+)?\]/',$wp_query->posts[$i]->post_content)){
+				$has_video = true;
+				break;
+			}
+		}
+	}
+	if($has_video)
+		echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
 }
 
 // 通过对URI的判断来获得图片远程信息
@@ -161,16 +173,19 @@ function wp_storage_print_video(){
 		echo $result;
 		session_destroy();
 		exit;
-	}elseif($outlink_type == '302' || WP2PCS_VIDEO_HD){
+	}else{
+	//}elseif($outlink_type == '302' || WP2PCS_VIDEO_HD){
 		$site_id = get_option('wp_to_pcs_site_id');
 		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
 		$video_outlink = 'http://wp2pcs.duapp.com/v?'.$site_id.'+'.$access_token.'+path='.$video_path.'.m3u8';
 		header('Location:'.$video_outlink);
 		exit;
+	/*
 	}else{
 		$video_outlink = "https://pcs.baidu.com/rest/2.0/pcs/file?method=streaming&access_token=".WP2PCS_APP_TOKEN."&path=$video_path&type=M3U8_854_480";
 		header('Location:'.$video_outlink);
 		exit;
+		*/
 	}
 	exit;
 }

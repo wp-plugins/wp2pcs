@@ -2,7 +2,7 @@
 
 // true强制采用外链，false则根据后台的设置来，媒体会消耗大量流量，且受网速影响
 // 但另外一个问题是，如果媒体文件太大，则外链受到BAE的影响，会泄露token信息，故不建议使用超过10M的外链媒体（直链没有token问题）
-define('WP2PCS_MEDIA_HD',false);
+define('WP2PCS_MEDIA_HD',get_option('wp_storage_to_pcs_meida_hd'));
 
 // 创建一个函数，用来在wordpress中打印图片地址
 function wp2pcs_media_src($media_path = false){

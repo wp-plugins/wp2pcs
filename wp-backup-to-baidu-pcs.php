@@ -17,6 +17,7 @@ function wp2pcs_more_reccurences_for_backup(){
 		'weekly' => array('interval' => 3600*24*7, 'display' => '每周一次'),
 		'biweekly' => array('interval' => 3600*24*7*2, 'display' => '两周一次'),
 		'monthly' => array('interval' => 3600*24*30, 'display' => '每月一次'),
+		'yearly' => array('interval' => 3600*24*30*12, 'display' => '每年一次')
 	);
 }
 
@@ -291,7 +292,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$file_name = basename($local_path);
 	
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-	if(!get_real_filesize($local_path) || get_real_filesize($local_path)>WP2PCS_BACKUP_OFFLINE_SIZE):
+	if(get_real_filesize($local_path)>WP2PCS_BACKUP_OFFLINE_SIZE):
 		$result = $baidupcs->addOfflineDownloadTask(trailingslashit($remote_dir),home_url('/wp-content/'.$file_name),10*1024*1024,2*3600,'');
 		// 离线下载之后增加一个定时任务，将打包文件删除
 		set_php_ini('timezone');
