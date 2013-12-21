@@ -81,7 +81,7 @@ html,body{background-color:#fff;background-attachment:fixed;}
 .opt-area{margin:0 10px;padding-bottom:20px;}
 .alert{color:#D44B25;margin:0 10px;padding-bottom:20px;}
 .hidden{display:none;}
-#upload-to-pcs{text-align:center;padding:5em 0;}
+#upload-to-pcs{text-align:center;padding-top:150px;}
 .page-navi{font-size:14px;text-align:center;background-color:#E62114;}
 .page-navi a{color:#fff;text-decoration:none;}
 #prev-page{padding:5px;}
@@ -264,16 +264,14 @@ jQuery(function($){
 	// 点击切换到上传面板
 	$('#show-upload-area').toggle(function(e){
 		e.preventDefault();
-		$('#files-on-pcs').hide();
+		$('#files-on-pcs,#next-page,#prev-page,#opt-area').hide();
 		$('#upload-to-pcs').show();
 		$(this).text('返回列表');
-		$('#next-page,#prev-page,#opt-area').hide();
 	},function(e){
 		e.preventDefault();
-		$('#files-on-pcs').show();
 		$('#upload-to-pcs').hide();
+		$('#files-on-pcs,#next-page,#prev-page,#opt-area').show();
 		$(this).text('上传到这里');
-		$('#next-page,#prev-page,#opt-area').show();
 	});
 	// 点击下一页
 	$('#next-page a').live('click',function(e){
@@ -417,7 +415,7 @@ jQuery(function($){
 ?>
 </div>
 <div style="clear:both;"></div>
-<div id="upload-to-pcs" style="display:none;">
+<div id="upload-to-pcs" class="hidden">
 	<form name="input" action="#" method="post" target="upload-to-pcs-window" enctype="multipart/form-data" id="upload-to-pcs-from">
 		<input type="file" name="select" id="upload-to-pcs-input" />
 		<input type="button" value="上传" class="button-primary" id="upload-to-pcs-submit" />
