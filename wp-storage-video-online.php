@@ -40,7 +40,7 @@ function wp2pcs_video_shortcode($atts){
 	$src = implode('/',$src_arr);
 
 	$player_id = get_php_run_time();
-	$player = '<div id="videoplayer_'.$player_id.'" class="wp2pcs-video"></div><script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
+	$player = '<div id="videoplayer_'.$player_id.'" class="wp2pcs-video" style="background:#000000;"></div><script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
 
 	return $player;
 }
@@ -48,7 +48,7 @@ add_shortcode('video','wp2pcs_video_shortcode');
 
 // 在网页头部输出音乐播放要使用到的javascript
 add_action('wp_head','wp2pcs_video_player_script');
-function wp2pcs_video_player_script(){
+function wp2pcs_video_player_script($force = false){
 	// 如果你不打算让播放器出现在除了文章页之外的页面，如首页、列表页等，那么可以加上if(!is_singular())return;
 	global $wp_query;
 	$has_video = false;
@@ -61,7 +61,7 @@ function wp2pcs_video_player_script(){
 			}
 		}
 	}
-	if($has_video)
+	if($has_video || $force)
 		echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
 }
 
