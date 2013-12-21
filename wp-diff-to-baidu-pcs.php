@@ -3,12 +3,16 @@
 // 增加schedule,自定义的时间间隔循环的时间间隔 每周一次和每两周一次
 add_filter('cron_schedules','wp2pcs_more_reccurences_for_diff');
 function wp2pcs_more_reccurences_for_diff($schedules){
-	return array_merge($schedules,array(
+	$add_array = wp2pcs_more_reccurences_for_diff_array();
+	return array_merge($schedules,$add_array);
+}
+function wp2pcs_more_reccurences_for_diff_array(){
+	return array(
 		'ten_second' => array('interval' => 10, 'display' => '10秒一次'),
 		'tweenty_second' => array('interval' => 20, 'display' => '20秒一次'),
 		'half_minute' => array('interval' => 30, 'display' => '30秒一次'),
 		'minutely' => array('interval' => 60, 'display' => '60秒一次')
-	));
+	);
 }
 
 // 更新设置
@@ -293,7 +297,7 @@ function wp_diff_to_pcs_panel(){
 	$app_key = get_option('wp_to_pcs_app_key');
 	$root_dir = get_option('wp_diff_to_pcs_root_dir');
 	$run_rate = get_option('wp_diff_to_pcs_run_rate');
-	$diff_rate = wp2pcs_more_reccurences_for_diff();
+	$diff_rate = wp2pcs_more_reccurences_for_diff_array();
 	$btn_text = (get_option('wp_diff_to_pcs_future') == '开启增量备份' ? '已经开启增量备份，现在关闭' : '开启增量备份');
 	$btn_class = ($btn_text == '开启增量备份' ? 'button-primary' : 'button');
 	$local_paths = get_option('wp_diff_to_pcs_local_paths');
