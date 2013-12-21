@@ -384,7 +384,7 @@ function wp_backup_to_pcs_panel(){
 	$backup_rate = wp2pcs_more_reccurences_for_backup_array();
 ?>
 <div class="postbox" id="wp-to-pcs-backup-form">
-	<h3>PCS备份设置 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
+	<h3>PCS备份设置 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 	<form method="post">
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<?php if($timestamp_database || $timestamp_logs || $timestamp_www): ?>
