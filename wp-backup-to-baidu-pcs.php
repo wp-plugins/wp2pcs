@@ -54,11 +54,11 @@ function wp_backup_to_pcs_action(){
 		}else{
 			$root_dir = WP2PCS_ROOT_DIR.$root_dir;
 		}
-		$root_dir = trailingslashit($root_dir);
+		$root_dir = trailing_slash_path($root_dir);
 		update_option('wp_backup_to_pcs_root_dir',$root_dir);
 		// 更新网站的日志目录
 		if(trim($_POST['wp_backup_to_pcs_log_dir']) != ''){
-			$log_dir = trailingslashit($_POST['wp_backup_to_pcs_log_dir']);
+			$log_dir = trailing_slash_path($_POST['wp_backup_to_pcs_log_dir'],WP2PCS_IS_WIN);
 			update_option('wp_backup_to_pcs_log_dir',$log_dir);
 		}else{
 			delete_option('wp_backup_to_pcs_log_dir');
@@ -78,8 +78,8 @@ function wp_backup_to_pcs_action(){
 			delete_option('wp_backup_to_pcs_local_paths');
 		}
 		// 压缩下载
-		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载' && IS_WP2PCS_WRITABLE){
-			$zip_dir = trailingslashit(WP_CONTENT_DIR);
+		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载' && WP2PCS_IS_WRITABLE){
+			$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
 			// 备份数据库
 			$database_file = $zip_dir.'database.sql';
 			if(file_exists($database_file))@unlink($database_file);
@@ -130,7 +130,7 @@ function wp_backup_to_pcs_action(){
 		// 立即备份
 		if(isset($_POST['wp_backup_to_pcs_now']) && $_POST['wp_backup_to_pcs_now'] == '马上备份'){
 			set_php_ini('limit');
-			$zip_dir = trailingslashit(WP_CONTENT_DIR);
+			$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
 			$remote_dir = $root_dir.date('Y.m.d_H.i.s').'/';
 			global $baidupcs;
 			
@@ -140,7 +140,7 @@ function wp_backup_to_pcs_action(){
 			$baidupcs->upload($file_content,$remote_dir,$file_name);
 			
 			// 备份日志
-			if($log_dir && IS_WP2PCS_WRITABLE){
+			if($log_dir && WP2PCS_IS_WRITABLE){
 				$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
 				if($log_file){
 					wp_backup_to_pcs_send_file($log_file,$remote_dir);
@@ -148,7 +148,7 @@ function wp_backup_to_pcs_action(){
 			}
 			
 			// 备份网站内的所有文件
-			if($local_paths && !empty($local_paths) && IS_WP2PCS_WRITABLE){
+			if($local_paths && !empty($local_paths) && WP2PCS_IS_WRITABLE){
 				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
 				if($www_file){
 					wp_backup_to_pcs_send_file($www_file,$remote_dir);
@@ -198,7 +198,7 @@ function wp_backup_to_pcs_corn_task_function_database() {
 		return;
 	set_php_ini('limit');
 	set_php_ini('timezone');
-	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
+	$remote_dir = trailing_slash_path(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
 	global $baidupcs;
 	
 	// 备份数据库
@@ -207,7 +207,7 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	$result = $baidupcs->upload($file_content,$remote_dir,$file_name);
 }
 function wp_backup_to_pcs_corn_task_function_logs(){
-	if(!IS_WP2PCS_WRITABLE){
+	if(!WP2PCS_IS_WRITABLE){
 		return;
 	}
 	if(get_option('wp_backup_to_pcs_future') != '开启定时')
@@ -221,8 +221,8 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 
 	set_php_ini('limit');
 	set_php_ini('timezone');
-	$zip_dir = trailingslashit(WP_CONTENT_DIR);
-	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
+	$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+	$remote_dir = trailing_slash_path(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
 
 	// 备份日志
 	$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
@@ -231,7 +231,7 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	}
 }
 function wp_backup_to_pcs_corn_task_function_www(){
-	if(!IS_WP2PCS_WRITABLE){
+	if(!WP2PCS_IS_WRITABLE){
 		return;
 	}
 	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')
@@ -245,8 +245,8 @@ function wp_backup_to_pcs_corn_task_function_www(){
 	
 	set_php_ini('limit');
 	set_php_ini('timezone');
-	$zip_dir = trailingslashit(WP_CONTENT_DIR);
-	$remote_dir = trailingslashit(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
+	$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+	$remote_dir = trailing_slash_path(get_option('wp_backup_to_pcs_root_dir')).date('Y.m.d_H.00').'/';
 
 	// 备份网站内的所有文件
 	$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
@@ -268,7 +268,7 @@ function wp_backup_to_pcs_clear_files_task(){
 	add_action('wp_backup_to_pcs_corn_task_clear_files','wp_backup_to_pcs_corn_task_function_clear_files');
 }
 function wp_backup_to_pcs_corn_task_function_clear_files(){
-	$zip_dir = trailingslashit(WP_CONTENT_DIR);
+	$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
 	$zip_www = $zip_dir.'www.zip';
 	$zip_logs = $zip_dir.'logs.zip';
 	$zip_database = $zip_dir.'database.sql';
@@ -286,7 +286,7 @@ function wp_backup_to_pcs_send_single_file($local_path,$remote_dir){
 	$file_size = filesize($local_path);
 	$handle = @fopen($local_path,'rb');
 	$file_content = fread($handle,$file_size);
-	$baidupcs->upload($file_content,trailingslashit($remote_dir),$file_name);
+	$baidupcs->upload($file_content,trailing_slash_path($remote_dir),$file_name);
 	fclose($handle);
 	@unlink($local_path);
 }
@@ -298,7 +298,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
 	if(get_real_filesize($local_path)>WP2PCS_BACKUP_OFFLINE_SIZE):
-		$result = $baidupcs->addOfflineDownloadTask(trailingslashit($remote_dir),home_url('/wp-content/'.$file_name),10*1024*1024,2*3600,'');
+		$result = $baidupcs->addOfflineDownloadTask(trailing_slash_path($remote_dir),home_url('/wp-content/'.$file_name),10*1024*1024,2*3600,'');
 		// 离线下载之后增加一个定时任务，将打包文件删除
 		set_php_ini('timezone');
 		wp_schedule_single_event(time()+(2*3600),'wp_backup_to_pcs_corn_task_delete_file_offline');
@@ -313,7 +313,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$handle = @fopen($local_path,'rb');
 	while(!@feof($handle)){
 		$file_block_content = fread($handle,$file_block_size);
-		$temp = $baidupcs->upload($file_block_content,trailingslashit($remote_dir),$file_name,false,true);
+		$temp = $baidupcs->upload($file_block_content,trailing_slash_path($remote_dir),$file_name,false,true);
 		if(!is_array($temp)){
 			$temp = json_decode($temp,true);
 		}
@@ -324,7 +324,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	fclose($handle);
 	@unlink($local_path);
 	if(count($file_blocks) > 1){
-		$baidupcs->createSuperFile(trailingslashit($remote_dir),$file_name,$file_blocks,'');
+		$baidupcs->createSuperFile(trailing_slash_path($remote_dir),$file_name,$file_blocks,'');
 	}
 }
 
@@ -356,7 +356,7 @@ function wp_backup_to_pcs_delete_file_offline_by_filename($file_name){
 	}
 	$result = $result['task_info'][0];
 	if($result['status'] == 1){
-		$file = trailingslashit(WP_CONTENT_DIR).$file_name;
+		$file = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN).$file_name;
 		if(file_exists($file))@unlink($file);
 	}
 }
@@ -402,7 +402,7 @@ function wp_backup_to_pcs_panel(){
 				<option value="<?php echo $rate; ?>" <?php selected($run_rate,$rate); ?>><?php echo $info['display']; ?></option>
 				<?php endforeach; ?>
 			</select> 
-			<?php if(IS_WP2PCS_WRITABLE) : ?>
+			<?php if(WP2PCS_IS_WRITABLE) : ?>
 			日志<select name="wp_backup_to_pcs_run_rate[logs]"><?php $run_rate = $run_rate_arr['logs']; ?>
 				<?php foreach($backup_rate as $rate => $info) : ?>
 				<option value="<?php echo $rate; ?>" <?php selected($run_rate,$rate); ?>><?php echo $info['display']; ?></option>
@@ -432,7 +432,7 @@ function wp_backup_to_pcs_panel(){
 		<?php else : ?>
 		<p class="tishi hidden">备份至网盘目录：你会在百度网盘的“我的应用数据”中看到“wp2pcs”这个目录，你填写“backup/”，就会在你的网盘目录“我的应用数据/wp2pcs/backup/”中找到自己的备份数据。<b>如果你打算把插件用在多个网站中，一定要注意通过设置不同的备份网盘目录，以区分不同的网站。</b></p>
 		<?php endif; ?>
-		<?php if(IS_WP2PCS_WRITABLE) : ?>
+		<?php if(WP2PCS_IS_WRITABLE) : ?>
 		<p>当前网站的日志文件夹路径：<input type="text" name="wp_backup_to_pcs_log_dir" class="regular-text" value="<?php echo $log_dir; ?>" <?php if($timestamp_database || $timestamp_logs || $timestamp_www)echo 'readonly="readonly"';?> /></p>
 		<p class="tishi hidden">一般而言，网址的日志是以.log结束的，文件记录了网站被访问、蜘蛛抓取等信息。在上面填写日志文件夹的路径，留空则不备份日志。这个路径不是访问URL，而是相对于服务器的文件路径。你的网站的根路径是“<?php echo ABSPATH; ?>”，一般日志文件都存放在<?php echo ABSPATH; ?>logs/或和public_html目录同一个级别，你需要填写成你自己的。</p>
 		<p>
@@ -445,8 +445,8 @@ function wp_backup_to_pcs_panel(){
 			<input type="submit" value="确定" class="button-primary" />
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="wp_backup_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
-			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="<?php if(IS_WP2PCS_WRITABLE) : ?>if(confirm('境外主机由于和百度服务器通信可能存在障碍，可能备份不成功，你可以使用“压缩下载”功能，先下载备份包，然后上传到网盘中！！') == false)return false;<?php endif; ?>if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
-			<?php if(IS_WP2PCS_WRITABLE) : ?>
+			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="<?php if(WP2PCS_IS_WRITABLE) : ?>if(confirm('境外主机由于和百度服务器通信可能存在障碍，可能备份不成功，你可以使用“压缩下载”功能，先下载备份包，然后上传到网盘中！！') == false)return false;<?php endif; ?>if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
+			<?php if(WP2PCS_IS_WRITABLE) : ?>
 			<input type="submit" name="wp_backup_to_pcs_zip" value="压缩下载" class="button-primary" onclick="if(confirm('压缩下载会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在下载，点击“取消”则不备份') == false){return false;}else{jQuery('#wp-to-pcs-backup-form').attr('target','_blank');setTimeout(function(){jQuery('#wp-to-pcs-backup-form').attr('target','_self');},500);}" />
 			<?php if(!class_exists('ZipArchive')){echo '<b>当前服务器不支持插件打包方式，只有数据库可以被备份。</b>';} ?>
 			<?php endif; ?>
@@ -513,10 +513,10 @@ function wp_backup_to_pcs_panel(){
 	endif;
 	?>
 	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-		<?php if(!IS_WP2PCS_WRITABLE) : ?>
+		<?php if(!WP2PCS_IS_WRITABLE) : ?>
 		<p class="tishi hidden" style="color:red"><b>当前环境下/wp-content/目录没有可写权限，不能在线打包zip文件，请赋予这个目录可写权限！注：BAE和SAE本身不具备可写权限，因此本插件功能受限。</b></p>
 		<?php endif; ?>
-		<?php if(IS_WP2PCS_WRITABLE) : ?>
+		<?php if(WP2PCS_IS_WRITABLE) : ?>
 		<p class="tishi hidden" style="color:red;font-weight:bold;">注意：由于备份时需要创建压缩文件，并把压缩文件上传到百度网盘，因此一方面需要你的网站空间有可写权限和足够的剩余空间，另一方面可能会消耗你的网站流量，因此请你一定要注意选择合理的备份方式，以免造成空间塞满或流量耗尽等问题。</p>
 		<p class="tishi hidden">境外主机受网络限制，使用马上备份功能可能面临失败的情况，请谨慎使用。<b>你可以选择“压缩下载”功能，它和马上备份的效果是一样的，只不过不自动上传到百度网盘，你需要下载下来自己上传到网盘。</b><p>
 		<?php endif; ?>

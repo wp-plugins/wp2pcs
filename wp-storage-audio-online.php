@@ -129,7 +129,7 @@ function wp_storage_print_audio(){
 
 	// 获取视频路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$audio_path = trailingslashit($root_dir).$audio_path;
+	$audio_path = trailing_slash_path($root_dir).$audio_path;
 	$audio_path = str_replace('//','/',$audio_path);
 
 	// 获取外链方式

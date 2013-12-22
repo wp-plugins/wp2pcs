@@ -39,7 +39,7 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 
 // 经过判断或函数运算才能进行定义的常量
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_access_token'));
-define('IS_WP2PCS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
+define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
 if(!defined('WP_CONTENT_DIR')){
 	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
 }
@@ -51,6 +51,7 @@ if(get_option('wp_to_pcs_debug') == '开启调试'){
 if(get_option('wp2pcs_connect_too_slow')=='true' && is_admin()){
 	define('ALTERNATE_WP_CRON',true);// 防止定时任务丢失
 }
+define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 
 // 直接初始化一个全局变量$baidupcs
 $baidupcs = new BaiduPCS(WP2PCS_APP_TOKEN);
@@ -83,7 +84,7 @@ function wp_smushit_filter_timeout_time($time) {
 // 默认设置选项
 function wp_to_pcs_default_settings(){
 	$app_key = get_option('wp_to_pcs_app_key');
-	$root_dir = trailingslashit($app_key === 'false' ? WP2PCS_SUB_DIR : WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME']);
+	$root_dir = trailing_slash_path($app_key === 'false' ? WP2PCS_SUB_DIR : WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME']);
 	if(!get_option('wp_backup_to_pcs_root_dir'))update_option('wp_backup_to_pcs_root_dir',$root_dir.'backup/');
 	if(!get_option('wp_diff_to_pcs_root_dir'))update_option('wp_diff_to_pcs_root_dir',$root_dir);
 	if(!get_option('wp_storage_to_pcs_root_dir'))update_option('wp_storage_to_pcs_root_dir',$root_dir.'wp-content/uploads/');
@@ -212,7 +213,7 @@ function wp_to_pcs_pannel(){
 ?>
 <div class="wrap" id="wp2pcs-admin-dashbord">
 	<h2>WP2PCS WordPress连接到百度网盘<?php if($app_key === 'false'){echo '[WP2PCS官方托管]';} ?></h2>
-	<div id="application-update-notice" class="updated hidden" data-version="<?php echo WP2PCS_PLUGIN_VER; ?>" data-nonce="<?php echo wp_create_nonce('install-plugin_wp2pcs'); ?>" data-admin-url="<?php echo admin_url('/'); ?>"><p>如果你看到该信息，说明WP2PCS官方不能被正常访问，<?php if($app_key==='false'): ?>你的托管服务将受到限制，赶紧和我们联系吧！<?php elseif(!$app_key): ?>不能正常授权，请稍后再试！<?php else : ?>如果你使用的是附件“外链”访问方式，那么赶紧切换到“直链”访问方式暂时解决！<?php endif; ?></p></div>
+	<div id="application-update-notice" class="updated hidden" data-version="<?php echo WP2PCS_PLUGIN_VER; ?>" data-nonce="<?php echo wp_create_nonce(); ?>" data-admin-url="<?php echo admin_url('/'); ?>"><p>如果你看到该信息，说明WP2PCS官方不能被正常访问，<?php if($app_key==='false'): ?>你的托管服务将受到限制，赶紧和我们联系吧！<?php elseif(!$app_key): ?>不能正常授权，请稍后再试！<?php else : ?>如果你使用的是附件“外链”访问方式，那么赶紧切换到“直链”访问方式暂时解决！<?php endif; ?></p></div>
     <div class="metabox-holder">
 	<?php if(!is_wp_to_pcs_active()): ?>
 		<div class="postbox">

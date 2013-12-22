@@ -74,7 +74,7 @@
 	}
 
 	// 测试创建文件及其相关
-	$file = trailingslashit(WP_CONTENT_DIR).'wp2pcs-debug.txt';
+	$file = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN).'wp2pcs-debug.txt';
 	$handle = fopen($file,"w+");
 	$words_count = fwrite($handle,'你的服务器支持创建和写入文件');
 	if($words_count > 0){
@@ -218,7 +218,7 @@
 
 	// 获取图片路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$image_path = trailingslashit($root_dir).$image_path;
+	$image_path = trailing_slash_path($root_dir).$image_path;
 	$image_path = str_replace('//','/',$image_path);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	if($outlink_type == 200){

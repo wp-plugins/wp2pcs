@@ -220,3 +220,16 @@ function get_real_filesize($file) {
         }
     return $size;
 }
+
+// 解决路径最后的slah尾巴，如果没有则加上，而且根据不同的服务器，采用/或者\
+function trailing_slash_path($path_string,$is_win = false){
+	$slash = '/';
+	if($is_win){
+		$slash = '\\';
+	}
+	$trail = substr($path_string,-1);
+	if($trail!=$slash){
+		$path_string .= $slash;
+	}
+	return $path_string;
+}

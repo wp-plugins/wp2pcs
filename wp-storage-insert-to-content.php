@@ -463,7 +463,7 @@ function wp_storage_to_pcs_media_thumbnail($file_pcs_path,$width = 120,$height =
 	$app_key = get_option('wp_to_pcs_app_key');
 	// 使用直链，有利于快速显示图片
 	$image_outlink_per = get_option('wp_storage_to_pcs_image_perfix');
-	$file_pcs_path = str_replace(trailingslashit(get_option('wp_storage_to_pcs_root_dir')),'/',$file_pcs_path);
+	$file_pcs_path = str_replace(trailing_slash_path(get_option('wp_storage_to_pcs_root_dir')),'/',$file_pcs_path);
 	$thumbnail = home_url('/'.$image_outlink_per.$file_pcs_path);
 	return $thumbnail;
 }

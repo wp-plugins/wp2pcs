@@ -64,7 +64,7 @@ function wp_storage_download_file(){
 
 	// 获取文件真实路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$file_path = trailingslashit($root_dir).$file_path;
+	$file_path = trailing_slash_path($root_dir).$file_path;
 	$file_path = str_replace('//','/',$file_path);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 

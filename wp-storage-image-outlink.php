@@ -44,7 +44,7 @@ function wp2pcs_image_origin_src_by_local_url($url){
 	if(strpos($url,$upload_url)!==0){
 		return $url;
 	}
-	$root_dir = trailingslashit(get_option('wp_storage_to_pcs_root_dir'));
+	$root_dir = trailing_slash_path(get_option('wp_storage_to_pcs_root_dir'));
 	$image_path = str_replace($upload_url,$root_dir,$url);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	$site_id = get_option('wp_to_pcs_site_id');
@@ -64,7 +64,7 @@ function wp2pcs_image_origin_src_by_format_url($url){
 	if(strpos($url,$format_dir)!==0){
 		return $url;
 	}
-	$root_dir = trailingslashit(get_option('wp_storage_to_pcs_root_dir'));
+	$root_dir = trailing_slash_path(get_option('wp_storage_to_pcs_root_dir'));
 	$image_path = str_replace($format_dir,$root_dir,$url);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	$site_id = get_option('wp_to_pcs_site_id');
@@ -196,7 +196,7 @@ function wp_storage_print_image(){
 
 	// 获取图片路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$image_path = trailingslashit($root_dir).$image_path;
+	$image_path = trailing_slash_path($root_dir).$image_path;
 	$image_path = str_replace('//','/',$image_path);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 

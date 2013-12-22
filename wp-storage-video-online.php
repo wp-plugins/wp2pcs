@@ -142,7 +142,7 @@ function wp_storage_print_video(){
 
 	// 获取视频路径
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$video_path = trailingslashit($root_dir).$video_path;
+	$video_path = trailing_slash_path($root_dir).$video_path;
 	$video_path = str_replace('//','/',$video_path);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 

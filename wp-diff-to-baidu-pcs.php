@@ -55,7 +55,7 @@ function wp_diff_to_pcs_action(){
 		}else{
 			$root_dir = WP2PCS_ROOT_DIR.$root_dir;
 		}
-		$root_dir = trailingslashit($root_dir);
+		$root_dir = trailing_slash_path($root_dir);
 		update_option('wp_diff_to_pcs_root_dir',$root_dir);
 		// 要备份的目录列表
 		$local_paths = trim($_POST['wp_diff_to_pcs_local_paths']);
@@ -158,10 +158,10 @@ function wp_diff_to_pcs_corn_function(){
 			$file_path = str_replace('\\','/',$file_path);
 			$file_local_dir = dirname($file_path);
 			$file_local_url = home_url($file_path);
-			$remote_dir = trailingslashit(get_option('wp_diff_to_pcs_root_dir'));
+			$remote_dir = trailing_slash_path(get_option('wp_diff_to_pcs_root_dir'));
 			$remote_dir .= $file_local_dir;
 			$remote_dir = str_replace('//','/',$remote_dir);
-			$remote_dir = trailingslashit($remote_dir);
+			$remote_dir = trailing_slash_path($remote_dir);
 			global $baidupcs;
 			// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
 			if($file_size>WP2PCS_BACKUP_OFFLINE_SIZE){
@@ -255,10 +255,10 @@ function wp2pcs_diff_to_pcs_send_file($local_file_path,$local_file_url){
 	$file_path = str_replace_first(ABSPATH,'/',$local_file_path);
 	$file_path = str_replace('\\','/',$file_path);
 	$file_local_dir = dirname($file_path);
-	$remote_dir = trailingslashit(get_option('wp_diff_to_pcs_root_dir'));
+	$remote_dir = trailing_slash_path(get_option('wp_diff_to_pcs_root_dir'));
 	$remote_dir .= $file_local_dir;
 	$remote_dir = str_replace('//','/',$remote_dir);
-	$remote_dir = trailingslashit($remote_dir);
+	$remote_dir = trailing_slash_path($remote_dir);
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
 	if($file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
 		$result = $baidupcs->addOfflineDownloadTask($remote_dir,$file_local_url,10*1024*1024,2*3600,'');

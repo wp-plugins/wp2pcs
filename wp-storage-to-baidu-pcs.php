@@ -29,7 +29,7 @@ function wp_storage_to_pcs_action(){
 			wp_die('请认真填写老的图片目录！');
 			exit;
 		}
-		$img_url_old_root = trailingslashit($img_url_old_root);
+		$img_url_old_root = trailing_slash_path($img_url_old_root);
 		update_option('wp_storage_to_pcs_replace_img_old_root',$img_url_old_root);
 		$wpdb->query("UPDATE $wpdb->posts SET post_content=replace(post_content,'src=\"$img_url_old_root','src=\"$img_url_new_root')");
 		$wpdb->query("UPDATE $wpdb->posts SET post_content=replace(post_content,'src=\'$img_url_old_root','src=\'$img_url_new_root')");
@@ -51,7 +51,7 @@ function wp_storage_to_pcs_action(){
 		}else{
 			$root_dir = WP2PCS_ROOT_DIR.$root_dir;
 		}
-		$root_dir = trailingslashit($root_dir);
+		$root_dir = trailing_slash_path($root_dir);
 		update_option('wp_storage_to_pcs_root_dir',$root_dir);
 		// 更新图片外链URL前缀
 		$image_perfix = trim($_POST['wp_storage_to_pcs_image_perfix']);
