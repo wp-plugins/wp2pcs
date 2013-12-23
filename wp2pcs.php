@@ -38,10 +38,11 @@ require(dirname(__FILE__).'/wp2pcs-setup-functions.php');
 require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 
 // 经过判断或函数运算才能进行定义的常量
+define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_access_token'));
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
 if(!defined('WP_CONTENT_DIR')){
-	define('WP_CONTENT_DIR',ABSPATH.'wp-content/');
+	define('WP_CONTENT_DIR',trailing_slash_path(ABSPATH.'wp-content',WP2PCS_IS_WIN));
 }
 if(get_option('wp_to_pcs_debug') == '开启调试'){
 	define('WP2PCS_DEBUG',true);
@@ -51,7 +52,6 @@ if(get_option('wp_to_pcs_debug') == '开启调试'){
 if(get_option('wp2pcs_connect_too_slow')=='true' && is_admin()){
 	define('ALTERNATE_WP_CRON',true);// 防止定时任务丢失
 }
-define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 
 // 直接初始化一个全局变量$baidupcs
 $baidupcs = new BaiduPCS(WP2PCS_APP_TOKEN);
