@@ -55,7 +55,7 @@ function wp2pcs_audio_player_script(){
 		$count = count($wp_query->posts);
 		for($i=0;$i<$count;$i++){
 			if(preg_match('/\[audio([^\]]+)?\]/',$wp_query->posts[$i]->post_content)){
-				$has_video = true;
+				$has_audio = true;
 				break;
 			}
 		}

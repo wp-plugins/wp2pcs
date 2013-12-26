@@ -148,7 +148,7 @@ function wp_storage_to_pcs_panel(){
 		<p>附件访问方式：<select name="wp_storage_to_pcs_outlink_type">
 			<option value="200" <?php selected($outlink_type,200); ?>>直链：耗流量，保护授权信息，利于SEO</option>
 			<option value="301" <?php selected($outlink_type,301); ?>>外链：省流量，泄露授权信息，SEO欠佳</option>
-			<option value="302" <?php selected($outlink_type,302); ?>>外链：省流量，保护授权信息，必须授权</option>
+			<option value="302" <?php selected($outlink_type,302); ?>>外链：省流量，保护授权信息，SEO欠佳</option>
 		</select> <a href="http://wp2pcs.duapp.com/150" title="第三种方式是什么意思？" target="_blank">授权?</a></p>
 		<P><input type="checkbox" name="wp_storage_to_pcs_outlink_protact" value="true" <?php checked($outlink_protact,'true'); ?> /> 防盗链</p>
 		<p class="tishi hidden">防盗链功能：来自网站本身以外的其他访问都会被认为是盗链行为，当然如果你懂代码，可以通过修改插件源文件来扩大图片可用范围。</p>
