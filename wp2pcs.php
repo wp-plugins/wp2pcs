@@ -141,8 +141,9 @@ function wp_to_pcs_action(){
 	// 提交授权
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key'){
 		check_admin_referer();
-		$app_key = $_POST['wp_to_pcs_app_key'];
-		if(!trim($app_key)){
+		// 检查和更新API KEY
+		$app_key = trim($_POST['wp_to_pcs_app_key']);
+		if(!$app_key){
 			wp_die('请选择授权方式');
 			exit;
 		}
@@ -218,7 +219,7 @@ function wp_to_pcs_pannel(){
 	<?php if(!is_wp_to_pcs_active()): ?>
 		<div class="postbox">
 		<form method="post" autocomplete="off">
-			<h3>百度授权 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
+			<h3>百度授权 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p style="color:#008000;"><?php
 					// 首先检查php环境
@@ -302,7 +303,7 @@ function wp_to_pcs_pannel(){
 		<script>jQuery(function($){$('#wp2pcs-information-area').insertAfter('#wp2pcs-information-pend');});</script>
 	<?php endif; ?>
 		<div class="postbox">
-			<h3>说明 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
+			<h3>说明 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 			<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>本插件主要用于将WordPress和百度网盘连接起来，把百度网盘作为WordPress的后备箱。</p>
 				<p>本插件主要希望实现以下目标：1、备份WordPress到百度网盘，以免网站数据丢失；2、WordPress中上传的附件等直接上传到百度网盘，并将网盘作为网站的下载空间，实现直链下载、图片外链、音乐视频外链等；3、开发更多的WP2PCS应用，例如可以通过百度网盘手机客户端就可以写文章等创意功能。但明显，功能还不够完善，如果你愿意，可以参与到我们的开发中，请进入下方给出的插件主页和我们联系。</p>

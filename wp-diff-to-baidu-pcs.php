@@ -97,19 +97,29 @@ function wp_diff_to_pcs_update_file_list(){
 		$local_files = array(ABSPATH);
 	}
 	foreach($local_paths as $path){
+		$path = trim($path);
 		if(strpos($path,ABSPATH)!==0)continue;
-		if(!file_exists(trim($path)))continue;
 		$get_files = array();
-		if(is_file(trim($path))){
+		if(is_file($path)){
 			$get_files = array($path);
 		}
 		elseif(is_dir($path)){
 			get_files_in_dir_reset();
 			$get_files = get_files_in_dir($path);
+		}else{
+			continue;
 		}
 		$local_files = array_merge($local_files,$get_files);
 	}
-	update_option('wp_diff_to_pcs_local_files',$local_files);
+	//update_option('wp_diff_to_pcs_local_files',$local_files);
+	$local_files_txt = dirname(__FILE__).'/asset/local_files.txt';
+	if(file_exists($local_files_txt))@unlink($database_file);
+	$handle = @fopen($local_files_txt,"w+");
+	if(fwrite($handle,"\xEF\xBB\xBF".implode("\n",$local_files)) === false){
+		wp_die("写入文件 local_files.txt 失败");
+		exit();
+	}
+	fclose($handle);
 	return $local_files;
 }
 
@@ -122,7 +132,10 @@ function wp_diff_to_pcs_corn_function(){
 	set_php_ini('timezone');
 
 	// 获得目录总汇
-	$local_files = get_option('wp_diff_to_pcs_local_files');
+	//$local_files = get_option('wp_diff_to_pcs_local_files');
+	$local_files_txt = dirname(__FILE__).'/asset/local_files.txt';
+	$local_files = file_get_contents($local_files_txt);
+	$local_files = explode("\n",$local_files);
 	if(!$local_files){
 		$local_files = wp_diff_to_pcs_update_file_list();
 	}
@@ -134,12 +147,12 @@ function wp_diff_to_pcs_corn_function(){
 	if(!$diff_time)$diff_time = 0;
 	// 通过对游标的判断，确认上一次同步的文件和这次应该同步第几个文件
 	if(isset($local_files[$diff_cursor])){
-		$local_file = $local_files[$diff_cursor];
+		$local_file = trim($local_files[$diff_cursor]);
 		set_php_ini('timezone');
 		$local_file = str_replace('{year}',date('Y'),$local_file);
 		$local_file = str_replace('{month}',date('m'),$local_file);
 		$local_file = str_replace('{day}',date('d'),$local_file);
-		if(!is_file(trim($local_file)) || is_dir($local_file)){
+		if(!is_file($local_file) || is_dir($local_file)){
 			$diff_cursor ++;
 			if(!isset($local_files[$diff_cursor])){
 				$diff_cursor = 0;
@@ -312,7 +325,10 @@ function wp_diff_to_pcs_panel(){
 	<form method="post">
 		<?php if($diff_timestamp) : ?>
 		<?php
-		$local_files = get_option('wp_diff_to_pcs_local_files');
+		//$local_files = get_option('wp_diff_to_pcs_local_files');
+		$local_files_txt = dirname(__FILE__).'/asset/local_files.txt';
+		$local_files = file_get_contents($local_files_txt);
+		$local_files = explode("\n",$local_files);
 		$diff_cursor = get_option('wp_diff_to_pcs_local_files_cursor');
 		$current_diff_file = $local_files[$diff_cursor];
 		$next_diff_file = isset($local_files[$diff_cursor+1]) ? $local_files[$diff_cursor+1] : false;
@@ -320,13 +336,15 @@ function wp_diff_to_pcs_panel(){
 		$left_count = $totle_count-$diff_cursor;
 		$diff_rate_interval = $diff_rate[$run_rate]['interval'];
 		$left_time_long = $diff_rate_interval * $left_count;
+		$left_time_hour = (int)($left_time_long/3600);
+		$left_time_long = $left_time_long-3600*$left_time_hour;
 		$left_time_min = (int)($left_time_long/60);
 		$left_time_sec = $left_time_long%60;
 		$diff_rate_display = $diff_rate[$run_rate]['display'];
 		echo "<p>增量备份任务：$diff_rate_display 共有 $totle_count 要备份，当前剩余 $left_count <br />";
 		echo "当前备份到了：$current_diff_file <br />";
 		echo ($next_diff_file ? "下一个将备份：$next_diff_file <br />" : '');
-		echo "预计还需要 ".($left_time_min ? $left_time_min.' 分 ' : '').($left_time_sec ? $left_time_sec.' 秒' : '')."才能备份完你规定的路径";
+		echo "预计还需要 ".($left_time_hour?$left_time_hour.' 小时 ':'').($left_time_min?$left_time_min.' 分钟 ':'').($left_time_sec?$left_time_sec.' 秒':'')." 才能备份完你规定的路径";
 		echo "请不要在这期间对网站进行大规模修改。</p>";
 		?>
 		<?php else : ?>

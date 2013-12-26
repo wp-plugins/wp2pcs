@@ -442,8 +442,8 @@ function wp_backup_to_pcs_panel(){
 		<p class="tishi hidden">只备份特定目录或文件：每行一个，当前年月日分别用{year}{month}{day}代替，不能有空格，末尾带/，必须为网站目录路径（包含路径头<?php echo ABSPATH; ?>）。<b>注意，上级目录将包含下级目录，如<?php echo ABSPATH; ?>wp-content/将包含<?php echo ABSPATH; ?>wp-content/uploads/，因此务必不要重复，两个只能填一个，否则会报错。</b>填写了目录或文件列表之后，只备份填写的列表中的目录或文件。不填，则不备份网站目录下的文件。</p>
 		<?php endif; ?>
 		<p>
-			<input type="submit" value="确定" class="button-primary" />
-			&nbsp;&nbsp;&nbsp;&nbsp;
+			<?php if(!($timestamp_database || $timestamp_logs || $timestamp_www)): ?><input type="submit" value="确定" class="button-primary" />
+			&nbsp;&nbsp;&nbsp;&nbsp;<?php endif; ?>
 			<input type="submit" name="wp_backup_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
 			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="<?php if(WP2PCS_IS_WRITABLE) : ?>if(confirm('境外主机由于和百度服务器通信可能存在障碍，可能备份不成功，你可以使用“压缩下载”功能，先下载备份包，然后上传到网盘中！！') == false)return false;<?php endif; ?>if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
 			<?php if(WP2PCS_IS_WRITABLE) : ?>

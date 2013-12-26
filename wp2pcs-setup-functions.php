@@ -162,7 +162,8 @@ function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 
 // 判断文件或目录是否真的有可写权限
 // http://blog.csdn.net/liushuai_andy/article/details/8611433
-function is_really_writable($file)  {  
+function is_really_writable($file){
+	$file = trim($file);
 	// 是否开启安全模式
 	if(DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE){
 		return is_writable($file);
@@ -179,7 +180,7 @@ function is_really_writable($file)  {
 		return TRUE;
 	}
 	// 如果是不是文件，或文件打不开的话
-	elseif(!is_file(trim($file)) OR ($fp = @fopen($file,'w+')) === FALSE){
+	elseif(!is_file($file) OR ($fp = @fopen($file,'w+')) === FALSE){
 		return FALSE;
 	}
 	fclose($fp);
@@ -211,9 +212,9 @@ function set_php_ini($name){
 function get_real_filesize($file) {
     $size = filesize($file);
     if($size < 0)
-        if (!(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN'))
+        if(!(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN'))
             $size = trim(`stat -c%s $file`);
-        else {
+        else{
             $fsobj = new COM("Scripting.FileSystemObject");
             $f = $fsobj->GetFile($file);
             $size = $file->Size;

@@ -118,6 +118,7 @@
 		echo "不存在<a href='http://".$_SERVER['SERVER_NAME']."/crossdomain.xml' target='_blank'>crossdomain.xml</a>文件，网盘中的视频将不能被正常播放<br />";
 	}
 
+
 	// 检查是否授权通过
 	global $baidupcs;
 	$quota = json_decode($baidupcs->getQuota());
