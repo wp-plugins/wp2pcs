@@ -147,6 +147,7 @@ function wp_storage_print_video(){
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 
 	if($outlink_type == '200' && !WP2PCS_VIDEO_HD){
+		/*
 		// 考虑到流量问题，必须增加缓存能力
 		set_php_ini('timezone');
 		set_php_ini('session');
@@ -158,6 +159,7 @@ function wp_storage_print_video(){
 			session_destroy();
 			exit;
 		}
+		*/
 		// 打印视频m3u8到浏览器
 		global $baidupcs;
 		$result = $baidupcs->streaming($video_path,'M3U8_854_480');
