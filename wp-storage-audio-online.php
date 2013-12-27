@@ -25,11 +25,18 @@ function wp2pcs_audio_shortcode($atts){
 		'loop' => 'no'
 	),$atts));
 
+	global $post;
+	static $audio_id = 0,$post_id = 0;
+	if($post_id!=$post->ID){
+		$audio_id = 1;
+		$post_id = $post->ID;
+	}
+	$player_id = $post->ID.'-'.$audio_id;
+	$audio_id ++;
+
 	$name = $name ? $name : 'Powered by WP2PCS';
 	$autostart = $autostart ? $autostart : '0';
 	$loop = $loop ? $loop : 'no';
-
-	$player_id = get_php_run_time();
 
 	// 处理SRC中存在空格和中文的情况
 	if(preg_match('/[一-龥]/u',$src)){
@@ -39,7 +46,7 @@ function wp2pcs_audio_shortcode($atts){
 		$src = wp2pcs_audio_src($record_key);
 	}
 
-	$player = '<div id="audioplayer_'.$player_id.'" class="wp2pcs-audio"></div><script type="text/javascript">AudioPlayer.embed("audioplayer_'.$player_id.'",{titles:"'.$name.'",loop:"'.$loop.'",autostart:"'.$autostart.'",soundFile:"'.$src.'"});</script>';
+	$player = '<div id="audioplayer-'.$player_id.'" class="wp2pcs-audio"></div><script type="text/javascript">AudioPlayer.embed("audioplayer-'.$player_id.'",{titles:"'.$name.'",loop:"'.$loop.'",autostart:"'.$autostart.'",soundFile:"'.$src.'"});</script>';
 
 	return $player;
 }
