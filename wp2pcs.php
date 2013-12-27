@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接百度网盘)
 Plugin URI: http://wp2pcs.duapp.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.2.0
+Version: 1.2.1
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -27,7 +27,7 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VER','201312211540'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
+define('WP2PCS_PLUGIN_VER','201312271240'); // 以最新一次更新的时间点（到分钟）作为版本号，注意以两位数字作为值
 define('WP2PCS_APP_KEY','CuOLkaVfoz1zGsqFKDgfvI0h'); // WP2PCS官方API KEY
 define('WP2PCS_ROOT_DIR','/apps/wp2pcs/');
 define('WP2PCS_SUB_DIR',WP2PCS_ROOT_DIR.$_SERVER['SERVER_NAME'].'/');
@@ -137,6 +137,10 @@ function wp_to_pcs_action(){
 		return;
 	}elseif(!current_user_can('edit_theme_options')){
 		return;
+	}
+	// 关闭初始化提示
+	if(isset($_GET['close_notice']) && $_GET['close_notice']=='true'){
+		update_option('wp2pcs_colose_notice',WP2PCS_PLUGIN_VER);
 	}
 	// 提交授权
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key'){
@@ -313,6 +317,7 @@ function wp_to_pcs_pannel(){
 				<p>插件同时处于开发中，欢迎站长、博主朋友们向我们反馈，提出宝贵意见，或加入到开发中。</p>
 				<p>官方网站：<a href="http://wp2pcs.duapp.com" target="_blank">http://wp2pcs.duapp.com</a></p>
 				<p>QQ群：292172954 <a href="http://shang.qq.com/wpa/qunwpa?idkey=97278156f3def92eef226cd5b88d9e7a463e157655650f4800f577472c219786" target="_blank"><img title="WP2PCS官方交流群" alt="WP2PCS官方交流群" src="http://pub.idqqimg.com/wpa/images/group.png" border="0" /></a></p>
+				<p>百度贴吧：<a href="http://tieba.baidu.com/f?kw=wp2pcs%B9%D9%B7%BD%BD%BB%C1%F7" target="_blank">wp2pcs官方交流</a></p>
 				<p>向插件作者捐赠：<a href="http://me.alipay.com/tangshuang" target="_blank">支付宝</a>、BTC（164jDbmE8ncUYbnuLvUzurXKfw9L7aTLGD）、PPC（PNijEw4YyrWL9DLorGD46AGbRbXHrtfQHx）、XPM（AbDGH5B7zFnKgMJM8ujV3br3R2V31qrF2F） <a href="http://wp2pcs.duapp.com/240" target="_blank" title="WP2PCS为何支持BTC、PPC、XPM捐赠且只支持这三种币？">?</a></p>
 			</div>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
@@ -351,3 +356,24 @@ jQuery('#application-update-notice').show();
 </script>
 <?php
 }
+
+// 后台全局提示信息
+add_action('admin_notices','wp2pcs_admin_notice');
+function wp2pcs_admin_notice(){
+	if(get_option('wp2pcs_colose_notice')>=WP2PCS_PLUGIN_VER)return;
+	if(is_multisite()){
+		if(!current_user_can('manage_network'))return;
+	}else{
+		if(!current_user_can('edit_theme_options'))return;
+	}
+    ?><div id="wp2pcs-admin-notice" class="updated">
+		<p>WP2PCS<a href="http://wp2pcs.duapp.com" target="_blank">官方网站</a>、QQ群(292172954)、<a href="http://tieba.baidu.com/f?kw=wp2pcs%B9%D9%B7%BD%BD%BB%C1%F7" target="_blank">百度贴吧</a>同时提供反馈交流平台，如果在使用中有什么问题，或对插件有什么意见，可以通过这些平台向我们反馈。</p>
+		<p>插件有重要通知时，会在“<a href="<?php echo admin_url('plugins.php?page=wp2pcs'); ?>">插件》WP2PCS</a>”中提示，请经常查阅。<a href="<?php echo admin_url('plugins.php?page=wp2pcs&close_notice=true'); ?>">关闭本消息</a></p>
+	</div><?php
+}
+
+// 新版本中删除之前的一些设置
+if(get_option('wp_diff_to_pcs_upload_backup'))delete_option('wp_diff_to_pcs_upload_backup');
+if(get_option('wp_diff_to_pcs_upload_type'))delete_option('wp_diff_to_pcs_upload_type');
+if(get_option('wp_storage_to_pcs_image_hd'))delete_option('wp_storage_to_pcs_image_hd');
+if(get_option('wp_storage_to_pcs_image_rb'))delete_option('wp_storage_to_pcs_image_rb');

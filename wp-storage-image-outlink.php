@@ -91,7 +91,7 @@ function wp2pcs_image_origin_src($url){
 	}
 }
 
-if(WP2PCS_IMAGE_HD && !is_admin()):
+if(WP2PCS_IMAGE_HD && !is_admin() && 0): // 关闭了该功能
 	function wp2pcs_get_attachment_link_filter($content,$post_id,$size,$permalink){
 		// http://oikos.org.uk/2011/09/tech-notes-using-resized-images-in-wordpress-galleries-and-lightboxes/
 		// Only do this if we're getting the file URL

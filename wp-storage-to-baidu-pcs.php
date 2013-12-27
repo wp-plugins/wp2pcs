@@ -20,7 +20,7 @@ function wp_storage_to_pcs_action(){
 		return;
 	}
 	// 替换图片路径
-	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_storage_to_pcs_replace_img_in_post'){
+	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_storage_to_pcs_replace_img_in_post' && 0){// 删除了图片路径替换功能
 		global $wpdb;
 		$img_url_base = get_option('wp_storage_to_pcs_image_perfix');
 		$img_url_new_root = home_url('/'.$img_url_base.'/');
@@ -56,10 +56,12 @@ function wp_storage_to_pcs_action(){
 		// 更新图片外链URL前缀
 		$image_perfix = trim($_POST['wp_storage_to_pcs_image_perfix']);
 		update_option('wp_storage_to_pcs_image_perfix',$image_perfix);
+		/* 关闭了图片附件地址修改功能
 		$image_hd = $_POST['wp_storage_to_pcs_image_hd'];
 		if($image_hd)update_option('wp_storage_to_pcs_image_hd',$image_hd);
 		else delete_option('wp_storage_to_pcs_image_hd');
 		update_option('wp_storage_to_pcs_image_rb',$_POST['wp_storage_to_pcs_image_rb']);
+		*/
 		// 更新文件下载URL前缀
 		$download_perfix = trim($_POST['wp_storage_to_pcs_download_perfix']);
 		update_option('wp_storage_to_pcs_download_perfix',$download_perfix);
@@ -119,6 +121,7 @@ function wp_storage_to_pcs_panel(){
 		<p class="tishi hidden">使用网盘中的某一个目录作为你存储图片或附件的根目录，例如你填写“/uploads/”，那么到时候就会采用这个目录下的文件作为附件。</p>
 		<p>图片访问前缀：
 			<input type="text" name="wp_storage_to_pcs_image_perfix" value="<?php echo $image_perfix; ?>" />
+			<?php if(0): // 关闭图片附件访问功能 ?>
 			<input type="checkbox" name="wp_storage_to_pcs_image_hd" value="true" <?php checked($image_hd,'true'); ?> />
 			<select name="wp_storage_to_pcs_image_rb">
 				<option value="1" <?php selected($image_rb,'1'); ?>>只替换所有图片链接</option>
@@ -127,6 +130,7 @@ function wp_storage_to_pcs_panel(){
 				<option value="4" <?php selected($image_rb,'4'); ?>>所有图片链接和地址</option>
 			</select>
 			<a href="http://wp2pcs.duapp.com/286" title="本地图片访问URL会被转换为网盘中图片的访问URL，必须开启增量备份，设置的文件路径必须为特定的方式，必须开启上传时就同步，必须关闭“简易加速”！" target="_blank">必读：强制使用网盘图片注意事项?</a>
+			<?php endif; ?>
 		</p>
 		<p class="tishi hidden">访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“/uploads/test.jpg”这张图片。为了提高不同空间的兼容性，建议你把这个前缀填写为“?img”的形式。</p>
 		<p>下载访问前缀：<input type="text" name="wp_storage_to_pcs_download_perfix" value="<?php echo $download_perfix; ?>" /></p>
@@ -147,8 +151,8 @@ function wp_storage_to_pcs_panel(){
 		</p>
 		<p>附件访问方式：<select name="wp_storage_to_pcs_outlink_type">
 			<option value="200" <?php selected($outlink_type,200); ?>>直链：耗流量，保护授权信息，利于SEO</option>
-			<option value="301" <?php selected($outlink_type,301); ?>>外链：省流量，泄露授权信息，SEO欠佳</option>
 			<option value="302" <?php selected($outlink_type,302); ?>>外链：省流量，保护授权信息，SEO欠佳</option>
+			<option value="301" <?php selected($outlink_type,301); ?>>外链：省流量，泄露授权信息，SEO欠佳</option>
 		</select> <a href="http://wp2pcs.duapp.com/150" title="第三种方式是什么意思？" target="_blank">授权?</a></p>
 		<P><input type="checkbox" name="wp_storage_to_pcs_outlink_protact" value="true" <?php checked($outlink_protact,'true'); ?> /> 防盗链</p>
 		<p class="tishi hidden">防盗链功能：来自网站本身以外的其他访问都会被认为是盗链行为，当然如果你懂代码，可以通过修改插件源文件来扩大图片可用范围。</p>
@@ -158,6 +162,7 @@ function wp_storage_to_pcs_panel(){
 		<?php wp_nonce_field(); ?>
 	</form>
 	</div>
+	<?php if(0): // 关闭图片地址替换功能 ?>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 	<form method="post">
 		<p class="tishi hidden"><strong>一键更新图片地址前缀功能</strong>：一键将图片从<?php echo home_url('/wp-content/uploads/2013/11/29/xxx.jpg'); ?>替换为<?php echo home_url('/'.$image_perfix.'/2013/11/29/xxx.jpg'); ?>。请看下面详细介绍。</p>
@@ -169,6 +174,7 @@ function wp_storage_to_pcs_panel(){
 		<?php wp_nonce_field(); ?>
 	</form>
 	</div>
+	<?php endif; ?>
 	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p class="tishi hidden">你还需要注意一些兼容性问题。这不是指插件本身的问题，而是指与其他环境的冲突，例如你使用了CDN缓存服务，就有可能造成图片缓存而不能被访问；如果你使用了其他插件来优化你的图片URL，也最好将这些插件重新设计。</p>
 	</div>

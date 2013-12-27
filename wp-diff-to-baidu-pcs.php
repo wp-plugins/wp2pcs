@@ -25,7 +25,7 @@ function wp_diff_to_pcs_action(){
 		return;
 	}
 	// 设置上传附件的时候立即备份
-	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_diff_to_pcs_upload_backup'){
+	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_diff_to_pcs_upload_backup' && 0){// 关闭了附件同步
 		$upload_backup = $_POST['wp_diff_to_pcs_upload_backup'];
 		if($upload_backup){
 			update_option('wp_diff_to_pcs_upload_backup',$upload_backup);
@@ -225,7 +225,7 @@ function wp_diff_to_pcs_corn_function(){
 }
 
 // 上传新的附件的时候，将附件同步到增量备份目录
-if(get_option('wp_diff_to_pcs_upload_backup')=='true' && get_option('wp2pcs_connect_too_slow')!='true'){
+if(get_option('wp_diff_to_pcs_upload_backup')=='true' && get_option('wp2pcs_connect_too_slow')!='true' && 0){// 关闭了附件同步功能
 	$upload_type = get_option('wp_diff_to_pcs_upload_type');
 	// 只上传原始附件
 	if($upload_type=='1'){
@@ -375,6 +375,7 @@ function wp_diff_to_pcs_panel(){
 		<?php wp_nonce_field(); ?>
 	</form>
 	</div>
+	<?php if(0):// 关闭同步设置 ?>
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 	<form method="post">
 		<p>
@@ -392,6 +393,7 @@ function wp_diff_to_pcs_panel(){
 		<?php wp_nonce_field(); ?>
 	</form>
 	</div>
+	<?php endif; ?>
 	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 		<p>什么是增量备份：严格意义上讲，wp2pcs提供的该功能为类似增量备份功能，即通过对文件检查，只上传经过修改的文件，已经备份过的，但没有发生变化的文件不进行备份，从而节省了大量资源。</p>
 		<p>wp2pcs提供的增量备份功能性能上受限于当前主机，如果你发现备份似乎不尽人意，建议开启简易加速，以尽快备份完你的文件。开启简易加速后，每次进入后台都会触发一次备份请求，URL会多出一个参数，前台不受影响。</p>
