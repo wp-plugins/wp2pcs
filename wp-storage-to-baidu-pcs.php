@@ -82,7 +82,7 @@ function wp_storage_to_pcs_action(){
 		update_option('wp_storage_to_pcs_media_perfix',$media_perfix);
 		$media_hd = $_POST['wp_storage_to_pcs_media_hd'];
 		if($media_hd)update_option('wp_storage_to_pcs_media_hd',$media_hd);
-		else delete_option('wp_storage_to_pcs_meida_hd');
+		else delete_option('wp_storage_to_pcs_media_hd');
 		// 防盗链
 		$outlink_protact = $_POST['wp_storage_to_pcs_outlink_protact'];
 		if($outlink_protact)update_option('wp_storage_to_pcs_outlink_protact',$outlink_protact);
