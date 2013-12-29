@@ -94,7 +94,7 @@ function wp_diff_to_pcs_update_file_list(){
 	$local_paths = get_option('wp_diff_to_pcs_local_paths');
 	$local_files = array();
 	if(!is_array($local_paths) || empty($local_paths)){
-		$local_files = array(ABSPATH);
+		$local_paths = array(ABSPATH);
 	}
 	foreach($local_paths as $path){
 		$path = trim($path);
