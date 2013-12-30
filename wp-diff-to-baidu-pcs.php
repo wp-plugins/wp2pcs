@@ -177,7 +177,7 @@ function wp_diff_to_pcs_corn_function(){
 			$remote_dir = trailing_slash_path($remote_dir);
 			global $baidupcs;
 			// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-			if($file_size>WP2PCS_BACKUP_OFFLINE_SIZE){
+			if($file_size>WP2PCS_BACKUP_OFFLINE_SIZE && 0){// 百度离线下载效果差，这里关闭了这个功能
 				$result = $baidupcs->addOfflineDownloadTask($remote_dir,$file_local_url,10*1024*1024,2*3600,'');
 			}
 			// 文件大于2M的时候，用分片上传
@@ -273,7 +273,7 @@ function wp2pcs_diff_to_pcs_send_file($local_file_path,$local_file_url){
 	$remote_dir = str_replace('//','/',$remote_dir);
 	$remote_dir = trailing_slash_path($remote_dir);
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-	if($file_size > WP2PCS_BACKUP_OFFLINE_SIZE){
+	if($file_size > WP2PCS_BACKUP_OFFLINE_SIZE && 0){// 百度离线下载效果差，这里关闭
 		$result = $baidupcs->addOfflineDownloadTask($remote_dir,$file_local_url,10*1024*1024,2*3600,'');
 	}
 	// 文件大于2M的时候，用分片上传

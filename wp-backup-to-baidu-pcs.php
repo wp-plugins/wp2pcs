@@ -297,7 +297,7 @@ function wp_backup_to_pcs_send_super_file($local_path,$remote_dir,$file_block_si
 	$file_name = basename($local_path);
 	
 	// 文件大于200M时，使用离线下载功能，可以更快的传输文件，不需要在执行fopen等操作，也可以节省资源了
-	if(get_real_filesize($local_path)>WP2PCS_BACKUP_OFFLINE_SIZE):
+	if(get_real_filesize($local_path)>WP2PCS_BACKUP_OFFLINE_SIZE && 0):// 百度离线下载效果非常差，因此关闭它
 		$result = $baidupcs->addOfflineDownloadTask(trailing_slash_path($remote_dir),home_url('/wp-content/'.$file_name),10*1024*1024,2*3600,'');
 		// 离线下载之后增加一个定时任务，将打包文件删除
 		set_php_ini('timezone');
@@ -341,6 +341,7 @@ function wp_backup_to_pcs_send_file($local_path,$remote_dir){
 }
 
 // 删除这些离线文件必须在晚上结束的时候执行
+/*
 add_action('wp_backup_to_pcs_corn_task_delete_file_offline','wp_backup_to_pcs_delete_file_offline');
 function wp_backup_to_pcs_delete_file_offline(){
 	wp_backup_to_pcs_delete_file_offline_by_filename('www.zip');
@@ -360,6 +361,7 @@ function wp_backup_to_pcs_delete_file_offline_by_filename($file_name){
 		if(file_exists($file))@unlink($file);
 	}
 }
+*/
 
 // WP2PCS菜单中，使用下面的函数，打印与备份有关的控制面板
 function wp_backup_to_pcs_panel(){
@@ -497,19 +499,20 @@ function wp_backup_to_pcs_panel(){
 			echo '</div>';
 		}
 	endif;
-	if(get_option('wp2pcs_connect_too_slow')!='true'):
-	$offline_task = $baidupcs->listOfflineDownloadTask(0,10,0,'','','',1,1);
-	$offline_task = json_decode($offline_task,true);
-	if(isset($offline_task['task_info'])){
-		$offline_task = $offline_task['task_info'];
-		if(!empty($offline_task) && strpos($task['source_url'],home_url())!==false){
-			echo "<div class='inside' style='border-bottom:1px solid #CCC;margin:0;padding:8px 10px;'><p>下列上传任务正在进行，请勿删除wp-content目录下的打包文件：<br />";
-			foreach($offline_task as $task){
-				echo "{$task['source_url']} <b style='color:#118508;'>=></b> {$task['save_path']} <br />";
+	// 如果存在离线下载任务，就会在下面显示这些任务
+	if(get_option('wp2pcs_connect_too_slow')!='true' && 0):// 关闭离线下载功能
+		$offline_task = $baidupcs->listOfflineDownloadTask(0,10,0,'','','',1,1);
+		$offline_task = json_decode($offline_task,true);
+		if(isset($offline_task['task_info'])){
+			$offline_task = $offline_task['task_info'];
+			if(!empty($offline_task) && strpos($task['source_url'],home_url())!==false){
+				echo "<div class='inside' style='border-bottom:1px solid #CCC;margin:0;padding:8px 10px;'><p>下列上传任务正在进行，请勿删除wp-content目录下的打包文件：<br />";
+				foreach($offline_task as $task){
+					echo "{$task['source_url']} <b style='color:#118508;'>=></b> {$task['save_path']} <br />";
+				}
+				echo "</p></div>";
 			}
-			echo "</p></div>";
 		}
-	}
 	endif;
 	?>
 	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
