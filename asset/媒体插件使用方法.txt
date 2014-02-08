@@ -1,0 +1,82 @@
+一、百度云媒体视频播放
+
+<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>
+<div id="playercontainer_最好是数字ID"></div>
+<script type="text/javascript">
+var player = cyberplayer("playercontainer_最好是数字ID").setup({
+    width:640,
+    height:480,
+    backcolor:"#FFFFFF",
+    stretching:"uniform", // uniform,fill,exactfit,bestfit,none
+    file:"http://yourdomain.com/media/test.m3u8",
+    image:"封面图片",
+    autoStart:!1,
+    repeat:"always",
+    volume:100,
+    controlbar:"over",
+    ak:"", // 完整的API KEY
+    sk:"" // Secret Key前16位
+});
+</script>
+
+上面的代码只是用来打印视频播放器，如果要让视频能够正常播放，还需要在上面的file属性值对应域名根目录下有crossdomain.xml
+
+二、音乐播放器
+
+<script type="text/javascript" src="asset/audio-player.js"></script>
+<script type="text/javascript">
+AudioPlayer.setup("asset/player.swf",{
+    width:"320",
+    animation:"yes",
+    encode:"no",
+    initialvolume:"60",
+    remaining:"yes",
+    noinfo:"no",
+    buffer:"5",
+    checkpolicy:"no",
+    rtl:"no",
+    bg:"E5E5E5",
+    text:"333333",
+    leftbg:"CCCCCC",
+    lefticon:"333333",
+    volslider:"666666",
+    voltrack:"FFFFFF",
+    rightbg:"B4B4B4",
+    rightbghover:"999999",
+    righticon:"333333",
+    righticonhover:"FFFFFF",
+    track:"FFFFFF",
+    loader:"009900",
+    border:"CCCCCC",
+    tracker:"DDDDDD",
+    skip:"666666",
+    pagebg:"FAFAFA",
+    transparentpagebg:"no"
+});
+</script>',
+<div id="audioplayer_唯一的ID号"></div>
+<script type="text/javascript">
+AudioPlayer.embed("audioplayer_唯一的ID号", {
+    titles:"要显示的曲目标题",
+    loop:"no",
+    autostart:"no",
+    soundFile:"音频mp3地址"
+});
+</script>
+
+注意：有时候会出现一直connecting的情况，是由于音频比较大，网速相对慢，没有在一定的时间内加载完造成的，但并不影响播放。
+目前最好只使用mp3音乐播放，其他格式的音乐好像很多不能播放。
+
+三、FLV视频播放
+
+<embed src="flv.swf"
+	allowfullscreen="true"
+	isautoplay="0"
+	flashvars="vcastr_file=http://wp2pcs.demo.utubon.com/?media/5.flv"
+	quality="high"
+	type="application/x-shockwave-flash"
+	width="500"
+	height="400"
+></embed>
+
+采用media前缀来获取flv流文件
