@@ -83,7 +83,7 @@ function wp_backup_to_pcs_action(){
 			// 备份数据库
 			$database_file = $zip_dir.'database.sql';
 			if(file_exists($database_file))@unlink($database_file);
-			$database_content = get_database_backup_all_sql();
+			$database_content = "\xEF\xBB\xBF".get_database_backup_all_sql();
 			$handle = @fopen($database_file,"w+");
 			if(fwrite($handle,$database_content) === false){
 				echo "写入文件 $filename 失败";
@@ -124,6 +124,7 @@ function wp_backup_to_pcs_action(){
 				if(file_exists($www_file))@unlink($www_file);
 				@unlink($database_file);
 				echo $file_content;
+				wp2pcs_log('执行了一次压缩下载备份');
 				exit;
 			}
 		}
@@ -135,7 +136,7 @@ function wp_backup_to_pcs_action(){
 			global $baidupcs;
 			
 			// 备份数据库
-			$file_content = get_database_backup_all_sql();
+			$file_content = "\xEF\xBB\xBF".get_database_backup_all_sql();
 			$file_name = 'database.sql';
 			$baidupcs->upload($file_content,$remote_dir,$file_name);
 			
@@ -154,6 +155,7 @@ function wp_backup_to_pcs_action(){
 					wp_backup_to_pcs_send_file($www_file,$remote_dir);
 				}
 			}
+			wp2pcs_log('执行了一次立即备份到PCS');
 		}
 		// 定时备份，需要和下面的wp_backup_to_pcs_corn_task_function函数结合起来
 		if(isset($_POST['wp_backup_to_pcs_future'])){
@@ -171,6 +173,7 @@ function wp_backup_to_pcs_action(){
 						wp_schedule_event($run_time,$date,'wp_backup_to_pcs_corn_task_'.$task);
 					}
 				}
+				wp2pcs_log('开启了定时备份任务');
 			}else{
 				// 关闭定时任务
 				if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))
@@ -179,6 +182,7 @@ function wp_backup_to_pcs_action(){
 					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_logs');
 				if(wp_next_scheduled('wp_backup_to_pcs_corn_task_www'))
 					wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_www');
+				wp2pcs_log('关闭了定时备份任务');
 			}
 		}
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time().'#wp-to-pcs-backup-form');
@@ -202,9 +206,11 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	global $baidupcs;
 	
 	// 备份数据库
-	$file_content = get_database_backup_all_sql();
+	$file_content = "\xEF\xBB\xBF".get_database_backup_all_sql();
 	$file_name = 'database.sql';
 	$result = $baidupcs->upload($file_content,$remote_dir,$file_name);
+
+	wp2pcs_log('备份数据库到PCS成功');
 }
 function wp_backup_to_pcs_corn_task_function_logs(){
 	if(!WP2PCS_IS_WRITABLE){
@@ -229,6 +235,8 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 	if($log_file){
 		wp_backup_to_pcs_send_file($log_file,$remote_dir);
 	}
+
+	wp2pcs_log('备份日志文件到PCS成功');
 }
 function wp_backup_to_pcs_corn_task_function_www(){
 	if(!WP2PCS_IS_WRITABLE){
@@ -253,6 +261,8 @@ function wp_backup_to_pcs_corn_task_function_www(){
 	if($www_file){
 		wp_backup_to_pcs_send_file($www_file,$remote_dir);
 	}
+
+	wp2pcs_log('备份网站文件到PCS成功');
 }
 
 // 每天早上6:30定时清理可能由于备份失败导致的文件未删除的文件

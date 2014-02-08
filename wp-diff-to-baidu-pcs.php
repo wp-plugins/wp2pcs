@@ -72,6 +72,7 @@ function wp_diff_to_pcs_action(){
 			delete_option('wp_diff_to_pcs_last_time');
 			delete_option('wp_diff_to_pcs_local_files_cursor');
 			wp_diff_to_pcs_update_file_list();
+			wp2pcs_log('更新了增量备份的文件列表');
 			wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))).'#wp-to-pcs-diff-form');
 			exit;
 		}
@@ -80,8 +81,10 @@ function wp_diff_to_pcs_action(){
 			update_option('wp_diff_to_pcs_future',$_POST['wp_diff_to_pcs_future']);
 			if($_POST['wp_diff_to_pcs_future'] == '开启增量备份'){
 				wp_schedule_event(time()+120,$run_rate,'wp_diff_to_pcs_corn_task');
+				wp2pcs_log('开启了增量备份');
 			}else{
 				wp_clear_scheduled_hook('wp_diff_to_pcs_corn_task');
+				wp2pcs_log('关闭了增量备份');
 			}
 		}
 		wp_redirect(remove_query_arg('_wpnonce',add_query_arg(array('time'=>time()))).'#wp-to-pcs-diff-form');
@@ -302,6 +305,7 @@ function wp2pcs_diff_to_pcs_send_file($local_file_path,$local_file_url){
 		$result = $baidupcs->upload($file_content,$remote_dir,$file_name);
 		fclose($handle);
 	}
+	wp2pcs_log('增量备份任务，上传了文件：'.$local_file_path);
 }
 
 // WP2PCS菜单中，使用下面的函数，打印与备份有关的内容

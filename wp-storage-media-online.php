@@ -69,6 +69,9 @@ function wp_storage_print_media(){
 	$root_dir = get_option('wp_storage_to_pcs_root_dir');
 	$media_path = trailing_slash_path($root_dir).$media_path;
 	$media_path = str_replace('//','/',$media_path);
+
+	wp2pcs_log('流媒体被访问，访问路径：'.$current_uri.'，实际路径：'.$audio_path);
+
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 
 	// 防盗链

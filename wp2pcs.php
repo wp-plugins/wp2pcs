@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接百度网盘)
 Plugin URI: http://wp2pcs.duapp.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.2.1
+Version: 1.2.2
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -75,7 +75,7 @@ require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
 // 提高执行时间
-add_filter( 'http_request_timeout', 'wp_smushit_filter_timeout_time');
+add_filter('http_request_timeout','wp_smushit_filter_timeout_time');
 function wp_smushit_filter_timeout_time($time) {
 	$time = 25; //new number of seconds
 	return $time;
@@ -97,7 +97,7 @@ function wp_to_pcs_default_settings(){
 	if(!get_option('wp_storage_to_pcs_outlink_protact'))update_option('wp_storage_to_pcs_outlink_protact','true');
 }
 
-// 停用插件的时候停止定时任务
+// 停用插件的时候，或者点击更新按钮，停止定时任务
 //register_deactivation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_plugin_deactivate');
 function wp2pcs_plugin_deactivate(){
 	// 删除授权TOKEN
@@ -176,6 +176,7 @@ function wp_to_pcs_action(){
 		update_option('wp_to_pcs_access_token',$access_token);
 		update_option('wp_to_pcs_site_id',$site_id);
 		wp_to_pcs_default_settings();// 初始化各个推荐值
+		wp_log('完成授权');
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
@@ -183,6 +184,7 @@ function wp_to_pcs_action(){
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key_update' && isset($_POST['wp_to_pcs_app_key_update']) && $_POST['wp_to_pcs_app_key_update'] == '更新授权'){
 		check_admin_referer();
 		wp2pcs_plugin_deactivate();// 更新授权API KEY跟停用插件是一样的
+		wp2pcs_log('更新WP2PCS授权，授权信息被删除');
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
@@ -190,6 +192,11 @@ function wp_to_pcs_action(){
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['wp_to_pcs_debug']) && !empty($_POST['wp_to_pcs_debug'])){
 		check_admin_referer();
 		update_option('wp_to_pcs_debug',$_POST['wp_to_pcs_debug']);
+		if($_POST['wp_to_pcs_debug'] == '开启调试'){
+			wp2pcs_log('调试模式被开启');
+		}else{
+			wp2pcs_log('调试模式关闭');
+		}
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
@@ -200,8 +207,10 @@ function wp_to_pcs_action(){
 		update_option('wp_to_pcs_speed_control',$speed_control);
 		if($speed_control=='简易加速'){
 			update_option('wp2pcs_connect_too_slow','true');
+			wp2pcs_log('简易加速被开启');
 		}else{
 			delete_option('wp2pcs_connect_too_slow');
+			wp2pcs_log('简易加速被关闭');
 		}
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
@@ -247,6 +256,7 @@ function wp_to_pcs_pannel(){
 					<input type="radio" name="wp_to_pcs_app_key" value="true" <?php checked($app_key,'true'); ?> />保存于自己的网盘
 					<input type="radio" name="wp_to_pcs_app_key" value="false" <?php checked($app_key,'false'); ?> />托管于WP2PCS官方
 				</p>
+				<p class="inside tishi hidden"><a href="https://openapi.baidu.com/oauth/2.0/authorize?response_type=token&client_id=CuOLkaVfoz1zGsqFKDgfvI0h&redirect_uri=oob&scope=netdisk" target="_blank">获取</a> Access Token <input type="text" name="wp_to_pcs_access_token_normal" /></p>
 				<p><input type="submit" value="提交" class="button-primary" /></p>
 				<input type="hidden" name="action" value="wp_to_pcs_app_key" />
 				<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
@@ -254,6 +264,7 @@ function wp_to_pcs_pannel(){
 			</div>
 			<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>本插件需要你登录自己的百度账号，如果你还没有开通自己的百度网盘，或者不愿意占用自己的网盘空间，可以将自己的资料托管于WP2PCS官方网盘，WP2PCS官方承诺尽最大努力保护你的资料安全。</p>
+				<p>在特殊情况下，WP2PCS官网可能不能正常打开，你可以使用“获取”链接直接获取access token，将access token值填写在上面的文本框中直接提交。</p>
 			</div>
 		</form>
 		</div>
@@ -372,7 +383,7 @@ function wp2pcs_admin_notice(){
 	</div><?php
 }
 
-// 新版本中删除之前的一些设置
+// 新版本中删除之前的一些设置，如果从1.2.1版本升级，则可以删除下面的
 if(get_option('wp_diff_to_pcs_upload_backup'))delete_option('wp_diff_to_pcs_upload_backup');
 if(get_option('wp_diff_to_pcs_upload_type'))delete_option('wp_diff_to_pcs_upload_type');
 if(get_option('wp_storage_to_pcs_image_hd'))delete_option('wp_storage_to_pcs_image_hd');
