@@ -8,8 +8,7 @@ Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-备份WordPress到网盘，把PCS作为网站后备箱。
-Backup and storage wordpress to baidu PCS.
+备份WordPress到网盘，把PCS作为网站附件存储空间。
 
 == Description ==
 
