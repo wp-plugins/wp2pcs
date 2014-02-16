@@ -1,4 +1,4 @@
-﻿=== WP2PCS （WordPress连接到百度网盘） ===
+﻿=== WP2PCS （WordPress连接到网盘） ===
 Contributors: frustigor
 Donate link: http://www.wp2pcs.com
 Tags:wp2pcs, backup, sync, baidu, personal cloud storage, PCS, 百度网盘
@@ -14,6 +14,7 @@ Backup and storage wordpress to baidu PCS.
 == Description ==
 
 WP2PCS顾名思议就是把WordPress和网盘（PCS，个人云存储）连接在一起的插件。它的两项基本功能就是：将wordpress的数据库、文件<strong>备份</strong>到网盘，以防止由于过失而丢失了网站数据；把网盘作为网站的后备箱，<strong>存放</strong>图片、附件，解决网站空间不够用的烦恼，这个时候，你可以在网站内<strong>直接引用</strong>网盘上的文件，并提高你的网站SEO和用户体验。
+WP2PCS将你的WordPress定时备份到百度网盘，把百度网盘作为附件存储空间，解决你的网站后顾之忧。
 
 官方网站 http://www.wp2pcs.com
 如有疑问请加官方唯一QQ群(292172954)参与讨论。
