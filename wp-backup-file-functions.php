@@ -31,14 +31,13 @@ function get_files_in_dir_reset(){
 * 打包指定目录列表中的文件
 * 第一个参数为准备放入zip文件的路径数组，或某单一路径
 * 第二个参数为准备作为存放zip文件的路径
-* 第三个参数为zip文件中，准备移除的路径字串
+* 第三个参数为zip文件路径中，准备移除的路径字串
 */
 function zip_files_in_dirs($zip_local_paths,$zip_file_path,$remove_path = ''){
 	if(empty($zip_local_paths)){
-		return null;
+		return false;
 	}
 	$zip_file_path = trim($zip_file_path);
-	$zip_local_paths = $zip_local_paths;
 	if(file_exists($zip_file_path)){
 		@unlink($zip_file_path);
 	}

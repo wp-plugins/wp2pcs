@@ -91,40 +91,6 @@ html,body{background-color:#fff;background-attachment:fixed;}
 </style>
 <script>
 jQuery(function($){
-	// 插入视频函数
-	var $insert_video_count = 0,$insert_audio_count = 0;
-	function insert_video_into_editor($video_src,$video_cover){
-		var $insert_id = new Date().getTime(),
-			$script = '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js">\x3C/script>',
-			$container = '<div id="playercontainer_'+$insert_id+'" class="wp2pcs-video"><img src="'+$video_cover+'" width="640" height="480" /></div>',
-			$config = '<script type="text/javascript">var player=cyberplayer("playercontainer_'+$insert_id+'").setup({width:640,height:480,backcolor:"#FFFFFF",stretching:"bestfit",file:"'+$video_src+'.m3u8",image:"'+$video_cover+'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});\x3C/script>',
-			//  (uniform,fill,exactfit,bestfit,none) http://www.longtailvideo.com/support/forums/jw-player/feature-suggestions/7313/stretching-uniformfillexactfitbestfitnone/
-			$html = '';
-		if(!$insert_video_count){
-			$html += $script;
-		}
-		$html += $container;
-		$html += $config;
-		$html += "\n<br /><br />\n";
-		$insert_video_count ++;
-		return $html;
-	}
-	function insert_audio_into_editor($audio_src,$audio_name){
-		var $insert_id = new Date().getTime(),
-			$script = '<script type="text/javascript" src="<?php echo plugins_url("asset/audio-player.js",WP2PCS_PLUGIN_NAME); ?>">\x3C/script><script type="text/javascript">AudioPlayer.setup("<?php echo plugins_url("asset/player.swf",WP2PCS_PLUGIN_NAME); ?>",{width:"320",animation:"yes",encode:"no",initialvolume:"60",remaining:"yes",noinfo:"no",buffer:"5",checkpolicy:"no",rtl:"no",bg:"E5E5E5",text:"333333",leftbg:"CCCCCC",lefticon:"333333",volslider:"666666",voltrack:"FFFFFF",rightbg:"B4B4B4",rightbghover:"999999",righticon:"333333",righticonhover:"FFFFFF",track:"FFFFFF",loader:"009900",border:"CCCCCC",tracker:"DDDDDD",skip:"666666",pagebg:"FAFAFA",transparentpagebg:"no"});\x3C/script>',
-			$container = '<div id="audioplayer_'+$insert_id+'" class="wp2pcs-audio"><img src="<?php echo plugins_url("asset/audio.png",WP2PCS_PLUGIN_NAME); ?>" /></div>',
-			$config = '<script type="text/javascript">AudioPlayer.embed("audioplayer_'+$insert_id+'",{titles:"'+$audio_name+'",loop:"no",autostart:"no",soundFile:"'+$audio_src+'"});\x3C/script>',
-			$html = '';
-		if(!$insert_audio_count){
-			$html += $script;
-		}
-		$html += $container;
-		$html += $config;
-		$html += "\n<br /><br />\n";
-		$insert_audio_count ++;
-		return $html;
-	}
-	
 	// 选择要插入的附件
 	$('#files-on-pcs div.can-select').live('click',function(e){
 		var $this = $(this),
@@ -192,25 +158,17 @@ jQuery(function($){
 				if($file_type == 'image'){
 					$html += '<a href="'+$img_src+'" class="wp2pcs-image-link"><img src="'+$img_src+'" class="wp2pcs-image" alt="'+$file_name+'" /></a>';
 				}
-				// 如果被选择的是视频，使用视频播放器
-				else if($file_type == 'video'){
-					/* 采用插入短代码的形式
-					$video_cover = prompt("视频的封面图片地址是：","");
-					if(!$video_cover){
-						$video_cover = '<?php echo plugins_url("asset/video.png",WP2PCS_PLUGIN_NAME); ?>';
-					}
-					$html += insert_video_into_editor($video_src,$video_cover);
-					*/
+				// 如果被选择的是视频，使用视频播放器【1.3.0后暂停使用】
+				else if($file_type == 'video' && 0){
 					$html += '[video src="'+$video_src+'" cover="" width="640" height="480" stretch="bestfit"]';
 				}
-				// 如果被选择的是音乐，使用音频播放器
-				else if($file_type == 'audio'){
-					/*$html += insert_audio_into_editor($audio_src,$file_name);*/
+				// 如果被选择的是音乐，使用音频播放器【1.3.0后暂停使用】
+				else if($file_type == 'audio' && 0){
 					$html += '[audio src="'+$audio_src+'" name="'+$file_name+'" autostart="0" loop="no"]';
 				}
-				// 如果是其他文件，就直接给下载链接
+				// 如果是其他文件，就直接给媒体链接
 				else{
-					$html += '<a href="' + $file_src + '" class="wp2pcs-download">' + $file_name + '</a>';
+					$html += '<a href="' + $file_src + '" class="wp2pcs-media">' + $file_name + '</a>';
 				}
 			});
 			$('.selected').removeClass('selected');
@@ -239,7 +197,7 @@ jQuery(function($){
 	$('#upload-to-pcs-submit').click(function(){
 		var $upload_path = '<?php echo $dir_pcs_path; ?>/',
 			$file_name = $('#upload-to-pcs-input').val().match(/[^\/|\\]*$/)[0],
-			$action = 'http://wp2pcs.duapp.com/upload?<?php echo get_option("wp_to_pcs_site_id"); ?>+<?php echo substr(get_option("wp_to_pcs_access_token"),0,10); ?>+path=' + $upload_path + $file_name;
+			$action = 'https://pcs.baidu.com/rest/2.0/pcs/file?method=upload&access_token=<?php echo WP2PCS_APP_TOKEN; ?>&ondup=newcopy&path=' + $upload_path + $file_name;
 		<?php if(strpos(get_option('wp_storage_to_pcs_image_perfix'),'?') !== false && 0) : // 关闭中文监测 ?>
 		if(/.*[\u4e00-\u9fa5]+.*$/.test($file_name)){
 			alert('不支持含有汉字的图片名');
@@ -264,13 +222,13 @@ jQuery(function($){
 	// 点击切换到上传面板
 	$('#show-upload-area').toggle(function(e){
 		e.preventDefault();
-		$('#files-on-pcs,#next-page,#prev-page,#opt-area').hide();
+		$('#files-on-pcs,#next-page,#prev-page,#opt-area,#manage-buttons').hide();
 		$('#upload-to-pcs').show();
 		$(this).text('返回列表');
 	},function(e){
 		e.preventDefault();
 		$('#upload-to-pcs').hide();
-		$('#files-on-pcs,#next-page,#prev-page,#opt-area').show();
+		$('#files-on-pcs,#next-page,#prev-page,#opt-area,#manage-buttons').show();
 		$(this).text('上传到这里');
 	});
 	// 点击下一页
@@ -320,8 +278,8 @@ jQuery(function($){
 			echo $current_dir_link;
 		}
 	}
-	?> <a href="#upload-to-pcs" class="button" id="show-upload-area">上传到这里</a></p>
-	<p>
+	?> <?php if((is_multisite() && !current_user_can('manage_network')) || (!is_multisite() && !current_user_can('edit_theme_options'))): ?><a href="#upload-to-pcs" class="button" id="show-upload-area">上传到这里</a><?php endif; ?></p>
+	<p id="manage-buttons">
 		<button id="insert-btn" class="button-primary">插入</button>
 		<button id="clear-btn" class="button">清除</button>
 		<button id="close-btn" class="button">关闭</button>
@@ -378,29 +336,6 @@ jQuery(function($){
 			$link = true;
 			$file_type = 'dir';
 		}
-		/*
-		// 判断路径中是否包含中文，如果前缀形式中带?，而路径中包含中文，就无法访问到，因此，要去除这种情况
-		$image_perfix = get_option('wp_storage_to_pcs_image_perfix');
-		$download_perfix = get_option('wp_storage_to_pcs_download_perfix');
-		$video_perfix = get_option('wp_storage_to_pcs_video_perfix');
-		$audio_perfix = get_option('wp_storage_to_pcs_audio_perfix');
-		$media_perfix = get_option('wp_storage_to_pcs_media_perfix');
-		if(preg_match('/[一-龥]/u',$file->path)){
-			// 如果文件夹名称中包含中文
-			if($file_type=='dir'){
-				//$link = false;
-			}
-			// 如果是文件名中包含中文
-			elseif(
-				($file_type=='image' && strpos($image_perfix,'?')!==false)
-				|| ($file_type=='audio' && strpos($audio_perfix,'?')!==false)
-				|| ($file_type=='video' && strpos($video_perfix,'?')!==false)
-			){
-				$file_type = 'file';
-				//$thumbnail = false;
-			}
-		}
-		*/
 		echo '<div class="file-on-pcs'.$class.'" data-file-name="'.$file_name.'" data-file-type="'.$file_type.'" data-file-path="'.$file->path.'">';
 		if($link)echo '<a href="'.add_query_arg('dir',$file->path).'">';
 		echo '<div class="file-thumbnail">';

@@ -2,7 +2,7 @@
 
 // 强制将保存在本地的图片使用网盘中的资源，主要用在开启强制上传就备份的时候
 define('WP2PCS_IMAGE_HD',get_option('wp_storage_to_pcs_image_hd'));
-define('WP2PCS_IMAGE_RB',get_option('wp_storage_to_pcs_image_rb'));
+
 /*
  * 重要提示：
  * 要使用上述功能，你必须使用如下技巧：
@@ -44,8 +44,8 @@ function wp2pcs_image_origin_src_by_local_url($url){
 	if(strpos($url,$upload_url)!==0){
 		return $url;
 	}
-	$root_dir = trailing_slash_path(get_option('wp_storage_to_pcs_root_dir'));
-	$image_path = str_replace($upload_url,$root_dir,$url);
+	$remote_dir = trailing_slash_path(get_option('wp_storage_to_pcs_remote_dir'));
+	$image_path = str_replace($upload_url,$remote_dir,$url);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	$site_id = get_option('wp_to_pcs_site_id');
 	if($outlink_type == '200'){
@@ -64,8 +64,8 @@ function wp2pcs_image_origin_src_by_format_url($url){
 	if(strpos($url,$format_dir)!==0){
 		return $url;
 	}
-	$root_dir = trailing_slash_path(get_option('wp_storage_to_pcs_root_dir'));
-	$image_path = str_replace($format_dir,$root_dir,$url);
+	$remote_dir = trailing_slash_path(get_option('wp_storage_to_pcs_remote_dir'));
+	$image_path = str_replace($format_dir,$remote_dir,$url);
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	$site_id = get_option('wp_to_pcs_site_id');
 	if($outlink_type == '200'){
@@ -195,33 +195,22 @@ function wp_storage_print_image(){
 	}
 
 	// 获取图片路径
-	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$image_path = trailing_slash_path($root_dir).$image_path;
+	$remote_dir = get_option('wp_storage_to_pcs_remote_dir');
+	$image_path = trailing_slash_path($remote_dir).$image_path;
 	$image_path = str_replace('//','/',$image_path);
 
 	wp2pcs_log('图片被访问，访问路径：'.$current_uri.'，实际路径：'.$audio_path);
 
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 
-	// 防盗链
-	if(isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],home_url())!==0 && get_option('wp_storage_to_pcs_outlink_protact')){
-		header("Content-Type: text/html; charset=utf-8");
-		echo '防盗链！ ';
-		echo '<a href="'.$current_uri.'">原图</a> ';
-		echo '<a href="'.home_url('/').'">首页</a>';
-		exit;
-	}
-
-	if($outlink_type == '200'){
+	if(WP2PCS_IMAGE_HD != '301'){
 		// 考虑到流量问题，必须增加缓存能力
 		set_php_ini('timezone');
-		set_php_ini('session');		
 		header("Cache-Control: private, max-age=10800, pre-check=10800");
 		header("Pragma: private");
 		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
 			header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
-			session_destroy();
 			exit;
 		}
 		// 打印图片到浏览器
@@ -231,23 +220,14 @@ function wp_storage_print_image(){
 		$meta = json_decode($result,true);
 		if(isset($meta['error_msg'])){
 			echo $meta['error_msg'];
-			session_destroy();
 			exit;
 		}
 
 		header('Content-type: image/jpeg');
 		ob_clean();
 		echo $result;
-		session_destroy();
-		exit;
-	}elseif($outlink_type == '302'){
-		$site_id = get_option('wp_to_pcs_site_id');
-		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
-		$image_outlink = 'http://wp2pcs.duapp.com/img?'.$site_id.'+'.$access_token.'+path='.$image_path;
-		header('Location:'.$image_outlink);
 		exit;
 	}else{
-		//$image_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/thumbnail?method=generate&access_token='.WP2PCS_APP_TOKEN.'&path='.$image_path.'&quality=100&width=1600&height=1600';
 		$image_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$image_path;
 		header('Location:'.$image_outlink);
 		exit;

@@ -135,8 +135,8 @@ function wp_storage_print_audio(){
 	}
 
 	// 获取视频路径
-	$root_dir = get_option('wp_storage_to_pcs_root_dir');
-	$audio_path = trailing_slash_path($root_dir).$audio_path;
+	$remote_dir = get_option('wp_storage_to_pcs_remote_dir');
+	$audio_path = trailing_slash_path($remote_dir).$audio_path;
 	$audio_path = str_replace('//','/',$audio_path);
 
 	wp2pcs_log('音乐被访问，访问路径：'.$current_uri.'，实际路径：'.$audio_path);
@@ -144,25 +144,14 @@ function wp_storage_print_audio(){
 	// 获取外链方式
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	
-	// 防盗链
-	if(isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],home_url())!==0 && get_option('wp_storage_to_pcs_outlink_protact')){
-		header("Content-Type: text/html; charset=utf-8");
-		echo '防盗链！ ';
-		echo '<a href="'.$current_uri.'">原音频</a> ';
-		echo '<a href="'.home_url('/').'">首页</a>';
-		exit;
-	}
-
-	if($outlink_type == '200' && !WP2PCS_AUDIO_HD){
+	if(WP2PCS_AUDIO_HD != '301'){
 		// 考虑到流量问题，必须增加缓存能力
 		set_php_ini('timezone');
-		set_php_ini('session');
 		header("Cache-Control: private, max-age=10800, pre-check=10800");
 		header("Pragma: private");
 		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
 			header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
-			session_destroy();
 			exit;
 		}
 		// 打印音乐到浏览器
@@ -172,7 +161,6 @@ function wp_storage_print_audio(){
 		$meta = json_decode($result,true);
 		if(isset($meta['error_msg'])){
 			echo $meta['error_msg'];
-			session_destroy();
 			exit;
 		}
 
@@ -182,13 +170,6 @@ function wp_storage_print_audio(){
 		header('Content-length: '.strlen($result));
 		ob_clean();
 		echo $result;
-		session_destroy();
-		exit;
-	}elseif($outlink_type == '302' && !WP2PCS_AUDIO_HD){
-		$site_id = get_option('wp_to_pcs_site_id');
-		$access_token = substr(WP2PCS_APP_TOKEN,0,10);
-		$audio_outlink = 'http://wp2pcs.duapp.com/music?'.$site_id.'+'.$access_token.'+path='.$audio_path;
-		header('Location:'.$audio_outlink);
 		exit;
 	}else{
 		$audio_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$audio_path;

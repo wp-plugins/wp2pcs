@@ -124,7 +124,7 @@ function get_php_run_time(){
 // 创建一个函数，判断插件是否已经激活
 function is_wp_to_pcs_active(){
 	$app_key = get_option('wp_to_pcs_app_key');
-	$access_token = get_option('wp_to_pcs_access_token');
+	$access_token = get_option('wp_to_pcs_app_token');
 	if(!$app_key || !$access_token){
 		return false;
 	}
