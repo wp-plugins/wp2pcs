@@ -278,7 +278,7 @@ jQuery(function($){
 			echo $current_dir_link;
 		}
 	}
-	?> <?php if((is_multisite() && !current_user_can('manage_network')) || (!is_multisite() && !current_user_can('edit_theme_options'))): ?><a href="#upload-to-pcs" class="button" id="show-upload-area">上传到这里</a><?php endif; ?></p>
+	?> <?php if((is_multisite() && current_user_can('manage_network')) || (!is_multisite() && current_user_can('edit_theme_options'))): ?><a href="#upload-to-pcs" class="button" id="show-upload-area">上传到这里</a><?php endif; ?></p>
 	<p id="manage-buttons">
 		<button id="insert-btn" class="button-primary">插入</button>
 		<button id="clear-btn" class="button">清除</button>
