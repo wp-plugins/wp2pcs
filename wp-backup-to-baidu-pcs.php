@@ -200,7 +200,6 @@ function wp_backup_to_pcs_corn_task_function_database() {
 	$file_name = 'database_'.date('Y.m.d_H.00').'.sql';
 	$result = $baidupcs->upload($file_content,$remote_dir,$file_name);
 
-	wp2pcs_log('备份数据库到PCS成功');
 }
 function wp_backup_to_pcs_corn_task_function_logs(){
 	if(!WP2PCS_IS_WRITABLE){
@@ -249,7 +248,6 @@ function wp_backup_to_pcs_corn_task_function_www(){
 		wp_backup_to_pcs_send_file($www_file,$remote_dir);
 	}
 
-	wp2pcs_log('备份网站文件到PCS成功');
 }
 
 // 每天早上6:30定时清理可能由于备份失败导致的文件未删除的文件

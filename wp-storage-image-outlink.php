@@ -199,8 +199,6 @@ function wp_storage_print_image(){
 	$image_path = trailing_slash_path($remote_dir).$image_path;
 	$image_path = str_replace('//','/',$image_path);
 
-	wp2pcs_log('图片被访问，访问路径：'.$current_uri.'，实际路径：'.$audio_path);
-
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 
 	if(WP2PCS_IMAGE_HD != '301'){

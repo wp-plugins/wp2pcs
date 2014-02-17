@@ -69,8 +69,6 @@ function wp_storage_download_file(){
 	$file_path = trailing_slash_path($remote_dir).$file_path;
 	$file_path = str_replace('//','/',$file_path);
 
-	wp2pcs_log('文件被下载，访问路径：'.$current_uri.'，实际路径：'.$audio_path);
-
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 
 	if(WP2PCS_DOWNLOAD_HD != '301'){

@@ -234,14 +234,3 @@ function trailing_slash_path($path_string,$is_win = false){
 	}
 	return $path_string;
 }
-
-// 记录操作LOG
-function wp2pcs_log($message){
-	$log = dirname(WP2PCS_PLUGIN_NAME).'/asset/wp2pcs.log';
-	if(is_array($message))
-		$contents = var_export($message,true);	
-	else if(is_object($message))
-		$contents = json_encode($message);
-	set_php_ini('timezone');
-	file_put_contents($file,date('Y-m-d H:i:s').':'.$contents."\n",FILE_APPEND);
-}

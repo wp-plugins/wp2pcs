@@ -139,8 +139,6 @@ function wp_storage_print_audio(){
 	$audio_path = trailing_slash_path($remote_dir).$audio_path;
 	$audio_path = str_replace('//','/',$audio_path);
 
-	wp2pcs_log('音乐被访问，访问路径：'.$current_uri.'，实际路径：'.$audio_path);
-
 	// 获取外链方式
 	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	
