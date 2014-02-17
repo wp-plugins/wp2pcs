@@ -17,7 +17,6 @@ Author URI: http://www.utubon.com
 
 // 初始化固定值常量
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_REMOTE_ROOT','/apps/wp2pcs/'.$_SERVER['SERVER_NAME'].'/');
 
 // 包含一些必备的函数和类，以提供下面使用
 require(dirname(__FILE__).'/wp2pcs-setup-functions.php');
@@ -26,6 +25,7 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 // 经过判断或函数运算才能进行定义的常量
 define('WP2PCS_APP_KEY',get_option('wp_to_pcs_app_key'));// CuOLkaVfoz1zGsqFKDgfvI0h
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_app_token'));
+define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.$_SERVER['SERVER_NAME'].'/');
 define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.02.16.22.00'));// 以最新一次更新的时间点（到分钟）作为版本号
 define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
@@ -90,6 +90,8 @@ function wp_to_pcs_default_options(){
 	if(!get_option('wp_storage_to_pcs_audio_perfix'))update_option('wp_storage_to_pcs_audio_perfix','?mp3');
 	if(!get_option('wp_storage_to_pcs_media_perfix'))update_option('wp_storage_to_pcs_media_perfix','?media');
 	if(!get_option('wp_storage_to_pcs_outlink_type'))update_option('wp_storage_to_pcs_outlink_type','200');
+	// 网盘中的应用目录
+	update_option('wp_to_pcs_remote_aplication','wp2pcs');
 }
 
 // 停用插件的时候停止定时任务
@@ -137,10 +139,17 @@ function wp_to_pcs_action(){
 	// 提交授权
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_to_pcs_app_key'){
 		check_admin_referer();
-		// 检查和更新API KEY
+		// API KEY
 		$app_key = trim($_POST['wp_to_pcs_app_key']);
+		$app_key = $app_key ? $app_key : 'CuOLkaVfoz1zGsqFKDgfvI0h';
 		update_option('wp_to_pcs_app_key',$app_key);
+		// 远程应用目录
+		$remote_aplication = trim($_POST['wp_to_pcs_remote_aplication']);
+		$remote_aplication = $remote_aplication ? $remote_aplication : 'wp2pcs';
+		update_option('wp_to_pcs_remote_aplication',$remote_aplication);
+		// Token
 		$app_token = trim($_POST['wp_to_pcs_app_token']);
+		update_option('wp_to_pcs_app_token',$app_token);
 		$back_url = wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page']; // 回调网址
 		// 如果不存在TOKEN，那么跳转到WP2PCS进行授权
 		if(!$app_token){
@@ -150,7 +159,6 @@ function wp_to_pcs_action(){
 		}
 		// 如果存在TOKEN，那么直接更新TOKEN，并刷新页面
 		else{
-			update_option('wp_to_pcs_app_token',$app_token);
 			$back_url .= '&time='.time();
 			wp_redirect($back_url);
 		}
@@ -189,9 +197,9 @@ function wp_to_pcs_pannel(){
 			<h3>WP2PCS开关 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>目前WP2PCS只支持百度网盘，往后将会支持腾讯微云、360网盘，敬请期待！</p>
-				<p class="tishi hidden">API KEY：<input type="password" name="wp_to_pcs_app_key" value="<?php echo WP2PCS_APP_KEY ? WP2PCS_APP_KEY : 'CuOLkaVfoz1zGsqFKDgfvI0h'; ?>" class="regular-text" /></p>
-				<p class="tishi hidden">ACCESS TOKEN：<input type="password" name="wp_to_pcs_app_token" value="<?php echo WP2PCS_APP_TOKEN; ?>" class="regular-text" /></p>
-				<p class="tishi hidden">手工填写Access Token，请先阅读<a href="http://www.wp2pcs.com/?p=79" target="_blank">这篇</a>文章</p>
+				<p class="tishi hidden">API KEY：<input type="password" name="wp_to_pcs_app_key" class="regular-text" /></p>
+				<p class="tishi hidden">ACCESS TOKEN：<input type="password" name="wp_to_pcs_app_token" class="regular-text" /> <a href="http://www.wp2pcs.com/?p=79" target="_blank">?</a></p>
+				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo $_SERVER['SERVER_NAME']; ?>/</p>
 				<p>
 					<button type="submit" class="button-primary">提交授权</button>
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
