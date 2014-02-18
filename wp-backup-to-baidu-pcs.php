@@ -377,7 +377,7 @@ function wp_backup_to_pcs_panel(){
 	$timestamp_www = wp_next_scheduled('wp_backup_to_pcs_corn_task_www');
 	$timestamp_www = ($timestamp_www ? date('Y-m-d H:i',$timestamp_www) : false);
 	$local_paths = get_option('wp_backup_to_pcs_local_paths');
-	$local_paths = (is_array($local_paths) && !empty($local_paths) ? implode("\n",$local_paths) : '');
+	$local_paths = (!empty($local_paths) ? implode("\n",$local_paths) : '');
 	$backup_rate = wp2pcs_more_reccurences_for_backup_array();
 	$is_turned_on = ($timestamp_database || $timestamp_logs || $timestamp_www);
 ?>

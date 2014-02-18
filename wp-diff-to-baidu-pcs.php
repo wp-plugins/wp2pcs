@@ -83,11 +83,13 @@ function wp_diff_to_pcs_update_file_list(){
 		$local_files = array_merge($local_files,$get_files);
 	}
 	//update_option('wp_diff_to_pcs_local_files',$local_files);
-	$local_files_txt = dirname(__FILE__).'/asset/local_files.txt';
-	if(file_exists($local_files_txt))@unlink($database_file);
-	$handle = @fopen($local_files_txt,"w+");
+	$local_files_record = dirname(__FILE__).'/asset/local_files.php';
+	if(file_exists($local_files_record))@unlink($database_file);
+	$handle = @fopen($local_files_record,"w+");
+	array_unshift($local_files,'<?php /**');
+	array_push($local_files,'**/');
 	if(fwrite($handle,"\xEF\xBB\xBF".implode("\n",$local_files)) === false){
-		wp_die("写入文件 local_files.txt 失败");
+		wp_die("写入文件 local_files.php 失败");
 		exit();
 	}
 	fclose($handle);
@@ -103,12 +105,15 @@ function wp_diff_to_pcs_corn_function(){
 
 	// 获得目录总汇
 	//$local_files = get_option('wp_diff_to_pcs_local_files');
-	$local_files_txt = dirname(__FILE__).'/asset/local_files.txt';
-	$local_files = file_get_contents($local_files_txt);
+	$local_files_record = dirname(__FILE__).'/asset/local_files.php';
+	$local_files = file_get_contents($local_files_record);
 	$local_files = explode("\n",$local_files);
 	if(!$local_files){
 		$local_files = wp_diff_to_pcs_update_file_list();
 	}
+	array_shift($local_files);
+	array_pop($local_files);
+
 
 	// 对每一个文件进行检查
 	$diff_cursor = get_option('wp_diff_to_pcs_local_files_cursor'); // 设置游标
@@ -210,9 +215,11 @@ function wp_diff_to_pcs_panel(){
 		<?php if($diff_timestamp) : ?>
 		<?php
 		//$local_files = get_option('wp_diff_to_pcs_local_files');
-		$local_files_txt = dirname(__FILE__).'/asset/local_files.txt';
-		$local_files = file_get_contents($local_files_txt);
+		$local_files_record = dirname(__FILE__).'/asset/local_files.php';
+		$local_files = file_get_contents($local_files_record);
 		$local_files = explode("\n",$local_files);
+		array_shift($local_files);
+		array_pop($local_files);
 		$diff_cursor = get_option('wp_diff_to_pcs_local_files_cursor');
 		$current_diff_file = $local_files[$diff_cursor];
 		$next_diff_file = isset($local_files[$diff_cursor+1]) ? $local_files[$diff_cursor+1] : false;
@@ -252,7 +259,7 @@ function wp_diff_to_pcs_panel(){
 			<?php endif; ?>
 			<input type="submit" name="wp_diff_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
 		</p>
-		<?php $local_files_txt = dirname(WP2PCS_PLUGIN_NAME).'/asset/local_files.txt';if(!is_really_writable($local_files_txt)): ?><p style="color:red;">WP2PCS插件目录下的/asset/local_files.txt这个文件不可写，无法进行增量备份。赋予它可写权限后必须再点击一次更新按钮。</p><?php endif; ?>
+		<?php $local_files_record = dirname(WP2PCS_PLUGIN_NAME).'/asset/local_files.php';if(!is_really_writable($local_files_record)): ?><p style="color:red;">WP2PCS插件目录下的/asset/local_files.php这个文件不可写，无法进行增量备份。赋予它可写权限后必须再点击一次更新按钮。</p><?php endif; ?>
 		<p class="tishi hidden">为避免误操作，开启备份后需要两分钟才会开始正式执行。</p>
 		<p class="tishi hidden">点击确定不会让新的备份任务立即生效，只有在下一轮更新中才会生效。如果你希望当前的设置马上生效，点击更新后再启动备份任务，就会马上按照新设置的信息进行备份。</p>
 		<input type="hidden" name="action" value="wp_diff_to_pcs_send_file" />

@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接网盘)
 Plugin URI: http://www.wp2pcs.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.3.0
+Version: 1.3.1
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -26,7 +26,7 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 define('WP2PCS_APP_KEY',get_option('wp_to_pcs_app_key'));// CuOLkaVfoz1zGsqFKDgfvI0h
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_app_token'));
 define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.$_SERVER['SERVER_NAME'].'/');
-define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.02.16.22.00'));// 以最新一次更新的时间点（到分钟）作为版本号
+define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.02.18.23.00'));// 以最新一次更新的时间点（到分钟）作为版本号
 define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
 
@@ -74,8 +74,12 @@ function wp_smushit_filter_timeout_time($time){
 }
 
 // 初始化插件默认设置选项
-register_activation_hook(WP2PCS_PLUGIN_NAME,'wp_to_pcs_default_options');
-function wp_to_pcs_default_options(){
+register_activation_hook(WP2PCS_PLUGIN_NAME,'wp_to_pcs_install_options');
+function wp_to_pcs_install_options(){
+	// 网盘中的应用目录
+	update_option('wp_to_pcs_remote_aplication','wp2pcs');	
+}
+function wp_to_pcs_default_options(){// 授权成功的时候再赋值
 	if(!get_option('wp_backup_to_pcs_remote_dir'))update_option('wp_backup_to_pcs_remote_dir',WP2PCS_REMOTE_ROOT.'backup/');
 	if(!get_option('wp_backup_to_pcs_local_paths'))update_option('wp_backup_to_pcs_local_paths',ABSPATH);
 	wp_diff_to_pcs_update_file_list();
@@ -83,6 +87,7 @@ function wp_to_pcs_default_options(){
 	$local_upload_dir = $local_upload_dir['basedir'];
 	$local_upload_dir = str_replace(ABSPATH,'',$local_upload_dir);
 	$remote_upload_dir = str_replace('\\','/',WP2PCS_REMOTE_ROOT.$local_upload_dir);
+	$remote_upload_dir = trailing_slash_path($remote_upload_dir,WP2PCS_IS_WIN);
 	if(!get_option('wp_storage_to_pcs_remote_dir'))update_option('wp_storage_to_pcs_remote_dir',$remote_upload_dir);
 	if(!get_option('wp_storage_to_pcs_image_perfix'))update_option('wp_storage_to_pcs_image_perfix','?image');
 	if(!get_option('wp_storage_to_pcs_download_perfix'))update_option('wp_storage_to_pcs_download_perfix','?download');
@@ -90,8 +95,6 @@ function wp_to_pcs_default_options(){
 	if(!get_option('wp_storage_to_pcs_audio_perfix'))update_option('wp_storage_to_pcs_audio_perfix','?mp3');
 	if(!get_option('wp_storage_to_pcs_media_perfix'))update_option('wp_storage_to_pcs_media_perfix','?media');
 	if(!get_option('wp_storage_to_pcs_outlink_type'))update_option('wp_storage_to_pcs_outlink_type','200');
-	// 网盘中的应用目录
-	update_option('wp_to_pcs_remote_aplication','wp2pcs');
 }
 
 // 停用插件的时候停止定时任务
@@ -314,7 +317,7 @@ function wp2pcs_admin_notice(){
 		if(!current_user_can('edit_theme_options'))return;
 	}
     ?><div id="wp2pcs-admin-notice" class="updated">
-		<p>WP2PCS提示：这是一个强制更新版本。你必须在<a href="<?php echo admin_url('plugins.php'); ?>">插件管理</a>中先停用WP2PCS，然后再启用它，并重新授权。</p>
-		<p>由于百度PCS API的变化，导致很多用户的WP2PCS无法使用。新的版本将有不少限制，由于使用量巨大，无法一一作答，因此新的版本将实行收费通道，具体请从官网了解 www.wp2pcs.com 。为了不影响老用户的正常使用，原来的大部分接口尚可正常使用。<a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
+		<p>WP2PCS提示：如果你是1.3.0之前的老用户，请阅读《<a href="http://www.wp2pcs.com/?p=119">WP2PCS升级到1.3.0的一些说明</a>》。</p>
+		<p>由于百度PCS API的变化，导致很多用户的WP2PCS无法使用。1.3.x版本将有不少限制，由于使用量巨大，无法一一作答，因此新的版本将实行收费通道，具体请从官网了解 www.wp2pcs.com 。为了不影响老用户的正常使用，原来的大部分接口尚可正常使用。<a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
 	</div><?php
 }
