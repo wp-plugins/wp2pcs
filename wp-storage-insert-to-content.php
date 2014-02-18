@@ -133,13 +133,13 @@ jQuery(function($){
 	$('#insert-btn').click(function(){
 		if($('div.selected').length > 0){
 			var $image_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_image_perfix")); ?>',
-				$download_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_download_perfix")); ?>',
+				$media_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_media_perfix")); ?>',
 				$video_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_video_perfix")); ?>',
 				$audio_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_audio_perfix")); ?>',
 				$remote_dir = '<?php echo trim(get_option("wp_storage_to_pcs_remote_dir")); ?>',
 				$home_url = '<?php echo home_url("/"); ?>',
 				$img_root = $home_url + $image_perfix + '/',
-				$download_root = $home_url + $download_perfix + '/',
+				$media_root = $home_url + $media_perfix + '/',
 				$video_root = $home_url + $video_perfix + '/',
 				$audio_root = $home_url + $audio_perfix + '/',
 				$html = '';
@@ -150,7 +150,7 @@ jQuery(function($){
 					$file_type = $this.attr('data-file-type'),
 					$file_touch = $file_path.replace($remote_dir,''),
 					$img_src = $img_root + $file_touch,
-					$file_src = $download_root + $file_touch,
+					$file_src = $media_root + $file_touch,
 					$video_src = $video_root + $file_touch,
 					$video_cover,
 					$audio_src = $audio_root + $file_touch;
