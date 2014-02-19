@@ -33,6 +33,10 @@ define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
 // 当你发现自己错过了很多定时任务时，删掉下面的注释符号
 //define('ALTERNATE_WP_CRON',true);
 
+//define('WP2PCS_CACHE',false);// 附件缓存
+//define('WP2PCS_SYNC',false);// 上传文件时，马上加入到同步列表
+//define('WP2PCS_SHORTCODE',false);// 启用视频、音乐短代码
+
 // 直接初始化全局变量
 $baidupcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 
@@ -95,6 +99,11 @@ function wp_to_pcs_default_options(){// 授权成功的时候再赋值
 	if(!get_option('wp_storage_to_pcs_audio_perfix'))update_option('wp_storage_to_pcs_audio_perfix','?mp3');
 	if(!get_option('wp_storage_to_pcs_media_perfix'))update_option('wp_storage_to_pcs_media_perfix','?media');
 	if(!get_option('wp_storage_to_pcs_outlink_type'))update_option('wp_storage_to_pcs_outlink_type','200');
+	// 网盘中的应用目录
+	update_option('wp_to_pcs_remote_aplication','wp2pcs');
+	// 初始化按钮
+	if(!wp_next_scheduled('wp_diff_to_pcs_corn_task'))delete_option('wp_diff_to_pcs_future');
+	if(!wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))delete_option('wp_backup_to_pcs_future');
 }
 
 // 停用插件的时候停止定时任务
@@ -317,7 +326,7 @@ function wp2pcs_admin_notice(){
 		if(!current_user_can('edit_theme_options'))return;
 	}
     ?><div id="wp2pcs-admin-notice" class="updated">
-		<p>WP2PCS提示：如果你是1.3.0之前的老用户，请阅读《<a href="http://www.wp2pcs.com/?p=119">WP2PCS升级到1.3.0的一些说明</a>》。</p>
+		<p>WP2PCS提示：如果你是1.3.x之前的老用户，请阅读《<a href="http://www.wp2pcs.com/?p=119">WP2PCS升级到1.3.0的一些说明</a>》。</p>
 		<p>由于百度PCS API的变化，导致很多用户的WP2PCS无法使用。1.3.x版本将有不少限制，由于使用量巨大，无法一一作答，因此新的版本将实行收费通道，具体请从官网了解 www.wp2pcs.com 。为了不影响老用户的正常使用，原来的大部分接口尚可正常使用。<a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
 	</div><?php
 }
