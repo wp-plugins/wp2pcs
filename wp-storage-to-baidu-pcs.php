@@ -98,10 +98,10 @@ function wp_storage_to_pcs_panel(){
 			<input type="checkbox" name="wp_storage_to_pcs_download_hd" value="301" <?php checked($download_hd,'301'); ?> />
 			外链 <a href="http://wp2pcs.duapp.com/286" title="使用说明" target="_blank">?</a>
 		</p>
-		<p class="tishi hidden">视频访问前缀：
+		<p <?php if(!VIDEO_SHORTCODE)echo 'class="tishi hidden"'; ?>>视频访问前缀：
 			<input type="text" name="wp_storage_to_pcs_video_perfix" value="<?php echo $video_perfix; ?>" /> 
 		</p>
-		<p class="tishi hidden">MP3访问前缀：
+		<p <?php if(!AUDIO_SHORTCODE)echo 'class="tishi hidden"'; ?>>MP3访问前缀：
 			<input type="text" name="wp_storage_to_pcs_audio_perfix" value="<?php echo $audio_perfix; ?>" /> 
 			<input type="checkbox" name="wp_storage_to_pcs_audio_hd" value="301" <?php checked($audio_hd,'301'); ?> />
 			外链 <a href="http://wp2pcs.duapp.com/202" title="使用说明" target="_blank">?</a>

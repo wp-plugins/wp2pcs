@@ -69,17 +69,8 @@ function wp_storage_download_file(){
 	$file_path = trailing_slash_path($remote_dir).$file_path;
 	$file_path = str_replace('//','/',$file_path);
 
-	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
-
 	if(WP2PCS_DOWNLOAD_HD != '301'){
-		set_php_ini('timezone');
-		header("Cache-Control: private, max-age=10800, pre-check=10800");
-		header("Pragma: private");
-		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
-		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
-			header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
-			exit;
-		}
+		set_wp2pcs_cache();
 		// 打印图片到浏览器
 		global $baidupcs;
 		$result = $baidupcs->download($file_path);

@@ -187,24 +187,19 @@ function is_really_writable($file){
 	return TRUE;
 }
 
-
-// 设置全局参数
-function set_php_ini($name){
-	if($name == 'session'){
-		if(!defined('WP_TEMP_DIR'))define('WP_TEMP_DIR',sys_get_temp_dir());
-		if(is_really_writable(WP_TEMP_DIR)){
-			ini_set('session.save_path',WP_TEMP_DIR);// 重新规定session的存储位置
-			session_start();
+function set_wp2pcs_cache(){
+	// 考虑到流量问题，必须增加缓存能力
+	if(WP2PCS_CACHE){
+		set_php_ini('timezone');
+		set_php_ini('session_start');		
+		header("Cache-Control: private, max-age=10800, pre-check=10800");
+		header("Pragma: private");
+		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
+		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
+			header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
+			set_php_ini('session_end');
+			exit;
 		}
-	}elseif($name == 'limit'){
-		set_time_limit(0); // 延长执行时间，防止备份失败
-		ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出		// 考虑到流量问题，必须增加缓存能力
-	}elseif($name == 'timezone'){
-		date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
-	}elseif($name == 'error'){
-		// 显示运行错误
-		error_reporting(E_ALL); 
-		ini_set("display_errors", 1);
 	}
 }
 
@@ -233,4 +228,28 @@ function trailing_slash_path($path_string,$is_win = false){
 		$path_string .= $slash;
 	}
 	return $path_string;
+}
+
+// 设置全局参数
+function set_php_ini($name){
+	if($name == 'session_start'){
+		if(!defined('WP_TEMP_DIR'))define('WP_TEMP_DIR',sys_get_temp_dir());
+		if(is_really_writable(WP_TEMP_DIR)){
+			if(function_exists("ini_set"))ini_set('session.save_path',WP_TEMP_DIR);// 重新规定session的存储位置
+			if(function_exists("session_start"))session_start();
+		}
+	}
+	elseif($name == 'session_end'){
+		if(function_exists("session_destroy"))session_destroy();
+	}
+	elseif($name == 'limit'){
+		if(function_exists("set_time_limit"))set_time_limit(0); // 延长执行时间，防止备份失败
+		if(function_exists("ini_set"))ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
+	}elseif($name == 'timezone'){
+		date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
+	}elseif($name == 'error'){
+		// 显示运行错误
+		if(function_exists("error_reporting"))error_reporting(E_ALL); 
+		if(function_exists("ini_set"))ini_set("display_errors", 1);
+	}
 }

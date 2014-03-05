@@ -153,17 +153,19 @@ jQuery(function($){
 					$file_src = $media_root + $file_touch,
 					$video_src = $video_root + $file_touch,
 					$video_cover,
-					$audio_src = $audio_root + $file_touch;
+					$video_shortcode = <?php echo (VIDEO_SHORTCODE?'true':'false'); ?>,
+					$audio_src = $audio_root + $file_touch,
+					$audio_shortcode = <?php echo (AUDIO_SHORTCODE?'true':'false'); ?>;
 				// 如果被选择的是图片
 				if($file_type == 'image'){
 					$html += '<a href="'+$img_src+'" class="wp2pcs-image-link"><img src="'+$img_src+'" class="wp2pcs-image" alt="'+$file_name+'" /></a>';
 				}
 				// 如果被选择的是视频，使用视频播放器【1.3.0后暂停使用】
-				else if($file_type == 'video' && 0){
-					$html += '[video src="'+$video_src+'" cover="" width="640" height="480" stretch="bestfit"]';
+				else if($file_type == 'video' && $video_shortcode){
+					$html += '[video src="'+$video_src+'.m3u8" cover="" width="640" height="480" stretch="bestfit" refresh="false"]';
 				}
 				// 如果被选择的是音乐，使用音频播放器【1.3.0后暂停使用】
-				else if($file_type == 'audio' && 0){
+				else if($file_type == 'audio' && $audio_shortcode){
 					$html += '[audio src="'+$audio_src+'" name="'+$file_name+'" autostart="0" loop="no"]';
 				}
 				// 如果是其他文件，就直接给媒体链接

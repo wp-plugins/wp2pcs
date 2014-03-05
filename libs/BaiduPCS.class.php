@@ -22,42 +22,11 @@ class BaiduPCS {
 	private $_accessToken = '';
 
 	/**
-	 * 通过远程获取ACCESS TOKEN
-	 * 只有在使用托管服务的时候使用它
-	 */
-	private function get_real_access_token(){
-		if(get_option('wp_to_pcs_app_key') === 'false'){
-			$app_key = WP2PCS_APP_KEY;
-			$access_token = WP2PCS_APP_TOKEN;
-			$site_id = get_option('wp_to_pcs_site_id');
-			$site_domain = $_SERVER['SERVER_NAME'];
-			//$post_data = "site_id=$site_id&app_key=$app_key&token=$access_token&domain=$site_domain";
-			$post_data = array('site_id' => $site_id,'app_key' => $app_key,'token' => $access_token);
-
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, 'http://wp2pcs.duapp.com/application-site-getsk.php');
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-			$data = curl_exec($ch);
-			curl_close($ch);
-
-			$data = json_decode($data,true);
-			if($data['error'] == true){
-				$this->_accessToken = false;
-			}else{
-				$this->_accessToken = $data['msg'];
-			}
-		}	
-	}
-	
-	/**
 	 * 初始化accessToken
 	 * @param string $accessToken
 	 */
 	public function __construct($accessToken) {
 		$this->_accessToken = $accessToken;
-		$this->get_real_access_token();
 	}
 
 	/**
@@ -67,7 +36,6 @@ class BaiduPCS {
 	 */
 	public function setAccessToken($accessToken) {
 		$this->_accessToken = $accessToken;
-		$this->get_real_access_token();
 		return $this;
 	}
 
@@ -97,13 +65,7 @@ class BaiduPCS {
 
 		$url = $this->_pcs_uri_prefixs ['https'] . $apiMethod . ($method == 'GET' ? '&' . $params : '');
 
-		/*
-		 * 如果由于网速或其他原因造成连接极慢，那么就不使用SDK的请求，直接使用原生的CURL
-		 * 但原生的CURL可能没有SDK的兼容性好
-		 */
-		if(!get_option('wp2pcs_connect_too_slow')){
 		$requestCore = new RequestCore ();
-
 		$requestCore->set_request_url ( $url );
 
 		$requestCore->set_method ( $method );
@@ -117,32 +79,6 @@ class BaiduPCS {
 
 		$requestCore->send_request ();
 		$result = $requestCore->get_response_body ();
-		} // end if 1
-		// 下面开始使用原生的CURL
-		else{
-		// 如果使用百度的SDK REQUEST无法抓取的话，试试原生的curl抓取
-		//$result_check = json_decode($result);
-		//if(!$result || !$result_check || isset($result_check->error_code)){
-			$ch = curl_init();
-			curl_setopt($ch,CURLOPT_URL,$url);
-			curl_setopt($ch,CURLOPT_HEADER,1);
-			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-			if($method == 'POST'){
-				curl_setopt($ch,CURLOPT_POST,1);
-				curl_setopt($ch,CURLOPT_POSTFIELDS,$params);
-			}
-			if(!empty($headers)){
-				foreach($headers as $key => $value){
-					$headers[$key] = $key.':'.addslashes($value);
-				}
-				curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
-			}
-			curl_setopt($ch,CURLOPT_HEADER,0);
-			curl_setopt($ch,CURLOPT_NOBODY,0);
-			$result = curl_exec($ch);
-			curl_close($ch);
-		//}
-		} // end if 2
 
 		return $result;
 	}
@@ -166,7 +102,7 @@ class BaiduPCS {
 	 * @param boolean $isCreateSuperFile 是否分片上传
 	 * @return string
 	 */
-	public function upload($fileContent, $targetPath, $fileName, $newCopy = false, $isCreateSuperFile = FALSE) {
+	public function upload($fileContent, $targetPath, $fileName, $newFileName = null, $isCreateSuperFile = FALSE) {
 		$boundary = md5 ( time () );
 		$postContent .= "--" . $boundary . "\r\n";
 		$postContent .= "Content-Disposition: form-data; name=\"file\"; filename=\"{$fileName}\"\r\n";
@@ -174,7 +110,7 @@ class BaiduPCS {
 		$postContent .= $fileContent . "\r\n";
 		$postContent .= "--" . $boundary . "\r\n";
 
-		$requestStr = 'file?method=upload&path='.urlencode($targetPath.$fileName).'&access_token='.$this->_accessToken.'&ondup='.($newCopy ? 'newcopy' : 'overwrite');// 如果$newcopy为真，那么这个文件会被拷贝一个副本，而不是原名上传，最好设置为false
+		$requestStr = 'file?method=upload&path=' . urlencode ( $targetPath . (empty ( $newFileName ) ? $fileName : $newFileName) ) . '&access_token=' . $this->_accessToken;
 
 		if ($isCreateSuperFile === TRUE) {
 			$requestStr .= '&type=tmpfile';

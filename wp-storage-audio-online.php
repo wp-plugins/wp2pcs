@@ -138,20 +138,9 @@ function wp_storage_print_audio(){
 	$remote_dir = get_option('wp_storage_to_pcs_remote_dir');
 	$audio_path = trailing_slash_path($remote_dir).$audio_path;
 	$audio_path = str_replace('//','/',$audio_path);
-
-	// 获取外链方式
-	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
 	
 	if(WP2PCS_AUDIO_HD != '301'){
-		// 考虑到流量问题，必须增加缓存能力
-		set_php_ini('timezone');
-		header("Cache-Control: private, max-age=10800, pre-check=10800");
-		header("Pragma: private");
-		header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
-		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
-			header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
-			exit;
-		}
+		set_wp2pcs_cache();
 		// 打印音乐到浏览器
 		global $baidupcs;
 		$result = $baidupcs->downloadStream($audio_path);

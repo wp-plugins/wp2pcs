@@ -35,6 +35,19 @@ function wp_backup_to_pcs_action(){
 	}elseif(!current_user_can('edit_theme_options')){
 		return;
 	}
+	// 删除压缩下载产生的压缩包
+	if(@$_GET['action'] == 'delete_zip_file' && isset($_GET['path']) && file_exists($_GET['path'])){
+		$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+		$zip_file_name = $_SERVER['SERVER_NAME'].'_backup_by_wp2pcs.zip';
+		if($zip_dir.$zip_file_name == $_GET['path']){
+			if(!unlink($_GET['path'])){
+				wp_die('删除这个文件失败，可能是由于wp-content目录没有可写权限。');
+				exit;
+			}
+		}
+		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time().'#wp-to-pcs-backup-area');
+		exit;
+	}
 	// 备份到百度网盘
 	if(!empty($_POST) && isset($_POST['page']) && $_POST['page'] == $_GET['page'] && isset($_POST['action']) && $_POST['action'] == 'wp_backup_to_pcs_send_file'){
 		check_admin_referer();
@@ -99,6 +112,8 @@ function wp_backup_to_pcs_action(){
 				}elseif($www_file){
 					$zip_file = zip_files_in_dirs(array($database_file,$www_file),$zip_dir.$zip_file_name,$zip_dir);
 				}
+				/*
+				set_php_ini('limit');
 				header("Content-type: application/octet-stream");
 				header("Content-disposition: attachment; filename=".basename($zip_file));
 				$file_content = '';
@@ -108,10 +123,15 @@ function wp_backup_to_pcs_action(){
 				}
 				fclose($handle);
 				@unlink($zip_file);
+				echo $file_content;
+				*/
 				if(file_exists($log_file))@unlink($log_file);
 				if(file_exists($www_file))@unlink($www_file);
 				@unlink($database_file);
-				echo $file_content;
+				$zip_file_url = content_url($zip_file_name);
+				$zip_delete_url = add_query_arg(array('action'=>'delete_zip_file','path'=>$zip_file));
+				echo "<p>点击下载 <a href='$zip_file_url'>$zip_file_name</a></p>";
+				echo "<p>注意，下载后你需要手动<a href='$zip_delete_url'>删除</a>这个文件。注意，这是绝对保密的！而且只有本次操作有效！</p>";
 				exit;
 			}else{
 				header("Content-type: application/octet-stream");
@@ -443,7 +463,7 @@ function wp_backup_to_pcs_panel(){
 			<input type="submit" name="wp_backup_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
 			<input type="submit" name="wp_backup_to_pcs_now" value="马上备份" class="button-primary" onclick="if(confirm('马上备份会备份整站或所填写的目录或文件列表，而且现在备份会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在备份，点击“取消”则不备份') == false)return false;" />
 			<?php if(WP2PCS_IS_WRITABLE) : ?>
-			<input type="submit" name="wp_backup_to_pcs_zip" value="压缩下载" class="button-primary" onclick="if(confirm('压缩下载会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在下载，点击“取消”则不备份') == false){return false;}else{jQuery('#wp-to-pcs-backup-form').attr('target','_blank');setTimeout(function(){jQuery('#wp-to-pcs-backup-form').attr('target','_self');},500);}" />
+			<input type="submit" name="wp_backup_to_pcs_zip" value="压缩下载" class="button-primary" onclick="if(confirm('压缩下载会花费大量的服务器资源，建议在深夜的时候进行！点击“确定”现在下载，点击“取消”则不备份') == false){return false;}" />
 			<?php if(!class_exists('ZipArchive')){echo '<b>当前服务器不支持ZipArchive(请联系主机商)，只有数据库可以被备份。</b>';} ?>
 			<?php endif; ?>
 		</p>

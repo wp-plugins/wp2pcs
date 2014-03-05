@@ -22,12 +22,14 @@ function wp2pcs_video_shortcode($atts){
 		'cover' => '',
 		'width' => '640',
 		'height' => '480',
-		'stretch' => 'bestfit'
+		'stretch' => 'bestfit',
+		'refresh' => 'true'
 	),$atts));
 
 	$width = $width ? $width : '640';
 	$height = $height ? $height : '480';
 	$stretch = $stretch ? $stretch : 'bestfit';
+	$refresh = $refresh ? $refresh : 'true';
 
 	// 处理SRC中存在空格和中文的情况
 	$src_arr = explode('/',$src);
@@ -40,7 +42,9 @@ function wp2pcs_video_shortcode($atts){
 	$src = implode('/',$src_arr);
 
 	$player_id = get_php_run_time();
-	$player = '<div id="videoplayer_'.$player_id.'" class="wp2pcs-video" style="background:#000000;"></div><script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'.m3u8",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
+	$player = '<div style="background:#000;display:block;margin:0 auto;width:640px;height:480px;"><div id="videoplayer_'.$player_id.'"></div></div>';
+	if($refresh === 'true')$player .= '<p align="center" class="videoplayer-source"><a href="'.$src.'" target="_blank" style="color:#999;font-size:0.8em;" title="刷新后重新加载本页才能观看完整的视频">刷新视频资源</a></p>';
+	$player .= '<script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"CuOLkaVfoz1zGsqFKDgfvI0h",sk:"67kjwIh3wVLb5UYL"});</script>';
 
 	return $player;
 }
@@ -90,7 +94,7 @@ function wp_storage_print_video(){
 	$blog_root = ($install_in_subdir ? str_replace_last($install_in_subdir,'',ABSPATH) : ABSPATH);
 	$crossdomain_file = $blog_root.'crossdomain.xml';
 	if(!file_exists($crossdomain_file) && is_really_writable($blog_root)){
-		copy(dirname(WP2PCS_PLUGIN_NAME).'/crossdomain.xml',$crossdomain_file);
+		copy(dirname(WP2PCS_PLUGIN_NAME).'/asset/crossdomain.xml',$crossdomain_file);
 	}
 
 	// 判断路径后缀，如果不是.m3u8，就不往下执行
@@ -145,7 +149,7 @@ function wp_storage_print_video(){
 	$video_path = trailing_slash_path($remote_dir).$video_path;
 	$video_path = str_replace('//','/',$video_path);
 
-	$outlink_type = get_option('wp_storage_to_pcs_outlink_type');
+	set_wp2pcs_cache();
 
 	// 打印视频m3u8到浏览器
 	global $baidupcs;

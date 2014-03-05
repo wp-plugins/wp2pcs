@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接网盘)
 Plugin URI: http://www.wp2pcs.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.3.1
+Version: 1.3.2
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -26,16 +26,17 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 define('WP2PCS_APP_KEY',get_option('wp_to_pcs_app_key'));// CuOLkaVfoz1zGsqFKDgfvI0h
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_app_token'));
 define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.$_SERVER['SERVER_NAME'].'/');
-define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.02.18.23.00'));// 以最新一次更新的时间点（到分钟）作为版本号
+define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.03.05.16.00'));// 以最新一次更新的时间点（到分钟）作为版本号
 define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
 
-// 当你发现自己错过了很多定时任务时，删掉下面的注释符号
-//define('ALTERNATE_WP_CRON',true);
+// 当你发现自己错过了很多定时任务时，可以帮助你执行没有执行完的定时任务
+if(is_admin())define('ALTERNATE_WP_CRON',true);
 
-//define('WP2PCS_CACHE',false);// 附件缓存
-//define('WP2PCS_SYNC',false);// 上传文件时，马上加入到同步列表
-//define('WP2PCS_SHORTCODE',false);// 启用视频、音乐短代码
+if(!defined('WP2PCS_CACHE'))define('WP2PCS_CACHE',true);// 附件缓存
+//if(!defined('WP2PCS_SYNC'))define('WP2PCS_SYNC',false);// 上传文件时，马上加入到同步列表
+if(!defined('VIDEO_SHORTCODE'))define('VIDEO_SHORTCODE',true);// 启用视频短代码
+if(!defined('AUDIO_SHORTCODE'))define('AUDIO_SHORTCODE',false);// 启用音乐短代码
 
 // 直接初始化全局变量
 $baidupcs = new BaiduPCS(WP2PCS_APP_TOKEN);
@@ -211,7 +212,7 @@ function wp_to_pcs_pannel(){
 				<p>目前WP2PCS只支持百度网盘，往后将会支持腾讯微云、360网盘，敬请期待！</p>
 				<p class="tishi hidden">API KEY：<input type="password" name="wp_to_pcs_app_key" class="regular-text" /></p>
 				<p class="tishi hidden">ACCESS TOKEN：<input type="password" name="wp_to_pcs_app_token" class="regular-text" /> <a href="http://www.wp2pcs.com/?p=79" target="_blank">?</a></p>
-				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo $_SERVER['SERVER_NAME']; ?>/</p>
+				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo $_SERVER['SERVER_NAME']; ?>/ <a href="http://www.wp2pcs.com/?p=164" target="_blank" title="只有开发者才能修改这个目录，点击阅读详情">?</a></p>
 				<p>
 					<button type="submit" class="button-primary">提交授权</button>
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
@@ -319,14 +320,18 @@ jQuery(function($){
 // 后台全局提示信息
 add_action('admin_notices','wp2pcs_admin_notice');
 function wp2pcs_admin_notice(){
-	if(get_option('wp2pcs_colose_notice')>=WP2PCS_PLUGIN_VER)return;
+	if(get_option('wp2pcs_colose_notice') >= WP2PCS_PLUGIN_VER)return;
 	if(is_multisite()){
 		if(!current_user_can('manage_network'))return;
 	}else{
 		if(!current_user_can('edit_theme_options'))return;
 	}
     ?><div id="wp2pcs-admin-notice" class="updated">
-		<p>WP2PCS提示：如果你是1.3.x之前的老用户，请阅读《<a href="http://www.wp2pcs.com/?p=119">WP2PCS升级到1.3.0的一些说明</a>》。</p>
-		<p>由于百度PCS API的变化，导致很多用户的WP2PCS无法使用。1.3.x版本将有不少限制，由于使用量巨大，无法一一作答，因此新的版本将实行收费通道，具体请从官网了解 www.wp2pcs.com 。为了不影响老用户的正常使用，原来的大部分接口尚可正常使用。<a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
+		<p>WP2PCS 1.3.2版新变化：</p>
+		<ul>
+			<li>加入了附件缓存机制，以提高附件（如图）显示速度</li>
+			<li>默认打开了视频短代码功能，以帮助部分需要使用视频功能的朋友</li>
+		</ul>
+		<p><a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
 	</div><?php
 }
