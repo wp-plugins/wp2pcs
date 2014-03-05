@@ -328,10 +328,11 @@ function wp2pcs_admin_notice(){
 	}
     ?><div id="wp2pcs-admin-notice" class="updated">
 		<p>WP2PCS 1.3.2版新变化：</p>
-		<ul>
+		<ol>
 			<li>加入了附件缓存机制，以提高附件（如图）显示速度</li>
 			<li>默认打开了视频短代码功能，以帮助部分需要使用视频功能的朋友</li>
-		</ul>
+			<li>修改了压缩下载备份的下载形式</li>
+		</ol>
 		<p><a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
 	</div><?php
 }
