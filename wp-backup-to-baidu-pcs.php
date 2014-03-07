@@ -467,14 +467,14 @@ function wp_backup_to_pcs_panel(){
 			<?php if(!class_exists('ZipArchive')){echo '<b>当前服务器不支持ZipArchive(请联系主机商)，只有数据库可以被备份。</b>';} ?>
 			<?php endif; ?>
 		</p>
+		<?php if(!WP2PCS_IS_WRITABLE) : ?>
+		<p style="color:red">当前环境下/wp-content/目录没有可写权限，不能备份网站，请赋予这个目录可写权限！</p>
+		<?php endif; ?>
 		<input type="hidden" name="action" value="wp_backup_to_pcs_send_file" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 		<?php wp_nonce_field(); ?>
 	</div>
 	<div class="inside tishi hidden" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-		<?php if(!WP2PCS_IS_WRITABLE) : ?>
-		<p class="tishi hidden" style="color:red"><b>当前环境下/wp-content/目录没有可写权限，不能在线打包zip文件，请赋予这个目录可写权限！注：BAE和SAE本身不具备可写权限，因此本插件功能受限。</b></p>
-		<?php endif; ?>
 		<?php if(WP2PCS_IS_WRITABLE) : ?>
 		<p class="tishi hidden" style="color:red;font-weight:bold;">注意：由于备份时需要创建压缩文件，并把压缩文件上传到百度网盘，因此一方面需要你的网站空间有可写权限和足够的剩余空间，另一方面可能会消耗你的网站流量，因此请你一定要注意选择合理的备份方式，以免造成空间塞满或流量耗尽等问题。</p>
 		<p class="tishi hidden">境外主机受网络限制，使用马上备份功能可能面临失败的情况，请谨慎使用。<p>

@@ -24,6 +24,7 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 
 // 经过判断或函数运算才能进行定义的常量
 define('WP2PCS_APP_KEY',get_option('wp_to_pcs_app_key'));// CuOLkaVfoz1zGsqFKDgfvI0h
+define('WP2PCS_APP_SECRET',get_option('wp_to_pcs_app_secret'));
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_app_token'));
 define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.$_SERVER['SERVER_NAME'].'/');
 define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.03.05.16.00'));// 以最新一次更新的时间点（到分钟）作为版本号
@@ -87,7 +88,6 @@ function wp_to_pcs_install_options(){
 function wp_to_pcs_default_options(){// 授权成功的时候再赋值
 	if(!get_option('wp_backup_to_pcs_remote_dir'))update_option('wp_backup_to_pcs_remote_dir',WP2PCS_REMOTE_ROOT.'backup/');
 	if(!get_option('wp_backup_to_pcs_local_paths'))update_option('wp_backup_to_pcs_local_paths',ABSPATH);
-	wp_diff_to_pcs_update_file_list();
 	$local_upload_dir = wp_upload_dir();
 	$local_upload_dir = $local_upload_dir['basedir'];
 	$local_upload_dir = str_replace(ABSPATH,'',$local_upload_dir);
@@ -100,8 +100,6 @@ function wp_to_pcs_default_options(){// 授权成功的时候再赋值
 	if(!get_option('wp_storage_to_pcs_audio_perfix'))update_option('wp_storage_to_pcs_audio_perfix','?mp3');
 	if(!get_option('wp_storage_to_pcs_media_perfix'))update_option('wp_storage_to_pcs_media_perfix','?media');
 	if(!get_option('wp_storage_to_pcs_outlink_type'))update_option('wp_storage_to_pcs_outlink_type','200');
-	// 网盘中的应用目录
-	update_option('wp_to_pcs_remote_aplication','wp2pcs');
 	// 初始化按钮
 	if(!wp_next_scheduled('wp_diff_to_pcs_corn_task'))delete_option('wp_diff_to_pcs_future');
 	if(!wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))delete_option('wp_backup_to_pcs_future');
@@ -112,6 +110,7 @@ register_deactivation_hook(WP2PCS_PLUGIN_NAME,'wp_to_pcs_delete_options');
 function wp_to_pcs_delete_options(){
 	// 删除授权TOKEN
 	delete_option('wp_to_pcs_app_key');
+	delete_option('wp_to_pcs_app_secret');
 	delete_option('wp_to_pcs_app_token');
 	// 关闭定时任务
 	if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database'))wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_database');
@@ -156,6 +155,10 @@ function wp_to_pcs_action(){
 		$app_key = trim($_POST['wp_to_pcs_app_key']);
 		$app_key = $app_key ? $app_key : 'CuOLkaVfoz1zGsqFKDgfvI0h';
 		update_option('wp_to_pcs_app_key',$app_key);
+		// Secret Key
+		$secret_key = trim($_POST['wp_to_pcs_app_secret']);
+		$secret_key = $secret ? $secret : '67kjwIh3wVLb5UYL';
+		update_option('wp_to_pcs_app_secret',$secret_key);
 		// 远程应用目录
 		$remote_aplication = trim($_POST['wp_to_pcs_remote_aplication']);
 		$remote_aplication = $remote_aplication ? $remote_aplication : 'wp2pcs';
@@ -172,6 +175,7 @@ function wp_to_pcs_action(){
 		}
 		// 如果存在TOKEN，那么直接更新TOKEN，并刷新页面
 		else{
+			wp_to_pcs_default_options();// 初始化各个推荐值
 			$back_url .= '&time='.time();
 			wp_redirect($back_url);
 		}
@@ -210,8 +214,9 @@ function wp_to_pcs_pannel(){
 			<h3>WP2PCS开关 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 				<p>目前WP2PCS只支持百度网盘，往后将会支持腾讯微云、360网盘，敬请期待！</p>
-				<p class="tishi hidden">API KEY：<input type="password" name="wp_to_pcs_app_key" class="regular-text" /></p>
-				<p class="tishi hidden">ACCESS TOKEN：<input type="password" name="wp_to_pcs_app_token" class="regular-text" /> <a href="http://www.wp2pcs.com/?p=79" target="_blank">?</a></p>
+				<p class="tishi hidden">API Key：<input type="password" name="wp_to_pcs_app_key" class="regular-text" /></p>
+				<p class="tishi hidden">Secret Key：<input type="password" name="wp_to_pcs_app_secret" class="regular-text" /></p>
+				<p class="tishi hidden">Access Token：<input type="password" name="wp_to_pcs_app_token" class="regular-text" /> <a href="http://www.wp2pcs.com/?p=79" target="_blank">?</a></p>
 				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo $_SERVER['SERVER_NAME']; ?>/ <a href="http://www.wp2pcs.com/?p=164" target="_blank" title="只有开发者才能修改这个目录，点击阅读详情">?</a></p>
 				<p>
 					<button type="submit" class="button-primary">提交授权</button>

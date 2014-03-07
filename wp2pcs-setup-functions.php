@@ -233,11 +233,10 @@ function trailing_slash_path($path_string,$is_win = false){
 // 设置全局参数
 function set_php_ini($name){
 	if($name == 'session_start'){
-		if(!defined('WP_TEMP_DIR'))define('WP_TEMP_DIR',sys_get_temp_dir());
-		if(is_really_writable(WP_TEMP_DIR)){
-			if(function_exists("ini_set"))ini_set('session.save_path',WP_TEMP_DIR);// 重新规定session的存储位置
-			if(function_exists("session_start"))session_start();
+		if(defined('WP_TEMP_DIR') && is_really_writable(WP_TEMP_DIR)){
+			if(function_exists('ini_set'))ini_set('session.save_path',WP_TEMP_DIR);// 重新规定session的存储位置
 		}
+		session_start();
 	}
 	elseif($name == 'session_end'){
 		if(function_exists("session_destroy"))session_destroy();
