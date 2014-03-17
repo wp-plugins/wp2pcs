@@ -453,7 +453,7 @@ function wp_backup_to_pcs_panel(){
 		<p class="tishi hidden">在上面填写日志文件夹的路径，留空则不备份日志。这个路径不是访问URL，而是相对于服务器的文件路径。你的网站的根路径是“<?php echo ABSPATH; ?>”，一般日志文件都存放在<?php echo ABSPATH; ?>logs/或和public_html目录同一个级别，你需要填写成你自己的。</p>
 		<p class="tishi hidden">
 			只备份下列文件或目录：（务必阅读下方说明，根路径为：<?php echo ABSPATH; ?>）<br />
-			<textarea name="wp_backup_to_pcs_local_paths" class="large-text code" style="height:90px;" <?php if($is_turned_on)echo 'readonly="readonly"';?>><?php echo stripslashes($local_paths); ?></textarea>
+			<textarea name="wp_backup_to_pcs_local_paths" class="large-text code" style="height:90px;" <?php if($is_turned_on)echo 'readonly="readonly"';?>><?php echo $local_paths; ?></textarea>
 		</p>
 		<p class="tishi hidden">只备份特定目录或文件：每行一个，当前年月日分别用{year}{month}{day}代替，不能有空格，末尾带/，必须为网站目录路径（包含路径头<?php echo ABSPATH; ?>）。<b>注意，上级目录将包含下级目录，如<?php echo ABSPATH; ?>wp-content/将包含<?php echo ABSPATH; ?>wp-content/uploads/，因此务必不要重复，两个只能填一个，否则会报错。</b>填写了目录或文件列表之后，只备份填写的列表中的目录或文件。不填，则不备份任何网站目录下的文件。</p>
 		<?php endif; ?>
