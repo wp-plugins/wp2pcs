@@ -94,7 +94,7 @@ function wp_to_pcs_default_options(){// 授权成功的时候再赋值
 	$local_upload_dir = $local_upload_dir['basedir'];
 	$local_upload_dir = str_replace(ABSPATH,'',$local_upload_dir);
 	$remote_upload_dir = str_replace('\\','/',WP2PCS_REMOTE_ROOT.$local_upload_dir);
-	$remote_upload_dir = trailing_slash_path($remote_upload_dir,WP2PCS_IS_WIN);
+	$remote_upload_dir = trailing_slash_path($remote_upload_dir);
 	if(!get_option('wp_storage_to_pcs_remote_dir'))update_option('wp_storage_to_pcs_remote_dir',$remote_upload_dir);
 	if(!get_option('wp_storage_to_pcs_image_perfix'))update_option('wp_storage_to_pcs_image_perfix','?image');
 	if(!get_option('wp_storage_to_pcs_download_perfix'))update_option('wp_storage_to_pcs_download_perfix','?download');
