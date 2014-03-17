@@ -133,15 +133,18 @@ jQuery(function($){
 	$('#insert-btn').click(function(){
 		if($('div.selected').length > 0){
 			var $image_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_image_perfix")); ?>',
-				$media_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_media_perfix")); ?>',
+				$download_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_download_perfix")); ?>',
 				$video_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_video_perfix")); ?>',
 				$audio_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_audio_perfix")); ?>',
+				$media_perfix = '<?php echo trim(get_option("wp_storage_to_pcs_media_perfix")); ?>',
 				$remote_dir = '<?php echo trim(get_option("wp_storage_to_pcs_remote_dir")); ?>',
 				$home_url = '<?php echo home_url("/"); ?>',
 				$img_root = $home_url + $image_perfix + '/',
-				$media_root = $home_url + $media_perfix + '/',
+				$download_root = $home_url + $download_perfix + '/',
 				$video_root = $home_url + $video_perfix + '/',
 				$audio_root = $home_url + $audio_perfix + '/',
+				$media_root = $home_url + $media_perfix + '/',
+				$is_image_outlink = <?php echo (WP2PCS_IMAGE_HD == '301' && get_option('wp2pcs_oauth_type') <= 1 ? 'true' : 'false'); ?>,
 				$html = '';
 			$('div.selected').each(function(){
 				var $this = $(this),
@@ -150,15 +153,16 @@ jQuery(function($){
 					$file_type = $this.attr('data-file-type'),
 					$file_touch = $file_path.replace($remote_dir,''),
 					$img_src = $img_root + $file_touch,
-					$file_src = $media_root + $file_touch,
+					$file_src = $download_root + $file_touch,
 					$video_src = $video_root + $file_touch,
 					$video_cover,
 					$video_shortcode = <?php echo (VIDEO_SHORTCODE?'true':'false'); ?>,
 					$audio_src = $audio_root + $file_touch,
-					$audio_shortcode = <?php echo (AUDIO_SHORTCODE?'true':'false'); ?>;
+					$audio_shortcode = <?php echo (AUDIO_SHORTCODE?'true':'false'); ?>,
+					$media_src = $media_root + $file_touch;
 				// 如果被选择的是图片
 				if($file_type == 'image'){
-					$html += '<a href="'+$img_src+'" class="wp2pcs-image-link"><img src="'+$img_src+'" class="wp2pcs-image" alt="'+$file_name+'" /></a>';
+					$html += '<a href="'+$img_src+'" class="wp2pcs-image-link"><img src="'+($is_image_outlink?$media_src:$img_src)+'" class="wp2pcs-image" alt="'+$file_name+'" /></a>';
 				}
 				// 如果被选择的是视频，使用视频播放器【1.3.0后暂停使用】
 				else if($file_type == 'video' && $video_shortcode){
@@ -170,7 +174,7 @@ jQuery(function($){
 				}
 				// 如果是其他文件，就直接给媒体链接
 				else{
-					$html += '<a href="' + $file_src + '" class="wp2pcs-media">' + $file_name + '</a>';
+					$html += '<a href="' + $file_src + '" class="wp2pcs-download">' + $file_name + '</a>';
 				}
 			});
 			$('.selected').removeClass('selected');
@@ -357,7 +361,7 @@ jQuery(function($){
 		<input type="file" name="select" id="upload-to-pcs-input" />
 		<input type="button" value="上传" class="button-primary" id="upload-to-pcs-submit" />
 		<a href="" class="button hidden" id="upload-to-pcs-refresh">成功，刷新查看</a>
-		<img src="<?php echo plugins_url( 'asset/loading.gif',WP2PCS_PLUGIN_NAME); ?>" class="hidden" id="upload-to-pcs-processing" />
+		<img src="<?php echo plugins_url('asset/loading.gif',WP2PCS_PLUGIN_NAME); ?>" class="hidden" id="upload-to-pcs-processing" />
 	</form>
 	<iframe name="upload-to-pcs-window" id="upload-to-pcs-window" style="display:none;"></iframe>
 </div>
@@ -376,10 +380,7 @@ jQuery(function($){
 	<p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
 	<p>本插件提供媒体通用前缀<?php echo get_option('wp_storage_to_pcs_media_perfix'); ?>，调用附件二进制流资源。</p>
 	<p>修改文件信息：选中文件之后，在原来的文件名上再点一次即可修改文件名。但修改只对这一次插入有效，并不真正修改文件数据。目前图片不能修改长宽信息，如果要修改长宽信息，先插入图片，然后再使用图片编辑功能修改。</p>
-	<?php if(get_option('wp_storage_to_pcs_outlink_type') == 200) : ?>
-	</p>有些大文件可能消耗巨大的流量，你可以使用直接外链来下载，你的网站的外链前缀是：<?php echo 'http://wp2pcs.duapp.com/media?'.$site_id.'+'.substr(WP2PCS_APP_TOKEN,0,10).'+path='.get_option('wp_storage_to_pcs_remote_dir'); ?>，你可以再后面跟上附件在网盘中的位置，直接使用外链来获取附件。</p>
-	<?php endif; ?>
-	<p>本插件的本地上传功能比较弱，会极大的消耗服务器资源。请在网盘中上传（客户端或网页端都可以），完成之后请点击刷新按钮以查看新上传的文件。</p>
+	<p>本插件的本地上传功能比较弱，请在网盘中上传（客户端或网页端都可以），完成之后请点击刷新按钮以查看新上传的文件。</p>
 	<p>使用流式文件的实例，用下面的代码来播放flv视频：<?php esc_html_e('<embed src="'.plugins_url( 'asset/flv.swf',WP2PCS_PLUGIN_NAME).'" allowfullscreen="true" isautoplay="0" flashvars="vcastr_file='.wp2pcs_media_src('test.flv').'" quality="high" type="application/x-shockwave-flash" width="500" height="400"></embed>'); ?></p>
 	<p>最后，强烈建议文件名、文件夹名使用常规的命名方法，不包含特殊字符，尽可能使用小写字母，使用-作为连接符，使用小写扩展名，由于命名特殊引起的问题，请自行排查。</p>
 </div>

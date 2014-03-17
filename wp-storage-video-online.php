@@ -42,9 +42,23 @@ function wp2pcs_video_shortcode($atts){
 	$src = implode('/',$src_arr);
 
 	$player_id = get_php_run_time();
+
 	$player = '<div style="background:#000;display:block;margin:0 auto;width:640px;height:480px;"><div id="videoplayer_'.$player_id.'"></div></div>';
 	if($refresh === 'true')$player .= '<p align="center" class="videoplayer-source"><a href="'.$src.'" target="_blank" style="color:#999;font-size:0.8em;" title="刷新后重新加载本页才能观看完整的视频">刷新视频资源</a></p>';
-	$player .= '<script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({width:'.$width.',height:'.$height.',backcolor:"#FFFFFF",stretching:"'.$stretch.'",file:"'.$src.'",image:"'.$cover.'",autoStart:!1,repeat:"always",volume:100,controlbar:"over",ak:"'.WP2PCS_APP_KEY.'",sk:"'.substr(WP2PCS_APP_SECRET,0,16).'"});</script>';
+	$player .= '<script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({
+		width:'.$width.',
+		height:'.$height.',
+		backcolor:"#FFFFFF",
+		stretching:"'.$stretch.'",
+		file:"'.$src.'",
+		image:"'.$cover.'",
+		autoStart:!1,
+		repeat:"always",
+		volume:100,
+		controlbar:"over",
+		ak:"'.WP2PCS_APP_KEY.'",
+		sk:"'.substr(WP2PCS_APP_SECRET,0,16).'"
+	});</script>';
 
 	return $player;
 }
@@ -149,20 +163,34 @@ function wp_storage_print_video(){
 	$video_path = trailing_slash_path($remote_dir).$video_path;
 	$video_path = str_replace('//','/',$video_path);
 
-	set_wp2pcs_cache();
-
-	// 打印视频m3u8到浏览器
-	global $baidupcs;
-	$result = $baidupcs->streaming($video_path,'M3U8_854_480');
-
-	$meta = json_decode($result,true);
-	if(isset($meta['error_msg'])){
-		echo $meta['error_msg'];
-		session_destroy();
+	if(WP2PCS_VIDEO_HD == '301'){
+		$oauth_type = get_option('wp2pcs_oauth_type');
+		if($oauth_type > 1){
+			$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
+			$path = str_replace('/apps/wp2pcs','',$video_path);
+			$url = WP2PCS_STATIC.$wp2pcs_oauth_code.$path.'.m3u8';
+		}
+		else{
+			$url = 'https://pcs.baidu.com/rest/2.0/pcs/file?method=streaming&path='.$video_path.'&access_token='.WP2PCS_APP_TOKEN.'&type=M3U8_854_480';
+		}
+		header("Location:$url");
 		exit;
 	}
-		
-	ob_clean();
-	echo $result;
+	else{
+		set_wp2pcs_cache();
+		global $baidupcs;
+		$result = $baidupcs->streaming($video_path,'M3U8_854_480');
+
+		$meta = json_decode($result,true);
+		if(isset($meta['error_msg'])){
+			echo $meta['error_msg'];
+			session_destroy();
+			exit;
+		}
+			
+		ob_clean();
+		echo $result;
+		exit;
+	}
 	exit;
 }

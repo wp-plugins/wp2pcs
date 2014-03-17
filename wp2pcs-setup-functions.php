@@ -139,11 +139,12 @@ function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 		$current_url .= "s";
 	}
 	$current_url .= "://";
-	if($_SERVER["SERVER_PORT"] != "80"){
-		$current_url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-	}else{
+	// 部分主机会出现多出端口号的情况，我们把它注释掉，看还会不会出现这种情况。
+	//if($_SERVER["SERVER_PORT"] != "80"){
+	//	$current_url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+	//}else{
 		$current_url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-	}
+	//}
 	// 是否要进行参数处理
 	$parse_url = parse_url($current_url);
 	if(is_array($query) && !empty($query)){
@@ -201,6 +202,20 @@ function set_wp2pcs_cache(){
 			exit;
 		}
 	}
+}
+
+function get_by_curl($url,$post = false){
+	$ch = curl_init();
+	curl_setopt($ch,CURLOPT_URL,$url);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	if($post){
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
+	}
+	$result = curl_exec($ch);
+	curl_close($ch);
+	return $result;
 }
 
 // 有效解决超过2G大文件的文件大小问题

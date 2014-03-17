@@ -90,26 +90,28 @@ function wp_storage_to_pcs_panel(){
 		<p>图片访问前缀：
 			<input type="text" name="wp_storage_to_pcs_image_perfix" value="<?php echo $image_perfix; ?>" />
 			<input type="checkbox" name="wp_storage_to_pcs_image_hd" value="301" <?php checked($image_hd,'301'); ?> />
-			外链 <a href="http://wp2pcs.duapp.com/286" title="使用说明" target="_blank">?</a>
+			外链 <a href="http://www.wp2pcs.com/?p=208" title="WP2PCS中直链、外链的意思及它们的原理" target="_blank">?</a>
 		</p>
 		<p class="tishi hidden">访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“<?php echo WP2PCS_REMOTE_ROOT; ?>uploads/test.jpg”这张图片。为了提高不同空间的兼容性，默认为“?img”的形式。</p>
 		<p class="tishi hidden">下载访问前缀：
 			<input type="text" name="wp_storage_to_pcs_download_perfix" value="<?php echo $download_perfix; ?>" />
 			<input type="checkbox" name="wp_storage_to_pcs_download_hd" value="301" <?php checked($download_hd,'301'); ?> />
-			外链 <a href="http://wp2pcs.duapp.com/286" title="使用说明" target="_blank">?</a>
+			外链
 		</p>
-		<p <?php if(!VIDEO_SHORTCODE)echo 'class="tishi hidden"'; ?>>视频访问前缀：
+		<p <?php if(!VIDEO_SHORTCODE)echo 'class="tishi hidden"'; ?>>M3U8视频前缀：
 			<input type="text" name="wp_storage_to_pcs_video_perfix" value="<?php echo $video_perfix; ?>" /> 
+			<input type="checkbox" name="wp_storage_to_pcs_video_hd" value="301" <?php checked($video_hd,'301'); ?> />
+			外链
 		</p>
-		<p <?php if(!AUDIO_SHORTCODE)echo 'class="tishi hidden"'; ?>>MP3访问前缀：
+		<p <?php if(!AUDIO_SHORTCODE)echo 'class="tishi hidden"'; ?>>MP3音乐前缀：
 			<input type="text" name="wp_storage_to_pcs_audio_perfix" value="<?php echo $audio_perfix; ?>" /> 
 			<input type="checkbox" name="wp_storage_to_pcs_audio_hd" value="301" <?php checked($audio_hd,'301'); ?> />
-			外链 <a href="http://wp2pcs.duapp.com/202" title="使用说明" target="_blank">?</a>
+			外链
 		</p>
-		<p>文件访问前缀：
+		<p>原始文件前缀：
 			<input type="text" name="wp_storage_to_pcs_media_perfix" value="<?php echo $media_perfix; ?>" /> 
 			<input type="checkbox" name="wp_storage_to_pcs_media_hd" value="301" <?php checked($media_hd,'301'); ?> />
-			外链 <a href="http://wp2pcs.duapp.com/204" title="使用说明" target="_blank">?</a>
+			外链
 		</p>
 		<p><input type="submit" value="确定" class="button-primary" /></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_update" />

@@ -139,7 +139,20 @@ function wp_storage_print_audio(){
 	$audio_path = trailing_slash_path($remote_dir).$audio_path;
 	$audio_path = str_replace('//','/',$audio_path);
 	
-	if(WP2PCS_AUDIO_HD != '301'){
+	if(WP2PCS_AUDIO_HD == '301'){
+		$oauth_type = get_option('wp2pcs_oauth_type');
+		if($oauth_type > 1){
+			$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
+			$path = str_replace('/apps/wp2pcs','',$audio_path);
+			$url = WP2PCS_STATIC.$wp2pcs_oauth_code.$path;
+		}
+		else{
+			$url = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$audio_path;
+		}
+		header("Location:$url");
+		exit;
+	}
+	else{
 		set_wp2pcs_cache();
 		// 打印音乐到浏览器
 		global $baidupcs;
@@ -157,10 +170,6 @@ function wp_storage_print_audio(){
 		header('Content-length: '.strlen($result));
 		ob_clean();
 		echo $result;
-		exit;
-	}else{
-		$audio_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$audio_path;
-		header('Location:'.$audio_outlink);
 		exit;
 	}
 	exit;

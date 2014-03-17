@@ -199,9 +199,21 @@ function wp_storage_print_image(){
 	$image_path = trailing_slash_path($remote_dir).$image_path;
 	$image_path = str_replace('//','/',$image_path);
 
-	if(WP2PCS_IMAGE_HD != '301'){
+	if(WP2PCS_IMAGE_HD == '301'){
+		$oauth_type = get_option('wp2pcs_oauth_type');
+		if($oauth_type > 1){
+			$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
+			$path = str_replace('/apps/wp2pcs','',$image_path);
+			$url = WP2PCS_STATIC.$wp2pcs_oauth_code.$path;
+		}
+		else{
+			$url = 'https://pcs.baidu.com/rest/2.0/pcs/thumbnail?method=generate&access_token='.WP2PCS_APP_TOKEN.'&path='.$image_path.'&quality=100&width=1600&height=1600';
+		}
+		header("Location:$url");
+		exit;
+	}
+	else{
 		set_wp2pcs_cache();
-		// 打印图片到浏览器
 		global $baidupcs;
 		$result = $baidupcs->downloadStream($image_path);
 
@@ -215,10 +227,11 @@ function wp_storage_print_image(){
 		ob_clean();
 		echo $result;
 		exit;
-	}else{
+	}
+	/*else{
 		$image_outlink = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$image_path;
 		header('Location:'.$image_outlink);
 		exit;
-	}
+	}*/
 	exit;
 }

@@ -4,7 +4,7 @@ Donate link: http://www.wp2pcs.com
 Tags:wp2pcs, backup, sync, baidu, personal cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
 Tested up to: 3.8.1
-Stable tag: 1.3.2
+Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,9 @@ WP2PCS将你的WordPress定时备份到百度网盘，把百度网盘作为附�
 5.在文章编辑页面“添加媒体”按钮后的媒体管理面板中选择插入网盘中的附件。
 
 == Changelog ==
+
+= 1.3.3 =
+加入了Oauth Code计划
 
 = 1.3.2 =
 加入了附件缓存机制
@@ -123,6 +126,9 @@ WP2PCS将你的WordPress定时备份到百度网盘，把百度网盘作为附�
 * 基本功能：1、备份到百度网盘；2、保存文件到百度网盘，并可以插入到文章中。
 
 == Upgrade Notice ==
+
+= 1.3.3 =
+加入了Oauth Code计划
 
 = 1.3.2 =
 加入了附件缓存机制
