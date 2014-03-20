@@ -239,7 +239,7 @@ function wp_to_pcs_action(){
 		}
 		// 如果没有通过验证
 		else{
-			echo null;
+			echo '{"error":1,"message":"删除成功。"}';
 		}
 		exit;
 	}
