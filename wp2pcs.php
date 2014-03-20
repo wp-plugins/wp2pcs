@@ -27,7 +27,7 @@ define('WP2PCS_APP_KEY',get_option('wp_to_pcs_app_key'));// CuOLkaVfoz1zGsqFKDgf
 define('WP2PCS_APP_SECRET',get_option('wp_to_pcs_app_secret'));
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_app_token'));
 define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.$_SERVER['SERVER_NAME'].'/');
-define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.03.20.16.00'));// 以最新一次更新的时间点（到分钟）作为版本号
+define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.03.20.21.00'));// 以最新一次更新的时间点（到分钟）作为版本号
 define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
 
@@ -200,6 +200,7 @@ function wp_to_pcs_action(){
 		$site_id = $_GET['site_id'];
 		update_option('wp_to_pcs_site_id',$site_id);
 		wp_to_pcs_default_options();// 初始化各个推荐值
+		update_option('wp2pcs_colose_notice',WP2PCS_PLUGIN_VER);// 关闭消息提示
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
 		exit;
 	}
@@ -246,8 +247,6 @@ function wp_to_pcs_action(){
 
 // 选项和菜单
 function wp_to_pcs_pannel(){
-	$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
-	$wp2pcs_oauth_type = get_option('wp2pcs_oauth_type');
 ?>
 <style>
 .tishi{font-size:0.8em;color:#999}
@@ -282,12 +281,6 @@ function wp_to_pcs_pannel(){
 		<form method="post" autocomplete="off">
 			<h3>WP2PCS开关 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;" id="wp2pcs-information-pend">
-				<p>WP2PCS Oauth Code：
-					<input type="text" name="wp2pcs_oauth_code" value="<?php echo $wp2pcs_oauth_code; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo $wp2pcs_oauth_code; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
-					<span id="oauth-code-loading" class="hidden"><img src="<?php echo plugins_url("asset/loader.gif",WP2PCS_PLUGIN_NAME); ?>" /></span>
-					<span id="oauth-code-message"></span>
-					<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
-				</p>
 				<p>
 					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
@@ -299,9 +292,9 @@ function wp_to_pcs_pannel(){
 			</div>
 		</form>
 		</div>
+		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
 		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
 		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_diff_to_pcs_panel(); ?>
-		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
 		<div id="wp2pcs-information-area" class="hidden">
 			<?php
 			// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
@@ -318,9 +311,6 @@ function wp_to_pcs_pannel(){
 			?>
 		</div>
 		<script>jQuery('#wp2pcs-information-area').prependTo('#wp2pcs-information-pend').show();</script>
-		<?php if($wp2pcs_oauth_code) : ?>
-			<script src="http://api.wp2pcs.com/oauthcodejs.php?code=<?php echo $wp2pcs_oauth_code; ?>&type=<?php echo $wp2pcs_oauth_type; ?>&script=status.js"></script>
-		<?php endif; ?>
 	<?php endif; ?>
 		<div class="postbox">
 			<h3>WP2PCS说明 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
@@ -375,39 +365,6 @@ jQuery(function($){
 		$(this).parent().parent().find('.tishi').hide();
 		$(this).text('+');
 	});
-	$('#wp2pcs-oauth-code').focusout(function(){
-		var $this = $(this),
-			code = $this.val(),
-			oauth = $this.attr('data-oauth-code');
-		if(code == oauth){
-			return;
-		}
-		else{
-			$('#oauth-code-loading').show();
-			var url = '<?php echo wp_to_pcs_wp_current_request_url(false)."?page=".$_GET["page"]; ?>',
-				data = {wp2pcs_oauth_code:code,action:'update_wp2pcs_oauth_code',_wpnonce:'<?php echo wp_create_nonce(); ?>'};
-			$.post(url,data,function(out){
-				if(out.error == 0){
-					if(out.type == 0){
-						$('#oauth-code-message').html('<span style="color:#999">Oauth Code被禁用。</span>');
-					}
-					else if(out.type == 2){
-						$('#oauth-code-message').html('<span style="color:#118508">验证通过，VIP被确认。</span>');
-					}
-					else if(out.type == 3){
-						$('#oauth-code-message').html('<span style="color:#118508">验证通过，高级VIP被确认。</span>');
-					}
-					else{
-						$('#oauth-code-message').html('<span style="color:#118508">验证通过。</span>');
-					}
-				}else{
-					$('#oauth-code-message').html('<span style="color:red">' + out.message + '</span>');
-				}
-				$this.attr('data-oauth-code',code);
-				$('#oauth-code-loading').hide();
-			},'json');
-		}
-	});
 });
 </script>
 <?php
@@ -430,6 +387,6 @@ function wp2pcs_admin_notice(){
 			<li>加入了Oauth Code，注册WP2PCS官网的用户拥有唯一的身份标识码</li>
 			<li>重新加入了音乐代码，现在可以再文章中插入MP3</li>
 		</ol>
-		<p><a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
+		<p><a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a> <span style="color:red">注意：关闭本消息后再授权！</span></p>
 	</div><?php
 }
