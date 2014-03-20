@@ -268,12 +268,6 @@ function wp_to_pcs_pannel(){
 				<p class="tishi hidden">Secret Key：<input type="password" name="wp_to_pcs_app_secret" class="regular-text" /></p>
 				<p class="tishi hidden">Access Token：<input type="password" name="wp_to_pcs_app_token" class="regular-text" /> <a href="http://www.wp2pcs.com/?p=79" target="_blank">?</a></p>
 				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo $_SERVER['SERVER_NAME']; ?>/ <a href="http://www.wp2pcs.com/?p=164" target="_blank" title="只有开发者才能修改这个目录，点击阅读详情">?</a></p>
-				<p>WP2PCS Oauth Code：
-					<input type="text" name="wp2pcs_oauth_code" value="<?php echo $wp2pcs_oauth_code; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo $wp2pcs_oauth_code; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
-					<span id="oauth-code-loading" class="hidden"><img src="<?php echo plugins_url("asset/loader.gif",WP2PCS_PLUGIN_NAME); ?>" /></span>
-					<span id="oauth-code-message"></span>
-					<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
-				</p>
 				<p>
 					<button type="submit" class="button-primary">提交授权</button>
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
@@ -290,6 +284,12 @@ function wp_to_pcs_pannel(){
 		<form method="post" autocomplete="off">
 			<h3>WP2PCS开关 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;" id="wp2pcs-information-pend">
+				<p>WP2PCS Oauth Code：
+					<input type="text" name="wp2pcs_oauth_code" value="<?php echo $wp2pcs_oauth_code; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo $wp2pcs_oauth_code; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
+					<span id="oauth-code-loading" class="hidden"><img src="<?php echo plugins_url("asset/loader.gif",WP2PCS_PLUGIN_NAME); ?>" /></span>
+					<span id="oauth-code-message"></span>
+					<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
+				</p>
 				<p>
 					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
