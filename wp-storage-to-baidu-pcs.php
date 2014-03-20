@@ -80,19 +80,10 @@ function wp_storage_to_pcs_panel(){
 	$video_hd = get_option('wp_storage_to_pcs_video_hd');
 	$audio_hd = get_option('wp_storage_to_pcs_audio_hd');
 	$media_hd = get_option('wp_storage_to_pcs_media_hd');
-	// Oauth Code
-	$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
-	$wp2pcs_oauth_type = get_option('wp2pcs_oauth_type');
 ?>
 <div class="postbox" id="wp-to-pcs-storage-form">
 	<h3>PCS存储设置 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>	
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
-	<p>WP2PCS Oauth Code：
-		<input type="text" name="wp2pcs_oauth_code" value="<?php echo $wp2pcs_oauth_code; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo $wp2pcs_oauth_code; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
-		<span id="oauth-code-loading" class="hidden"><img src="<?php echo plugins_url("asset/loader.gif",WP2PCS_PLUGIN_NAME); ?>" /></span>
-		<span id="oauth-code-message"></span>
-		<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
-	</p>
 	<form method="post">
 		<p>使用网盘中的哪个目录：<?php echo WP2PCS_REMOTE_ROOT; ?><input type="text" name="wp_storage_to_pcs_remote_dir"  class="regular-text" value="<?php echo str_replace(WP2PCS_REMOTE_ROOT,'',$remote_dir); ?>" /></p>
 		<p class="tishi hidden">使用网盘中的某一个目录作为你存储图片或附件的根目录，例如你填写“uploads”，那么到时候就会采用这个目录下的文件作为附件。</p>
@@ -134,45 +125,5 @@ function wp_storage_to_pcs_panel(){
 		<p style="color:red;">如果你在使用中遇到问题，随时<a href="http://www.wp2pcs.com/?cat=6" target="_blank">申请帮助</a>，以获得VIP专享服务。</p>
 	</div>
 </div>
-<script>
-jQuery(function($){
-	$('#wp2pcs-oauth-code').focusout(function(){
-		var $this = $(this),
-			code = $this.val(),
-			oauth = $this.attr('data-oauth-code');
-		if(code == oauth){
-			return;
-		}
-		else{
-			$('#oauth-code-loading').show();
-			var url = '<?php echo wp_to_pcs_wp_current_request_url(false)."?page=".$_GET["page"]; ?>',
-				data = {wp2pcs_oauth_code:code,action:'update_wp2pcs_oauth_code',_wpnonce:'<?php echo wp_create_nonce(); ?>'};
-			$.post(url,data,function(out){
-				if(out.error == 0){
-					if(out.type == 0){
-						$('#oauth-code-message').html('<span style="color:#999">Oauth Code被禁用。</span>');
-					}
-					else if(out.type == 2){
-						$('#oauth-code-message').html('<span style="color:#118508">验证通过，VIP被确认。</span>');
-					}
-					else if(out.type == 3){
-						$('#oauth-code-message').html('<span style="color:#118508">验证通过，高级VIP被确认。</span>');
-					}
-					else{
-						$('#oauth-code-message').html('<span style="color:#118508">验证通过。</span>');
-					}
-				}else{
-					$('#oauth-code-message').html('<span style="color:red">' + out.message + '</span>');
-				}
-				$this.attr('data-oauth-code',code);
-				$('#oauth-code-loading').hide();
-			},'json');
-		}
-	});
-});	
-</script>
-<?php if($wp2pcs_oauth_code) : ?>
-<script src="http://api.wp2pcs.com/oauthcodejs.php?code=<?php echo $wp2pcs_oauth_code; ?>&type=<?php echo $wp2pcs_oauth_type; ?>&script=status.js"></script>
-<?php endif; ?>
 <?php
 }

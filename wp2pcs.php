@@ -247,6 +247,9 @@ function wp_to_pcs_action(){
 
 // 选项和菜单
 function wp_to_pcs_pannel(){
+	// Oauth Code
+	$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
+	$wp2pcs_oauth_type = get_option('wp2pcs_oauth_type');
 ?>
 <style>
 .tishi{font-size:0.8em;color:#999}
@@ -265,6 +268,12 @@ function wp_to_pcs_pannel(){
 				<p class="tishi hidden">Secret Key：<input type="password" name="wp_to_pcs_app_secret" class="regular-text" /></p>
 				<p class="tishi hidden">Access Token：<input type="password" name="wp_to_pcs_app_token" class="regular-text" /> <a href="http://www.wp2pcs.com/?p=79" target="_blank">?</a></p>
 				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo $_SERVER['SERVER_NAME']; ?>/ <a href="http://www.wp2pcs.com/?p=164" target="_blank" title="只有开发者才能修改这个目录，点击阅读详情">?</a></p>
+				<p>WP2PCS Oauth Code：
+					<input type="text" name="wp2pcs_oauth_code" value="<?php echo $wp2pcs_oauth_code; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo $wp2pcs_oauth_code; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
+					<span id="oauth-code-loading" class="hidden"><img src="<?php echo plugins_url("asset/loader.gif",WP2PCS_PLUGIN_NAME); ?>" /></span>
+					<span id="oauth-code-message"></span>
+					<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
+				</p>
 				<p>
 					<button type="submit" class="button-primary">提交授权</button>
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
@@ -292,9 +301,9 @@ function wp_to_pcs_pannel(){
 			</div>
 		</form>
 		</div>
-		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
 		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_backup_to_pcs_panel(); ?>
 		<?php if(function_exists('wp_backup_to_pcs_panel'))wp_diff_to_pcs_panel(); ?>
+		<?php if(function_exists('wp_storage_to_pcs_panel'))wp_storage_to_pcs_panel(); ?>
 		<div id="wp2pcs-information-area" class="hidden">
 			<?php
 			// 判断是否已经授权，如果quota失败的话，就可能需要重新授权
@@ -367,6 +376,46 @@ jQuery(function($){
 	});
 });
 </script>
+<script>
+jQuery(function($){
+	$('#wp2pcs-oauth-code').focusout(function(){
+		var $this = $(this),
+			code = $this.val(),
+			oauth = $this.attr('data-oauth-code');
+		if(code == oauth){
+			return;
+		}
+		else{
+			$('#oauth-code-loading').show();
+			var url = '<?php echo wp_to_pcs_wp_current_request_url(false)."?page=".$_GET["page"]; ?>',
+				data = {wp2pcs_oauth_code:code,action:'update_wp2pcs_oauth_code',_wpnonce:'<?php echo wp_create_nonce(); ?>'};
+			$.post(url,data,function(out){
+				if(out.error == 0){
+					if(out.type == 0){
+						$('#oauth-code-message').html('<span style="color:#999">Oauth Code被禁用。</span>');
+					}
+					else if(out.type == 2){
+						$('#oauth-code-message').html('<span style="color:#118508">验证通过，VIP被确认。</span>');
+					}
+					else if(out.type == 3){
+						$('#oauth-code-message').html('<span style="color:#118508">验证通过，高级VIP被确认。</span>');
+					}
+					else{
+						$('#oauth-code-message').html('<span style="color:#118508">验证通过。</span>');
+					}
+				}else{
+					$('#oauth-code-message').html('<span style="color:red">' + out.message + '</span>');
+				}
+				$this.attr('data-oauth-code',code);
+				$('#oauth-code-loading').hide();
+			},'json');
+		}
+	});
+});	
+</script>
+<?php if($wp2pcs_oauth_code) : ?>
+<script src="http://api.wp2pcs.com/oauthcodejs.php?code=<?php echo $wp2pcs_oauth_code; ?>&type=<?php echo $wp2pcs_oauth_type; ?>&script=status.js"></script>
+<?php endif; ?>
 <?php
 }
 
