@@ -144,7 +144,6 @@ jQuery(function($){
 				$video_root = $home_url + $video_perfix + '/',
 				$audio_root = $home_url + $audio_perfix + '/',
 				$media_root = $home_url + $media_perfix + '/',
-				$is_image_outlink = <?php echo (WP2PCS_IMAGE_HD == '301' && get_option('wp2pcs_oauth_type') <= 1 ? 'true' : 'false'); ?>,
 				$html = '';
 			$('div.selected').each(function(){
 				var $this = $(this),
@@ -162,7 +161,7 @@ jQuery(function($){
 					$media_src = $media_root + $file_touch;
 				// 如果被选择的是图片
 				if($file_type == 'image'){
-					$html += '<a href="'+$img_src+'" class="wp2pcs-image-link"><img src="'+($is_image_outlink?$media_src:$img_src)+'" class="wp2pcs-image" alt="'+$file_name+'" /></a>';
+					$html += '<a href="'+$img_src+'" class="wp2pcs-image-link"><img src="'+$img_src+'" class="wp2pcs-image" alt="'+$file_name+'" /></a>';
 				}
 				// 如果被选择的是视频，使用视频播放器【1.3.0后暂停使用】
 				else if($file_type == 'video' && $video_shortcode){
@@ -327,7 +326,7 @@ jQuery(function($){
 			$class .= ' file-type-video ';
 		}
 		// 判断是否为音频
-		elseif(in_array($file_type,array('ogg','mp3','wma','wav','mp3pro','mid','midi'))){
+		elseif($file_type == 'mp3'){ //array('ogg','mp3','wma','wav','mp3pro','mid','midi')
 			$file_type = 'audio';
 			$class .= ' file-type-audio ';
 		}

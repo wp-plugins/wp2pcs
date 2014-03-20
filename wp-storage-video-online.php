@@ -26,6 +26,10 @@ function wp2pcs_video_shortcode($atts){
 		'refresh' => 'false'
 	),$atts));
 
+	static $video_id = 1;
+	if($video_id == 1)echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
+	else $video ++;
+
 	$width = $width ? $width : '640';
 	$height = $height ? $height : '480';
 	$stretch = $stretch ? $stretch : 'bestfit';
@@ -65,7 +69,7 @@ function wp2pcs_video_shortcode($atts){
 add_shortcode('video','wp2pcs_video_shortcode');
 
 // 在网页头部输出音乐播放要使用到的javascript
-add_action('wp_head','wp2pcs_video_player_script');
+//add_action('wp_head','wp2pcs_video_player_script');
 function wp2pcs_video_player_script($force = false){
 	// 如果你不打算让播放器出现在除了文章页之外的页面，如首页、列表页等，那么可以加上if(!is_singular())return;
 	global $wp_query;
@@ -165,15 +169,16 @@ function wp_storage_print_video(){
 
 	if(WP2PCS_VIDEO_HD == '301'){
 		$oauth_type = get_option('wp2pcs_oauth_type');
-		if($oauth_type > 1){
-			$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
-			$path = str_replace('/apps/wp2pcs','',$video_path);
-			$url = WP2PCS_STATIC.$wp2pcs_oauth_code.$path.'.m3u8';
+		if($oauth_type >= 1){
+			$site_id = get_option('wp_to_pcs_site_id');
+			$path = str_replace(WP2PCS_REMOTE_ROOT,'/',$video_path);
+			$app_dir = get_option('wp_to_pcs_remote_aplication');
+			$url = WP2PCS_STATIC.$site_id.$path.'.m3u8';
+			if($app_dir != 'wp2pcs')$url .= "?root=$app_dir";
+			header("Location:$url");
+		}else{
+			wp_die('你的Oauth Code被禁用。');
 		}
-		else{
-			$url = 'https://pcs.baidu.com/rest/2.0/pcs/file?method=streaming&path='.$video_path.'&access_token='.WP2PCS_APP_TOKEN.'&type=M3U8_854_480';
-		}
-		header("Location:$url");
 		exit;
 	}
 	else{

@@ -141,15 +141,16 @@ function wp_storage_print_audio(){
 	
 	if(WP2PCS_AUDIO_HD == '301'){
 		$oauth_type = get_option('wp2pcs_oauth_type');
-		if($oauth_type > 1){
-			$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
-			$path = str_replace('/apps/wp2pcs','',$audio_path);
-			$url = WP2PCS_STATIC.$wp2pcs_oauth_code.$path;
+		if($oauth_type >= 1){
+			$site_id = get_option('wp_to_pcs_site_id');
+			$path = str_replace(WP2PCS_REMOTE_ROOT,'/',$audio_path);
+			$app_dir = get_option('wp_to_pcs_remote_aplication');
+			$url = WP2PCS_STATIC.$site_id.$path;
+			if($app_dir != 'wp2pcs')$url .= "?root=$app_dir";
+			header("Location:$url");
+		}else{
+			wp_die('你的Oauth Code被禁用。');
 		}
-		else{
-			$url = 'https://pcs.baidu.com/rest/2.0/pcs/stream?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$audio_path;
-		}
-		header("Location:$url");
 		exit;
 	}
 	else{

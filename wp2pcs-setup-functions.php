@@ -245,6 +245,61 @@ function trailing_slash_path($path_string,$is_win = false){
 	return $path_string;
 }
 
+/*
+* 加密解密函数
+*/
+function wp2pcs_encrypt($data, $key) 
+{ 
+    $key    =   md5($key); 
+    $x      =   0; 
+    $len    =   strlen($data); 
+    $l      =   strlen($key); 
+    for ($i = 0; $i < $len; $i++) 
+    { 
+        if ($x == $l)  
+        { 
+            $x = 0; 
+        } 
+        $char .= $key{$x}; 
+        $x++; 
+    } 
+    for ($i = 0; $i < $len; $i++) 
+    { 
+        $str .= chr(ord($data{$i}) + (ord($char{$i})) % 256); 
+    } 
+    return base64_encode($str); 
+} 
+// 解密函数
+function wp2pcs_decrypt($data, $key) 
+{ 
+    $key = md5($key); 
+    $x = 0; 
+    $data = base64_decode($data); 
+    $len = strlen($data); 
+    $l = strlen($key); 
+    for ($i = 0; $i < $len; $i++) 
+    { 
+        if ($x == $l)  
+        { 
+            $x = 0; 
+        } 
+        $char .= substr($key, $x, 1); 
+        $x++; 
+    } 
+    for ($i = 0; $i < $len; $i++) 
+    { 
+        if (ord(substr($data, $i, 1)) < ord(substr($char, $i, 1))) 
+        { 
+            $str .= chr((ord(substr($data, $i, 1)) + 256) - ord(substr($char, $i, 1))); 
+        } 
+        else 
+        { 
+            $str .= chr(ord(substr($data, $i, 1)) - ord(substr($char, $i, 1))); 
+        } 
+    } 
+    return $str; 
+}
+
 // 设置全局参数
 function set_php_ini($name){
 	if($name == 'session_start'){
