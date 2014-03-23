@@ -177,7 +177,7 @@ function wp_storage_print_video(){
 			if($app_dir != 'wp2pcs')$url .= "?root=$app_dir";
 			header("Location:$url");
 		}else{
-			wp_die('你的Oauth Code被禁用。');
+			wp_die('你的Oauth Code被禁用。不要勾选外链。');
 		}
 		exit;
 	}

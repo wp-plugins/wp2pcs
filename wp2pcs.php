@@ -185,6 +185,7 @@ function wp_to_pcs_action(){
 		}
 		// 如果存在TOKEN，那么直接更新TOKEN，并刷新页面
 		else{
+			update_option('wp2pcs_colose_notice',WP2PCS_PLUGIN_VER);// 关闭消息提示
 			wp_to_pcs_default_options();// 初始化各个推荐值
 			$back_url .= '&time='.time();
 			wp_redirect($back_url);
@@ -192,13 +193,11 @@ function wp_to_pcs_action(){
 		exit;
 	}
 	// 授权通过
-	if(isset($_GET['wp_to_pcs_app_token']) && !empty($_GET['wp_to_pcs_app_token']) && isset($_GET['site_id'])){
+	if(isset($_GET['wp_to_pcs_app_token']) && !empty($_GET['wp_to_pcs_app_token'])){
 		check_admin_referer();
 		$app_token = urlencode($_GET['wp_to_pcs_app_token']);// 这个地方注意，由于授权的时候密文中可能出现+号，如果不做处理，得不到想要的结果
 		$app_token = wp2pcs_decrypt($app_token,'aed9763fd9e73caa202627a9adaa6dd7');
 		update_option('wp_to_pcs_app_token',$app_token);
-		$site_id = $_GET['site_id'];
-		update_option('wp_to_pcs_site_id',$site_id);
 		wp_to_pcs_default_options();// 初始化各个推荐值
 		update_option('wp2pcs_colose_notice',WP2PCS_PLUGIN_VER);// 关闭消息提示
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time());
@@ -230,6 +229,10 @@ function wp_to_pcs_action(){
 		// 如果通过验证
 		if($result !== ''){
 			$result_data = json_decode($result);
+			if(!isset($result_data->error)){
+				echo '{"error":1,"message":"未知错误。"}';
+				exit;
+			}
 			if($result_data->error == 0){
 				update_option('wp2pcs_oauth_code',$oauth_code);
 				update_option('wp2pcs_oauth_type',$result_data->type);
@@ -290,6 +293,7 @@ function wp_to_pcs_pannel(){
 					<span id="oauth-code-message"></span>
 					<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
 				</p>
+				<?php if('CuOLkaVfoz1zGsqFKDgfvI0h' != WP2PCS_APP_KEY)echo '<p>当前使用的是开发者自己的PCS API。</p>'; ?>
 				<p>
 					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>

@@ -114,7 +114,7 @@ function wp_storage_to_pcs_panel(){
 			外链
 		</p>
 		<p><input type="submit" value="确定" class="button-primary" /></p>
-		<p style="color:red">注意：使用外链时需先通过Oauth Code重新授权，外链下载文件最大为6M。<a href="http://www.wp2pcs.com/?p=243" target="_blank">详细说明</a></p>
+		<p style="color:red">注意：使用外链必须通过Oauth Code授权，外链下载文件最大为6M。<a href="http://www.wp2pcs.com/?p=243" target="_blank">详细说明</a></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_update" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 		<?php wp_nonce_field(); ?>
