@@ -167,7 +167,7 @@ function wp_storage_print_video(){
 	$video_path = trailing_slash_path($remote_dir).$video_path;
 	$video_path = str_replace('//','/',$video_path);
 
-	if(WP2PCS_VIDEO_HD == '301'){
+	if(WP2PCS_VIDEO_HD == '301' && WP2PCS_OAUTH_CODE){
 		$oauth_type = get_option('wp2pcs_oauth_type');
 		if($oauth_type >= 1){
 			$site_id = get_option('wp_to_pcs_site_id');

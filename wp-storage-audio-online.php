@@ -139,7 +139,7 @@ function wp_storage_print_audio(){
 	$audio_path = trailing_slash_path($remote_dir).$audio_path;
 	$audio_path = str_replace('//','/',$audio_path);
 	
-	if(WP2PCS_AUDIO_HD == '301'){
+	if(WP2PCS_AUDIO_HD == '301' && WP2PCS_OAUTH_CODE){
 		$oauth_type = get_option('wp2pcs_oauth_type');
 		if($oauth_type >= 1){
 			$site_id = get_option('wp_to_pcs_site_id');
