@@ -403,6 +403,10 @@ jQuery(function($){
 				$('#oauth-code-loading').hide();
 			},'json');
 		}
+	}).keypress(function(e){
+		if(e.keyCode == 13){
+			return false;
+		}
 	});
 	// 点击阅读官网资讯
 	$('#open-wp2pcs-notic-in-iframe').click(function(){
