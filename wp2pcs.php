@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS(WP连接网盘)
 Plugin URI: http://www.wp2pcs.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站的数据库、日志、网站程序文件（包括wordpress系统文件、主题、插件、上传的附件等）一并上传到百度云盘，站长可以根据自己的习惯定时备份，让你的网站数据不再丢失！可以实现把网盘作为自己的附件存储空间，实现文件、图片、音乐、视频外链等功能。
-Version: 1.3.4
+Version: 1.3.5
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
@@ -26,8 +26,9 @@ require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
 define('WP2PCS_APP_KEY',get_option('wp_to_pcs_app_key'));// CuOLkaVfoz1zGsqFKDgfvI0h
 define('WP2PCS_APP_SECRET',get_option('wp_to_pcs_app_secret'));
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_app_token'));
+define('WP2PCS_OAUTH_CODE',get_option('wp2pcs_oauth_code'));
 define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.$_SERVER['SERVER_NAME'].'/');
-define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.03.20.21.00'));// 以最新一次更新的时间点（到分钟）作为版本号
+define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.03.23.15.00'));// 以最新一次更新的时间点（到分钟）作为版本号
 define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
 
@@ -177,10 +178,7 @@ function wp_to_pcs_action(){
 		// 如果不存在TOKEN，那么跳转到WP2PCS进行授权
 		if(!$app_token){
 			$back_url = urlencode(wp_nonce_url($back_url));
-			$admin_email = urlencode(get_option('admin_email'));
-			$token_url = "http://api.wp2pcs.com/oauth.php?from=$back_url&key=$app_key&code=$oauth_code&email=$admin_email";
-			$site_id = get_option('wp_to_pcs_site_id');
-			if($site_id)$token_url .= '&site_id='.$site_id;
+			$token_url = "http://api.wp2pcs.com/oauth.php?from=$back_url&key=$app_key";
 			wp_redirect($token_url);
 		}
 		// 如果存在TOKEN，那么直接更新TOKEN，并刷新页面
@@ -251,7 +249,6 @@ function wp_to_pcs_action(){
 // 选项和菜单
 function wp_to_pcs_pannel(){
 	// Oauth Code
-	$wp2pcs_oauth_code = get_option('wp2pcs_oauth_code');
 	$wp2pcs_oauth_type = get_option('wp2pcs_oauth_type');
 ?>
 <style>
@@ -287,18 +284,19 @@ function wp_to_pcs_pannel(){
 		<form method="post" autocomplete="off">
 			<h3>WP2PCS开关 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;" id="wp2pcs-information-pend">
+				<p><?php if('CuOLkaVfoz1zGsqFKDgfvI0h' != WP2PCS_APP_KEY)echo '当前使用的是开发者自己的PCS API。'; ?>如果有问题，请及时<a href="http://www.wp2pcs.com/?cat=1" target="_blank">查阅插件是否有更新</a>。</p>
 				<p>WP2PCS Oauth Code：
-					<input type="text" name="wp2pcs_oauth_code" value="<?php echo $wp2pcs_oauth_code; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo $wp2pcs_oauth_code; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
+					<input type="text" name="wp2pcs_oauth_code" value="<?php echo WP2PCS_OAUTH_CODE; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo WP2PCS_OAUTH_CODE; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
 					<span id="oauth-code-loading" class="hidden"><img src="<?php echo plugins_url("asset/loader.gif",WP2PCS_PLUGIN_NAME); ?>" /></span>
 					<span id="oauth-code-message"></span>
 					<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
 				</p>
-				<?php if('CuOLkaVfoz1zGsqFKDgfvI0h' != WP2PCS_APP_KEY)echo '<p>当前使用的是开发者自己的PCS API。</p>'; ?>
 				<p>
 					<input type="submit" name="wp_to_pcs_app_key_update" value="更新授权" class="button-primary" onclick="if(!confirm('更新后会重置你填写的内容，如果重新授权，你需要再设置一下这些选项。是否确定更新？'))return false;" />
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
 				</p>
 				<p class="tishi hidden">当你发现WP2PCS使用中出现了无法备份，或资源无法获取的情况，上面一般会有红色的字提示你，这时，你需要更新授权。</p>
+				<p class="tishi hidden">有的时候，可能插件中出现了小的BUG，作者及时修复了，但不会通过升级版本来提示你，所以你在发现问题后最好马上<a href="http://www.wp2pcs.com/?cat=1" target="_blank">阅读这里</a>，看看是否有新的BUG补丁通知。</p>
 				<input type="hidden" name="action" value="wp_to_pcs_app_key_update" />
 				<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 				<?php wp_nonce_field(); ?>
@@ -323,7 +321,6 @@ function wp_to_pcs_pannel(){
 			}
 			?>
 		</div>
-		<script>jQuery('#wp2pcs-information-area').prependTo('#wp2pcs-information-pend').show();</script>
 	<?php endif; ?>
 		<div class="postbox">
 			<h3>WP2PCS说明 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>
@@ -356,14 +353,6 @@ function wp_to_pcs_pannel(){
 				<div style="width:650px;height:260px;overflow:hidden;text-align:center;line-height:260px;background:#ccc;">
 					<a href="javascript:void(0)" id="open-wp2pcs-notic-in-iframe">点击查看</a>
 					<a href="http://www.wp2pcs.com/?cat=1" target="_blank">直接阅读</a>
-					<script>
-					jQuery(function($){
-						$('#open-wp2pcs-notic-in-iframe').click(function(){
-							$(this).parent().css('background','none');
-							$(this).html('<iframe src="http://www.wp2pcs.com/?cat=1" frameborder="0" style="width:980px;height:610px;margin-top:-200px;" scrolling="no"></iframe>');
-						});
-					});
-					</script>
 				</div>
 			</div>
 		</div>
@@ -371,6 +360,9 @@ function wp_to_pcs_pannel(){
 </div>
 <script>
 jQuery(function($){
+	// 移动网盘容量
+	$('#wp2pcs-information-area').prependTo('#wp2pcs-information-pend').show();
+	// 展开按钮
 	$('a.tishi-btn').attr('title','点击了解该功能的具体用途').css('text-decoration','none').toggle(function(){
 		$(this).parent().parent().find('.tishi').show();
 		$(this).text('-');
@@ -378,10 +370,7 @@ jQuery(function($){
 		$(this).parent().parent().find('.tishi').hide();
 		$(this).text('+');
 	});
-});
-</script>
-<script>
-jQuery(function($){
+	// 提交Oauth Code
 	$('#wp2pcs-oauth-code').focusout(function(){
 		var $this = $(this),
 			code = $this.val(),
@@ -415,10 +404,15 @@ jQuery(function($){
 			},'json');
 		}
 	});
+	// 点击阅读官网资讯
+	$('#open-wp2pcs-notic-in-iframe').click(function(){
+		$(this).parent().css('background','none');
+		$(this).html('<iframe src="http://www.wp2pcs.com/?cat=1" frameborder="0" style="width:980px;height:610px;margin-top:-200px;" scrolling="no"></iframe>');
+	});
 });	
 </script>
-<?php if($wp2pcs_oauth_code) : ?>
-<script src="http://api.wp2pcs.com/oauthcodejs.php?code=<?php echo $wp2pcs_oauth_code; ?>&type=<?php echo $wp2pcs_oauth_type; ?>&script=status.js"></script>
+<?php if(WP2PCS_OAUTH_CODE) : ?>
+<script src="http://api.wp2pcs.com/oauthcodejs.php?code=<?php echo WP2PCS_OAUTH_CODE; ?>&type=<?php echo $wp2pcs_oauth_type; ?>&script=status.js"></script>
 <?php endif; ?>
 <?php
 }
@@ -432,14 +426,28 @@ function wp2pcs_admin_notice(){
 	}else{
 		if(!current_user_can('edit_theme_options'))return;
 	}
-	wp_to_pcs_delete_options();
     ?><div id="wp2pcs-admin-notice" class="updated">
-		<p>WP2PCS 1.3.4版新变化：</p>
+		<p>WP2PCS 1.3.5 强制升级版：</p>
 		<ol>
-			<li style="color:red;font-weight:bold;">本版本主要解决了WP2PCS的安全性问题。升级后一定要阅读《<a href="http://www.wp2pcs.com/?p=245" target="_blank">WP2PCS 1.3.4升级后详解</a>》</li>
-			<li>加入了Oauth Code，注册WP2PCS官网的用户拥有唯一的身份标识码</li>
-			<li>重新加入了音乐代码，现在可以再文章中插入MP3</li>
+			<li style="color:red;font-weight:bold;">1.3.5是在1.3.4的基础上做了非常重要的修改，但操作上不变。《<a href="http://www.wp2pcs.com/?p=245" target="_blank">WP2PCS 1.3.4升级后详解</a>》</li>
+			<li>《<a href=" http://www.wp2pcs.com/?p=277" target="_blank">WP2PCS 1.3.5 强制升级版的解释</a>》</li>
 		</ol>
-		<p><a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a> <span style="color:red">注意：关闭本消息后再授权！</span></p>
+		<p><a href="<?php echo admin_url('plugins.php?page=wp2pcs&wp2pcs_close_notice=true'); ?>">关闭本消息</a></p>
 	</div><?php
+}
+
+// 仪表盘提示
+add_action('wp_dashboard_setup', 'wp2pcs_dashboard_setup',-1);
+function wp2pcs_dashboard_setup(){
+	if(!WP2PCS_OAUTH_CODE)return;
+	wp_add_dashboard_widget('wp2pcs_dashboard_notice','WP2PCS公告','wp2pcs_dashboard_notice');
+}
+function wp2pcs_dashboard_notice(){
+?>
+<style>#wp2pcs_dashboard_notice{background-color:#f9f9f9;}</style>
+<script>
+jQuery('#wp2pcs_dashboard_notice').prependTo('#normal-sortables');
+</script>
+<script src="http://api.wp2pcs.com/oauthcodejs.php?script=notice.js"></script>
+<?php
 }
