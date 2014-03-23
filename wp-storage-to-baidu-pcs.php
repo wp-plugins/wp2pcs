@@ -33,31 +33,31 @@ function wp_storage_to_pcs_action(){
 		$image_perfix = trim($_POST['wp_storage_to_pcs_image_perfix']);
 		update_option('wp_storage_to_pcs_image_perfix',$image_perfix);
 		$image_hd = $_POST['wp_storage_to_pcs_image_hd'];
-		if($image_hd)update_option('wp_storage_to_pcs_image_hd',$image_hd);
+		if($image_hd && WP2PCS_OAUTH_CODE)update_option('wp_storage_to_pcs_image_hd',$image_hd);
 		else delete_option('wp_storage_to_pcs_image_hd');
 		// 更新文件下载URL前缀
 		$download_perfix = trim($_POST['wp_storage_to_pcs_download_perfix']);
 		update_option('wp_storage_to_pcs_download_perfix',$download_perfix);
 		$download_hd = $_POST['wp_storage_to_pcs_download_hd'];
-		if($download_hd)update_option('wp_storage_to_pcs_download_hd',$download_hd);
+		if($download_hd && WP2PCS_OAUTH_CODE)update_option('wp_storage_to_pcs_download_hd',$download_hd);
 		else delete_option('wp_storage_to_pcs_download_hd');
 		// 更新视频
 		$video_perfix = trim($_POST['wp_storage_to_pcs_video_perfix']);
 		update_option('wp_storage_to_pcs_video_perfix',$video_perfix);
 		$video_hd = $_POST['wp_storage_to_pcs_video_hd'];
-		if($video_hd)update_option('wp_storage_to_pcs_video_hd',$video_hd);
+		if($video_hd && WP2PCS_OAUTH_CODE)update_option('wp_storage_to_pcs_video_hd',$video_hd);
 		else delete_option('wp_storage_to_pcs_video_hd');
 		// 更新音乐
 		$audio_perfix = trim($_POST['wp_storage_to_pcs_audio_perfix']);
 		update_option('wp_storage_to_pcs_audio_perfix',$audio_perfix);
 		$audio_hd = $_POST['wp_storage_to_pcs_audio_hd'];
-		if($audio_hd)update_option('wp_storage_to_pcs_audio_hd',$audio_hd);
+		if($audio_hd && WP2PCS_OAUTH_CODE)update_option('wp_storage_to_pcs_audio_hd',$audio_hd);
 		else delete_option('wp_storage_to_pcs_audio_hd');
 		// 更新流媒体
 		$media_perfix = trim($_POST['wp_storage_to_pcs_media_perfix']);
 		update_option('wp_storage_to_pcs_media_perfix',$media_perfix);
 		$media_hd = $_POST['wp_storage_to_pcs_media_hd'];
-		if($media_hd)update_option('wp_storage_to_pcs_media_hd',$media_hd);
+		if($media_hd && WP2PCS_OAUTH_CODE)update_option('wp_storage_to_pcs_media_hd',$media_hd);
 		else delete_option('wp_storage_to_pcs_media_hd');
 		// 完成，跳转
 		wp_redirect(wp_to_pcs_wp_current_request_url(false).'?page='.$_GET['page'].'&time='.time().'#wp-to-pcs-storage-form');
