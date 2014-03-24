@@ -215,6 +215,12 @@ function wp_to_pcs_action(){
 		$oauth_code = trim($_POST['wp2pcs_oauth_code']);
 		delete_option('wp2pcs_oauth_code');
 		delete_option('wp2pcs_oauth_type');
+		// 删除Oauth Code
+		if(empty($oauth_code)){
+			echo '{"error":1,"message":"删除成功。"}';
+			exit;
+		}
+		// 验证Oauth Code
 		$site_id = get_option('wp_to_pcs_site_id');
 		$post_data = array(
 			'host' => $_SERVER['SERVER_NAME'],
@@ -225,7 +231,7 @@ function wp_to_pcs_action(){
 		if($site_id)$post_data['site_id'] = $site_id;
 		$result = get_by_curl('http://api.wp2pcs.com/oauthcode.php',$post_data);
 		// 如果通过验证
-		if($result !== ''){
+		if(trim($result) !== ''){
 			$result_data = json_decode($result);
 			if(!isset($result_data->error)){
 				echo '{"error":1,"message":"未知错误。"}';
@@ -240,7 +246,7 @@ function wp_to_pcs_action(){
 		}
 		// 如果没有通过验证
 		else{
-			echo '{"error":1,"message":"删除成功。"}';
+			echo '{"error":1,"message":"未知错误。"}';
 		}
 		exit;
 	}
@@ -287,6 +293,7 @@ function wp_to_pcs_pannel(){
 				<p><?php if('CuOLkaVfoz1zGsqFKDgfvI0h' != WP2PCS_APP_KEY)echo '当前使用的是开发者自己的PCS API。'; ?>如果有问题，请及时<a href="http://www.wp2pcs.com/?cat=1" target="_blank">查阅插件是否有更新</a>。</p>
 				<p>WP2PCS Oauth Code：
 					<input type="text" name="wp2pcs_oauth_code" value="<?php echo WP2PCS_OAUTH_CODE; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo WP2PCS_OAUTH_CODE; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
+					<a href="javascript:void(0)" id="oauth-code-delete" title="删除Oauth Code">×</a>
 					<span id="oauth-code-loading" class="hidden"><img src="<?php echo plugins_url("asset/loader.gif",WP2PCS_PLUGIN_NAME); ?>" /></span>
 					<span id="oauth-code-message"></span>
 					<a href="http://www.wp2pcs.com/?p=199" target="_blank" title="是什么?如何获取?">?</a>
@@ -396,6 +403,7 @@ jQuery(function($){
 					else{
 						$('#oauth-code-message').html('<span style="color:#118508">验证通过。</span>');
 					}
+					$('.hide-for-oauth-code').removeClass('hidden');
 				}else{
 					$('#oauth-code-message').html('<span style="color:red">' + out.message + '</span>');
 				}
@@ -407,6 +415,10 @@ jQuery(function($){
 		if(e.keyCode == 13){
 			return false;
 		}
+	});
+	$('#oauth-code-delete').css('text-decoration','none').click(function(e){
+		$('#wp2pcs-oauth-code').val('').focus().focusout();
+		$('.hide-for-oauth-code').addClass('hidden');
 	});
 	// 点击阅读官网资讯
 	$('#open-wp2pcs-notic-in-iframe').click(function(){

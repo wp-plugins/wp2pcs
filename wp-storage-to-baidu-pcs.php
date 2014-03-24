@@ -89,32 +89,42 @@ function wp_storage_to_pcs_panel(){
 		<p class="tishi hidden">使用网盘中的某一个目录作为你存储图片或附件的根目录，例如你填写“uploads”，那么到时候就会采用这个目录下的文件作为附件。</p>
 		<p>图片访问前缀：
 			<input type="text" name="wp_storage_to_pcs_image_perfix" value="<?php echo $image_perfix; ?>" />
-			<input type="checkbox" name="wp_storage_to_pcs_image_hd" value="301" <?php if(WP2PCS_OAUTH_CODE)checked($image_hd,'301'); ?> />
+			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">
+			<input type="checkbox" name="wp_storage_to_pcs_image_hd" value="301" <?php checked($image_hd,'301'); ?> />
 			外链 <a href="http://www.wp2pcs.com/?p=208" title="WP2PCS中直链、外链的意思及它们的原理" target="_blank">?</a>
+			</span>
 		</p>
 		<p class="tishi hidden">访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“<?php echo WP2PCS_REMOTE_ROOT; ?>uploads/test.jpg”这张图片。为了提高不同空间的兼容性，默认为“?img”的形式。</p>
 		<p class="tishi hidden">下载访问前缀：
 			<input type="text" name="wp_storage_to_pcs_download_perfix" value="<?php echo $download_perfix; ?>" />
-			<input type="checkbox" name="wp_storage_to_pcs_download_hd" value="301" <?php if(WP2PCS_OAUTH_CODE)checked($download_hd,'301'); ?> />
+			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">
+			<input type="checkbox" name="wp_storage_to_pcs_download_hd" value="301" <?php checked($download_hd,'301'); ?> />
 			外链
+			</span>
 		</p>
 		<p <?php if(!VIDEO_SHORTCODE)echo 'class="tishi hidden"'; ?>>M3U8视频前缀：
 			<input type="text" name="wp_storage_to_pcs_video_perfix" value="<?php echo $video_perfix; ?>" /> 
-			<input type="checkbox" name="wp_storage_to_pcs_video_hd" value="301" <?php if(WP2PCS_OAUTH_CODE)checked($video_hd,'301'); ?> />
+			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">
+			<input type="checkbox" name="wp_storage_to_pcs_video_hd" value="301" <?php checked($video_hd,'301'); ?> />
 			外链
+			</span>
 		</p>
 		<p <?php if(!AUDIO_SHORTCODE)echo 'class="tishi hidden"'; ?>>MP3音乐前缀：
 			<input type="text" name="wp_storage_to_pcs_audio_perfix" value="<?php echo $audio_perfix; ?>" /> 
-			<input type="checkbox" name="wp_storage_to_pcs_audio_hd" value="301" <?php if(WP2PCS_OAUTH_CODE)checked($audio_hd,'301'); ?> />
+			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">
+			<input type="checkbox" name="wp_storage_to_pcs_audio_hd" value="301" <?php checked($audio_hd,'301'); ?> />
 			外链
+			</span>
 		</p>
 		<p>原始文件前缀：
 			<input type="text" name="wp_storage_to_pcs_media_perfix" value="<?php echo $media_perfix; ?>" /> 
-			<input type="checkbox" name="wp_storage_to_pcs_media_hd" value="301" <?php if(WP2PCS_OAUTH_CODE)checked($media_hd,'301'); ?> />
+			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">
+			<input type="checkbox" name="wp_storage_to_pcs_media_hd" value="301" <?php checked($media_hd,'301'); ?> />
 			外链
+			</span>
 		</p>
 		<p><input type="submit" value="确定" class="button-primary" /></p>
-		<p style="color:red">注意：使用外链必须通过Oauth Code授权，外链下载文件最大为6M。<a href="http://www.wp2pcs.com/?p=243" target="_blank">详细说明</a></p>
+		<p style="color:red">注意：通过Oauth Code验证后可以使用免费外链功能，外链下载文件最大为6M。<a href="http://www.wp2pcs.com/?p=243" target="_blank">详细说明</a></p>
 		<input type="hidden" name="action" value="wp_storage_to_pcs_update" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />
 		<?php wp_nonce_field(); ?>
