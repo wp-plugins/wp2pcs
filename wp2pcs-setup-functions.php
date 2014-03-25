@@ -141,9 +141,9 @@ function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 	$current_url .= "://";
 	// 部分主机会出现多出端口号的情况，我们把它注释掉，看还会不会出现这种情况。
 	//if($_SERVER["SERVER_PORT"] != "80"){
-	//	$current_url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+	//	$current_url .= WP2PCS_SITE_DOMAIN.":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
 	//}else{
-		$current_url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+		$current_url .= WP2PCS_SITE_DOMAIN.$_SERVER["REQUEST_URI"];
 	//}
 	// 是否要进行参数处理
 	$parse_url = parse_url($current_url);

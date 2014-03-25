@@ -38,7 +38,7 @@ function wp_backup_to_pcs_action(){
 	// 删除压缩下载产生的压缩包
 	if(@$_GET['action'] == 'delete_zip_file' && isset($_GET['path']) && file_exists($_GET['path'])){
 		$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
-		$zip_file_name = $_SERVER['SERVER_NAME'].'_backup_by_wp2pcs.zip';
+		$zip_file_name = WP2PCS_SITE_DOMAIN.'_backup_by_wp2pcs.zip';
 		if($zip_dir.$zip_file_name == $_GET['path']){
 			if(!unlink($_GET['path'])){
 				wp_die('删除这个文件失败，可能是由于wp-content目录没有可写权限。');
@@ -104,7 +104,7 @@ function wp_backup_to_pcs_action(){
 				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
 			}
 			if($log_file || $www_file){
-				$zip_file_name = $_SERVER['SERVER_NAME'].'_backup_by_wp2pcs.zip';
+				$zip_file_name = WP2PCS_SITE_DOMAIN.'_backup_by_wp2pcs.zip';
 				if($log_file && $www_file){
 					$zip_file = zip_files_in_dirs(array($database_file,$log_file,$www_file),$zip_dir.$zip_file_name,$zip_dir);
 				}elseif($log_file){
@@ -287,7 +287,7 @@ function wp_backup_to_pcs_corn_task_function_clear_files(){
 	$zip_www = $zip_dir.'www.zip';
 	$zip_logs = $zip_dir.'logs.zip';
 	$zip_database = $zip_dir.'database.sql';
-	$zip_all = $_SERVER['SERVER_NAME'].'_backup_by_wp2pcs.zip';
+	$zip_all = WP2PCS_SITE_DOMAIN.'_backup_by_wp2pcs.zip';
 	if(file_exists($zip_www))@unlink($zip_www);
 	if(file_exists($zip_logs))@unlink($zip_logs);
 	if(file_exists($zip_database))@unlink($zip_database);
@@ -447,7 +447,7 @@ function wp_backup_to_pcs_panel(){
 		</p>
 		<p class="tishi hidden">定时功能：选“永不”则不备份。建议你使用一款名为<a href="http://wordpress.org/plugins/wp-crontrol/" target="_blank">wp-crontrol</a>的插件来管理所有的定时任务。</p>
 		<p>备份到网盘目录：<?php echo WP2PCS_REMOTE_ROOT; ?><input type="text"  class="regular-text" name="wp_backup_to_pcs_remote_dir"  value="<?php echo str_replace(WP2PCS_REMOTE_ROOT,'',$remote_dir); ?>" <?php if($timestamp_database || $timestamp_logs || $timestamp_www)echo 'readonly="readonly"';?> /></p>
-		<p class="tishi hidden">你会在百度网盘的“我的应用数据”中看到“wp2pcs”这个目录。你在这里填写“backup/”，就会在你的网盘目录“我的应用数据/wp2pcs/<?php echo $_SERVER['SERVER_NAME']; ?>/backup/”中找到自己的备份数据。</p>
+		<p class="tishi hidden">你会在百度网盘的“我的应用数据”中看到“wp2pcs”这个目录。你在这里填写“backup/”，就会在你的网盘目录“我的应用数据/wp2pcs/<?php echo WP2PCS_SITE_DOMAIN; ?>/backup/”中找到自己的备份数据。</p>
 		<?php if(WP2PCS_IS_WRITABLE) : ?>
 		<p class="tishi hidden">网站的日志文件夹路径：<input type="text" name="wp_backup_to_pcs_log_dir" class="regular-text" value="<?php echo $log_dir; ?>" <?php if($is_turned_on)echo 'readonly="readonly"';?> /></p>
 		<p class="tishi hidden">在上面填写日志文件夹的路径，留空则不备份日志。这个路径不是访问URL，而是相对于服务器的文件路径。你的网站的根路径是“<?php echo ABSPATH; ?>”，一般日志文件都存放在<?php echo ABSPATH; ?>logs/或和public_html目录同一个级别，你需要填写成你自己的。</p>

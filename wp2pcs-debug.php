@@ -113,9 +113,9 @@
 		$domain_root = str_replace_last($install_in_subdir,'',$install_root);
 	}
 	if(file_exists(trim($domain_root).'crossdomain.xml')){
-		echo "存在crossdomain.xml，<a href='http://".$_SERVER['SERVER_NAME']."/crossdomain.xml' target='_blank'>检查一下它是否可以被正常访问</a>，并显示出xml结果<br />";
+		echo "存在crossdomain.xml，<a href='http://".WP2PCS_SITE_DOMAIN."/crossdomain.xml' target='_blank'>检查一下它是否可以被正常访问</a>，并显示出xml结果<br />";
 	}else{
-		echo "不存在<a href='http://".$_SERVER['SERVER_NAME']."/crossdomain.xml' target='_blank'>crossdomain.xml</a>文件，网盘中的视频将不能被正常播放<br />";
+		echo "不存在<a href='http://".WP2PCS_SITE_DOMAIN."/crossdomain.xml' target='_blank'>crossdomain.xml</a>文件，网盘中的视频将不能被正常播放<br />";
 	}
 
 

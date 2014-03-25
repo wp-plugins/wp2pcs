@@ -27,7 +27,8 @@ define('WP2PCS_APP_KEY',get_option('wp_to_pcs_app_key'));// CuOLkaVfoz1zGsqFKDgf
 define('WP2PCS_APP_SECRET',get_option('wp_to_pcs_app_secret'));
 define('WP2PCS_APP_TOKEN',get_option('wp_to_pcs_app_token'));
 define('WP2PCS_OAUTH_CODE',get_option('wp2pcs_oauth_code'));
-define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.$_SERVER['SERVER_NAME'].'/');
+define('WP2PCS_SITE_DOMAIN',$_SERVER['HTTP_HOST']);
+define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.WP2PCS_SITE_DOMAIN.'/');
 define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.03.23.15.00'));// 以最新一次更新的时间点（到分钟）作为版本号
 define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP_CONTENT_DIR));
@@ -223,7 +224,7 @@ function wp_to_pcs_action(){
 		// 验证Oauth Code
 		$site_id = get_option('wp_to_pcs_site_id');
 		$post_data = array(
-			'host' => $_SERVER['SERVER_NAME'],
+			'host' => WP2PCS_SITE_DOMAIN,
 			'oauth_code' => $oauth_code,
 			'access_token' => wp2pcs_encrypt(WP2PCS_APP_TOKEN,'aed9763fd9e73caa202627a9adaa6dd7'),
 			'admin_email' => urlencode(get_option('admin_email'))
@@ -273,7 +274,7 @@ function wp_to_pcs_pannel(){
 				<p class="tishi hidden">API Key：<input type="password" name="wp_to_pcs_app_key" class="regular-text" /></p>
 				<p class="tishi hidden">Secret Key：<input type="password" name="wp_to_pcs_app_secret" class="regular-text" /></p>
 				<p class="tishi hidden">Access Token：<input type="password" name="wp_to_pcs_app_token" class="regular-text" /> <a href="http://www.wp2pcs.com/?p=79" target="_blank">?</a></p>
-				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo $_SERVER['SERVER_NAME']; ?>/ <a href="http://www.wp2pcs.com/?p=164" target="_blank" title="只有开发者才能修改这个目录，点击阅读详情">?</a></p>
+				<p class="tishi hidden">网盘目录：/apps/<input type="text" name="wp_to_pcs_remote_aplication" style="width:100px;" value="<?php echo get_option('wp_to_pcs_remote_aplication'); ?>" />/<?php echo WP2PCS_SITE_DOMAIN; ?>/ <a href="http://www.wp2pcs.com/?p=164" target="_blank" title="只有开发者才能修改这个目录，点击阅读详情">?</a></p>
 				<p>
 					<button type="submit" class="button-primary">提交授权</button>
 					<a href="http://www.wp2pcs.com/?cat=6" target="_blank" class="button-primary">申请帮助</a>
