@@ -140,11 +140,11 @@ function wp_to_pcs_wp_current_request_url($query = array(),$remove = array()){
 	}
 	$current_url .= "://";
 	// 部分主机会出现多出端口号的情况，我们把它注释掉，看还会不会出现这种情况。
-	//if($_SERVER["SERVER_PORT"] != "80"){
-	//	$current_url .= WP2PCS_SITE_DOMAIN.":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-	//}else{
+	if($_SERVER["SERVER_PORT"] != "80"){
+		$current_url .= WP2PCS_SITE_DOMAIN.":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+	}else{
 		$current_url .= WP2PCS_SITE_DOMAIN.$_SERVER["REQUEST_URI"];
-	//}
+	}
 	// 是否要进行参数处理
 	$parse_url = parse_url($current_url);
 	if(is_array($query) && !empty($query)){
@@ -234,13 +234,15 @@ function get_real_filesize($file) {
 
 // 解决路径最后的slah尾巴，如果没有则加上，而且根据不同的服务器，采用/或者\
 function trailing_slash_path($path_string,$is_win = false){
-	$slash = '/';
-	if($is_win){
-		$slash = '\\';
-	}
 	$trail = substr($path_string,-1);
-	if($trail!=$slash){
-		$path_string .= $slash;
+	if($is_win){
+		if($trail != '/' && $trail != '\\'){
+			$path_string .= '\\';
+		}
+	}else{
+		if($trail != '/'){
+			$path_string .= '/';
+		}
 	}
 	return $path_string;
 }
@@ -303,17 +305,23 @@ function wp2pcs_decrypt($data, $key)
 // 设置全局参数
 function set_php_ini($name){
 	if($name == 'session_start'){
+		/* 为了兼容性，去掉session，你可以自己打开
 		if(defined('WP_TEMP_DIR') && is_really_writable(WP_TEMP_DIR)){
 			if(function_exists('ini_set'))ini_set('session.save_path',WP_TEMP_DIR);// 重新规定session的存储位置
 		}
 		session_start();
+		*/
 	}
 	elseif($name == 'session_end'){
+		/* 为了兼容性，去掉session，你可以自己打开
 		if(function_exists("session_destroy"))session_destroy();
+		*/
 	}
 	elseif($name == 'limit'){
+		/* 为了兼容性，去掉time limit，你可以自己打开
 		if(function_exists("set_time_limit"))set_time_limit(0); // 延长执行时间，防止备份失败
 		if(function_exists("ini_set"))ini_set('memory_limit','200M'); // 扩大内存限制，防止备份溢出
+		*/
 	}elseif($name == 'timezone'){
 		date_default_timezone_set("PRC");// 使用东八区时间，如果你是其他地区的时间，自己修改
 	}elseif($name == 'error'){

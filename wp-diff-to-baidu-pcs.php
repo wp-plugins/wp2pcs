@@ -31,6 +31,9 @@ function wp_diff_to_pcs_action(){
 		// 要备份的目录列表
 		$local_paths = trim($_POST['wp_diff_to_pcs_local_paths']);
 		if(!empty($local_paths)){
+			if(WP2PCS_IS_WIN){
+				$local_paths = str_replace('\\\\','\\',$local_paths);
+			}
 			$local_paths = array_filter(explode("\n",$local_paths));
 			update_option('wp_diff_to_pcs_local_paths',$local_paths);
 		}else{
@@ -249,7 +252,7 @@ function wp_diff_to_pcs_panel(){
 		<p>网站将被备份到网盘目录：<?php echo WP2PCS_REMOTE_ROOT; ?></p>
 		<p class="tishi hidden">
 			只备份下列文件或目录：（和上面的定时备份一样，不填则备份整个网站）<br />
-			<textarea name="wp_diff_to_pcs_local_paths" class="large-text code" style="height:90px;" <?php if($diff_timestamp)echo 'readonly="readonly"'; ?>><?php echo stripslashes($local_paths); ?></textarea>
+			<textarea name="wp_diff_to_pcs_local_paths" class="large-text code" style="height:90px;" <?php if($diff_timestamp)echo 'readonly="readonly"'; ?>><?php echo $local_paths; ?></textarea>
 		</p>
 		<p>
 			<?php if(!$diff_timestamp) : ?>

@@ -64,6 +64,9 @@ function wp_backup_to_pcs_action(){
 		$log_dir = trim($_POST['wp_backup_to_pcs_log_dir']);
 		if($log_dir != ''){
 			$log_dir = trailing_slash_path($log_dir,WP2PCS_IS_WIN);
+			if(WP2PCS_IS_WIN){
+				$log_dir = str_replace('\\\\','\\',$log_dir);
+			}
 			update_option('wp_backup_to_pcs_log_dir',$log_dir);
 		}else{
 			delete_option('wp_backup_to_pcs_log_dir');
@@ -77,6 +80,9 @@ function wp_backup_to_pcs_action(){
 		// 要备份的目录列表
 		$local_paths = trim($_POST['wp_backup_to_pcs_local_paths']);
 		if(!empty($local_paths)){
+			if(WP2PCS_IS_WIN){
+				$local_paths = str_replace('\\\\','\\',$local_paths);
+			}
 			$local_paths = array_filter(explode("\n",$local_paths));
 			update_option('wp_backup_to_pcs_local_paths',$local_paths);
 		}else{
@@ -91,7 +97,7 @@ function wp_backup_to_pcs_action(){
 			$database_content = "\xEF\xBB\xBF".get_database_backup_all_sql();
 			$handle = @fopen($database_file,"w+");
 			if(fwrite($handle,$database_content) === false){
-				echo "写入文件 $database_file 失败";
+				wp_die("写入文件 $database_file 失败");
 				exit();
 			}
 			fclose($handle);
@@ -130,8 +136,7 @@ function wp_backup_to_pcs_action(){
 				@unlink($database_file);
 				$zip_file_url = content_url($zip_file_name);
 				$zip_delete_url = add_query_arg(array('action'=>'delete_zip_file','path'=>$zip_file));
-				echo "<p>点击下载 <a href='$zip_file_url'>$zip_file_name</a></p>";
-				echo "<p>注意，下载后你需要手动<a href='$zip_delete_url'>删除</a>这个文件。注意，这是绝对保密的！而且只有本次操作有效！</p>";
+				wp_die("<p>点击下载 <a href='$zip_file_url'>$zip_file_name</a></p><p>注意，下载后你需要手动 <a href='$zip_delete_url'>删除</a> 这个文件。注意，这是绝对保密的！而且只有本次操作有效！</p>");
 				exit;
 			}else{
 				header("Content-type: application/octet-stream");

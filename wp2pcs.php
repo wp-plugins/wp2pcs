@@ -46,18 +46,21 @@ if(!defined('WP2PCS_STATIC'))define('WP2PCS_STATIC','http://wp2pcs.duapp.com/');
 // 直接初始化全局变量
 $baidupcs = new BaiduPCS(WP2PCS_APP_TOKEN);
 
-
 /*
  *
  * 引入功能文件
  *
  */
 
+// 开启调试模式
+//include(dirname(__FILE__).'/wp2pcs-debug.php');
+
 // 下面是备份功能文件
 require(dirname(__FILE__).'/wp-backup-database-functions.php');
 require(dirname(__FILE__).'/wp-backup-file-functions.php');
 require(dirname(__FILE__).'/wp-backup-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-diff-to-baidu-pcs.php');
+
 // 下面是存储功能文件
 require(dirname(__FILE__).'/wp-storage-image-outlink.php');
 require(dirname(__FILE__).'/wp-storage-download-file.php');
@@ -67,8 +70,6 @@ require(dirname(__FILE__).'/wp-storage-media-online.php');
 require(dirname(__FILE__).'/wp-storage-to-baidu-pcs.php');
 require(dirname(__FILE__).'/wp-storage-insert-to-content.php');
 
-// 开启调试模式
-//include(dirname(__FILE__).'/wp2pcs-debug.php');
 
 
 /*

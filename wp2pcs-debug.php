@@ -23,7 +23,6 @@
 	// 输出文字
 	header("Content-Type: text/html; charset=utf-8");
 	
-
 	// 测试session是否可以用
 	session_start();
 	echo "如果在这句话之前没有看到错误，说明session可以正常使用<br />";
