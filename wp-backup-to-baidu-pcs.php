@@ -87,9 +87,13 @@ function wp_backup_to_pcs_action(){
 			update_option('wp_backup_to_pcs_local_paths',$local_paths);
 		}else{
 			delete_option('wp_backup_to_pcs_local_paths');
+			$local_paths = array(ABSPATH);
 		}
 		// 压缩下载
-		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载' && WP2PCS_IS_WRITABLE){
+		if(isset($_POST['wp_backup_to_pcs_zip']) && $_POST['wp_backup_to_pcs_zip'] == '压缩下载'){
+			if(!WP2PCS_IS_WRITABLE){
+				wp_die('主机没有可写权限，不能打包。');
+			}
 			$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
 			// 备份数据库
 			$database_file = $zip_dir.'database.sql';
@@ -106,7 +110,7 @@ function wp_backup_to_pcs_action(){
 				$log_file = zip_files_in_dirs($log_dir,$zip_dir.'logs.zip',$log_dir);
 			}
 			// 备份网站
-			if($local_paths && !empty($local_paths)){
+			if(is_array($local_paths)){
 				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www.zip',ABSPATH);
 			}
 			if($log_file || $www_file){
@@ -165,7 +169,7 @@ function wp_backup_to_pcs_action(){
 			}
 			
 			// 备份网站内的所有文件
-			if($local_paths && !empty($local_paths) && WP2PCS_IS_WRITABLE){
+			if(is_array($local_paths) && WP2PCS_IS_WRITABLE){
 				$www_file = zip_files_in_dirs($local_paths,$zip_dir.'www_'.date('Y.m.d_H.i.s').'.zip',ABSPATH);
 				if($www_file){
 					wp_backup_to_pcs_send_file($www_file,$remote_dir);
@@ -256,8 +260,9 @@ function wp_backup_to_pcs_corn_task_function_www(){
 	if(trim(get_option('wp_backup_to_pcs_future')) != '开启定时')
 		return;
 	$local_paths = get_option('wp_backup_to_pcs_local_paths');
-	if(!$local_paths || empty($local_paths))
-		return;
+	if(!$local_paths || empty($local_paths)){
+		$local_paths = array(ABSPATH);
+	}
 	$run_rate = get_option('wp_backup_to_pcs_run_rate');
 	if(!isset($run_rate['www']) || $run_rate['www'] == 'never')
 		return;
@@ -402,7 +407,7 @@ function wp_backup_to_pcs_panel(){
 	$timestamp_www = wp_next_scheduled('wp_backup_to_pcs_corn_task_www');
 	$timestamp_www = ($timestamp_www ? date('Y-m-d H:i',$timestamp_www) : false);
 	$local_paths = get_option('wp_backup_to_pcs_local_paths');
-	$local_paths = (!empty($local_paths) ? (is_array($local_paths) ? implode("\n",$local_paths) : $local_paths) : '');
+	$local_paths = (is_array($local_paths) ? implode("\n",$local_paths) : '');
 	$backup_rate = wp2pcs_more_reccurences_for_backup_array();
 	$is_turned_on = ($timestamp_database || $timestamp_logs || $timestamp_www);
 ?>

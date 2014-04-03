@@ -92,7 +92,7 @@ function wp_to_pcs_install_options(){
 }
 function wp_to_pcs_default_options(){// 授权成功的时候再赋值
 	if(!get_option('wp_backup_to_pcs_remote_dir'))update_option('wp_backup_to_pcs_remote_dir',WP2PCS_REMOTE_ROOT.'backup/');
-	if(!get_option('wp_backup_to_pcs_local_paths'))update_option('wp_backup_to_pcs_local_paths',ABSPATH);
+	//if(!get_option('wp_backup_to_pcs_local_paths'))update_option('wp_backup_to_pcs_local_paths',ABSPATH);
 	$local_upload_dir = wp_upload_dir();
 	$local_upload_dir = $local_upload_dir['basedir'];
 	$local_upload_dir = str_replace(ABSPATH,'',$local_upload_dir);
