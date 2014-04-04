@@ -4,7 +4,7 @@ Donate link: http://www.wp2pcs.com
 Tags:wp2pcs, backup, sync, baidu, personal cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
 Tested up to: 3.8.1
-Stable tag: trunk
+Stable tag: 1.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
