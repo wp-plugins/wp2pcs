@@ -224,6 +224,26 @@ function wp_storage_print_image(){
 			exit;
 		}
 
+		// 将图片文件强制缓存到本地
+		$file_local_path = ABSPATH.$current_uri;
+		$file_local_path = str_replace('//','/',$file_local_path);
+		$visit_key = 'WP2PCS_IMAGE_'.strtoupper(md5($file_local_path));
+		$visit_value = get_option($visit_key);
+		echo $visit_value = ($visit_value?$visit_value:0);
+		echo $copy_value = get_option('wp_storage_to_pcs_image_copy');
+		if($copy_value != 0 && $visit_value >= $copy_value){
+			if(!file_exists($file_local_path)){
+				$fopen = fopen($file_local_path,"w+");
+				if($fopen != false){
+					fwrite($fopen,$result);
+				}
+				fclose($fopen);
+			}
+		}else{
+			$visit_value ++;
+			update_option($visit_key,$visit_value);
+		}
+
 		header('Content-type: image/jpeg');
 		ob_clean();
 		echo $result;
