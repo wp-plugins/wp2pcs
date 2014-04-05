@@ -37,7 +37,7 @@ function wp_backup_to_pcs_action(){
 	}
 	// 删除压缩下载产生的压缩包
 	if(@$_GET['action'] == 'delete_zip_file' && isset($_GET['path']) && file_exists($_GET['path'])){
-		$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+		$zip_dir = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN);
 		$zip_file_name = WP2PCS_SITE_DOMAIN.'_backup_by_wp2pcs.zip';
 		if($zip_dir.$zip_file_name == $_GET['path']){
 			if(!unlink($_GET['path'])){
@@ -94,7 +94,7 @@ function wp_backup_to_pcs_action(){
 			if(!WP2PCS_IS_WRITABLE){
 				wp_die('主机没有可写权限，不能打包。');
 			}
-			$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+			$zip_dir = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN);
 			// 备份数据库
 			$database_file = $zip_dir.'database.sql';
 			if(file_exists($database_file))@unlink($database_file);
@@ -138,7 +138,7 @@ function wp_backup_to_pcs_action(){
 				if(file_exists($log_file))@unlink($log_file);
 				if(file_exists($www_file))@unlink($www_file);
 				@unlink($database_file);
-				$zip_file_url = content_url($zip_file_name);
+				$zip_file_url = home_url(str_replace(ABSPATH,'',WP2PCS_TMP_DIR).'/'.$zip_file_name);
 				$zip_delete_url = add_query_arg(array('action'=>'delete_zip_file','path'=>$zip_file));
 				wp_die("<p>点击下载 <a href='$zip_file_url'>$zip_file_name</a></p><p>注意，下载后你需要手动 <a href='$zip_delete_url'>删除</a> 这个文件。注意，这是绝对保密的！而且只有本次操作有效！</p>");
 				exit;
@@ -152,7 +152,7 @@ function wp_backup_to_pcs_action(){
 		}
 		// 立即备份
 		if(isset($_POST['wp_backup_to_pcs_now']) && $_POST['wp_backup_to_pcs_now'] == '马上备份'){
-			$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+			$zip_dir = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN);
 			global $baidupcs;
 			
 			// 备份数据库
@@ -244,7 +244,7 @@ function wp_backup_to_pcs_corn_task_function_logs(){
 		return;
 
 	set_php_ini('timezone');
-	$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+	$zip_dir = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN);
 	$remote_dir = trailing_slash_path(get_option('wp_backup_to_pcs_remote_dir'));
 
 	// 备份日志
@@ -269,7 +269,7 @@ function wp_backup_to_pcs_corn_task_function_www(){
 	
 	set_php_ini('limit');
 	set_php_ini('timezone');
-	$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+	$zip_dir = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN);
 	$remote_dir = trailing_slash_path(get_option('wp_backup_to_pcs_remote_dir'));
 
 	// 备份网站内的所有文件
@@ -293,7 +293,7 @@ function wp_backup_to_pcs_clear_files_task(){
 	add_action('wp_backup_to_pcs_corn_task_clear_files','wp_backup_to_pcs_corn_task_function_clear_files');
 }
 function wp_backup_to_pcs_corn_task_function_clear_files(){
-	$zip_dir = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN);
+	$zip_dir = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN);
 	$zip_www = $zip_dir.'www.zip';
 	$zip_logs = $zip_dir.'logs.zip';
 	$zip_database = $zip_dir.'database.sql';
@@ -382,7 +382,7 @@ function wp_backup_to_pcs_delete_file_offline_by_filename($file_name){
 	}
 	$result = $result['task_info'][0];
 	if($result['status'] == 1){
-		$file = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN).$file_name;
+		$file = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN).$file_name;
 		if(file_exists($file))@unlink($file);
 	}
 }

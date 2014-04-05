@@ -102,7 +102,7 @@ function wp_storage_to_pcs_panel(){
 			<span class="hide-for-copy">被访问<input type="text" name="wp_storage_to_pcs_image_copy" value="<?php echo get_option('wp_storage_to_pcs_image_copy'); ?>" style="width:30px;" />次以上强制缓存到本地</span>
 		</p>
 		<p class="tishi hidden">访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“<?php echo WP2PCS_REMOTE_ROOT; ?>uploads/test.jpg”这张图片。为了提高不同空间的兼容性，默认为“?img”的形式。</p>
-		<p class="tishi hidden">强制缓存到本地：当你的某个图片或视频被访问的次数超过了你设置的这个次数，说明这个图片或视频需要经常使用，保存到你的网站空间更有利。要使用该功能需要满足：1.你没有勾选外链；2.你的网站空间有可写的权限；3.访问前缀中不能包含?。填写0或留空时，表示不使用这个功能。具体细节可以阅读<a href="http://www.wp2pcs.com/?p=313" target="_blank">这篇文章</a>。</p>
+		<p class="tishi hidden">强制缓存到本地：当你的某个图片或视频被访问的次数超过了你设置的这个次数，说明这个图片或视频需要经常使用，缓存到你的网站空间更有利。要使用该功能需要满足：1.你没有勾选外链；2.你的网站空间有可写的权限；3.访问前缀中不能包含?。填写0或留空时，表示不使用这个功能。具体细节可以阅读<a href="http://www.wp2pcs.com/?p=313" target="_blank">这篇文章</a>。</p>
 		<p class="tishi hidden">下载访问前缀：
 			<input type="text" name="wp_storage_to_pcs_download_perfix" value="<?php echo $download_perfix; ?>" />
 			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">

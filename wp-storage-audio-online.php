@@ -80,6 +80,12 @@ function wp_storage_print_audio(){
 	}
 
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
+	$query_pos = strpos($current_uri,'?');
+	// 如果URL中有参数
+	if($query_pos !== false){
+		$current_uri = substr($current_uri,0,$query_pos);
+	}
+
 	$audio_perfix = get_option('wp_storage_to_pcs_audio_perfix');
 	$audio_uri = $current_uri;
 	$audio_path = '';

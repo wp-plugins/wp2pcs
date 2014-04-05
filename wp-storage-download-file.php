@@ -22,8 +22,14 @@ function wp_storage_download_file(){
 		return;
 	}
 
-	$download_perfix = trim(get_option('wp_storage_to_pcs_download_perfix'));
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
+	$query_pos = strpos($current_uri,'?');
+	// 如果URL中有参数
+	if($query_pos !== false){
+		$current_uri = substr($current_uri,0,$query_pos);
+	}
+
+	$download_perfix = trim(get_option('wp_storage_to_pcs_download_perfix'));
 	$file_uri = $current_uri;
 	$file_path = '';
 

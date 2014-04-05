@@ -73,7 +73,7 @@
 	}
 
 	// 测试创建文件及其相关
-	$file = trailing_slash_path(WP_CONTENT_DIR,WP2PCS_IS_WIN).'wp2pcs-debug.txt';
+	$file = trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_HWIN).'wp2pcs-debug.txt';
 	$handle = fopen($file,"w+");
 	$words_count = fwrite($handle,'你的服务器支持创建和写入文件');
 	if($words_count > 0){
@@ -90,10 +90,10 @@
 
 	// 检查content目录的写入权限
 	if(DIRECTORY_SEPARATOR=='/' && @ini_get("safe_mode")==FALSE){
-		echo "没有开启安全模式，".(is_writable(WP_CONTENT_DIR) ? 'content目录可写' : 'content目录不可写')."<br />";
+		echo "没有开启安全模式，".(is_writable(WP2PCS_TMP_DIR) ? 'content目录可写' : 'content目录不可写')."<br />";
 	}else{
 		echo "开启了安全模式，";
-		$file = rtrim(WP_CONTENT_DIR,'/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
+		$file = rtrim(WP2PCS_TMP_DIR,'/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
 		if(($fp = @fopen($file,'w+'))===FALSE){
 			echo "content目录不可写";
 		}else{

@@ -96,6 +96,12 @@ function wp_storage_print_video(){
 	}
 
 	$current_uri = urldecode($_SERVER["REQUEST_URI"]);
+	$query_pos = strpos($current_uri,'?');
+	// 如果URL中有参数
+	if($query_pos !== false){
+		$current_uri = substr($current_uri,0,$query_pos);
+	}
+
 	$video_perfix = trim(get_option('wp_storage_to_pcs_video_perfix'));
 	$video_uri = $current_uri;
 	$video_path = '';
@@ -183,37 +189,46 @@ function wp_storage_print_video(){
 	}
 	else{
 		set_wp2pcs_cache();
-		global $baidupcs;
-		$result = $baidupcs->streaming($video_path,'M3U8_854_480');
 
-		$meta = json_decode($result,true);
-		if(isset($meta['error_msg'])){
-			echo $meta['error_msg'];
-			exit;
-		}
-
-		// 将视频文件强制缓存到本地
-		$file_local_path = ABSPATH.$current_uri;
-		$file_local_path = str_replace('//','/',$file_local_path);
-		$visit_key = 'WP2PCS_VIDEO_'.strtoupper(md5($file_local_path));
+		// 将图片文件强制缓存到本地
+		$file_local_path = ABSPATH.'wp2pcs_tmp/'.str_replace('/','_',$current_uri).'.tmp';
+		$visit_key = 'WP2PCS_VIDEOTMP_'.strtoupper(md5($file_local_path));
 		$visit_value = get_option($visit_key);
 		$visit_value = ($visit_value?$visit_value:0);
 		$copy_value = get_option('wp_storage_to_pcs_video_copy');
-		if($copy_value != 0 && $visit_value >= $copy_value){
-			if(!file_exists($file_local_path) && strrchr(trim($result),'#EXT-X-ENDLIST') == '#EXT-X-ENDLIST'){
+		
+		// 如果存在缓存文件，使用它
+		if(file_exists($file_local_path)){
+			$file = fopen($file_local_path,"r");
+			$result = fread($file,filesize($file_local_path));
+			fclose($file);
+		}
+		// 如果不存在缓存文件，就从PCS获取，并本地化
+		else{
+			global $baidupcs;
+			$result = $baidupcs->streaming($video_path,'M3U8_854_480');
+
+			$meta = json_decode($result,true);
+			if(isset($meta['error_msg'])){
+				echo $meta['error_msg'];
+				exit;
+			}
+
+			// 下面本地化文件
+			if($copy_value != 0 && $visit_value >= $copy_value){
 				$fopen = fopen($file_local_path,"w+");
 				if($fopen != false){
 					fwrite($fopen,$result);
 				}
 				fclose($fopen);
 			}
-		}else{
-			$visit_value ++;
-			update_option($visit_key,$visit_value);
 		}
+		// 记录被访问的次数，这个次数可以用在今后对附件的评估上面
+		$visit_value ++;
+		update_option($visit_key,$visit_value);
 			
 		ob_clean();
-		echo $result;
+		echo trim($result);
 		exit;
 	}
 	exit;
