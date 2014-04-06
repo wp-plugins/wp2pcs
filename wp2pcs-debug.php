@@ -6,7 +6,7 @@
 
 
 	// 只在前台进行调试，否则连后台都进不去了
-	if(is_admin()){
+	if(is_admin() || !current_user_can('edit_theme_options')){
 		return;
 	}
 
