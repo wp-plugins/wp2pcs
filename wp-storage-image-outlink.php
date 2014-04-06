@@ -230,7 +230,7 @@ function wp_storage_print_image(){
 		$copy_value = get_option('wp_storage_to_pcs_image_copy');
 		
 		// 如果存在缓存文件，使用它
-		if(file_exists($file_local_path)){
+		if($copy_value != 0 && $copy_value != '' && file_exists($file_local_path)){
 			$file = fopen($file_local_path,"r");
 			$result = fread($file,filesize($file_local_path));
 			fclose($file);
@@ -247,7 +247,7 @@ function wp_storage_print_image(){
 			}
 
 			// 下面本地化文件
-			if($copy_value != 0 && $visit_value >= $copy_value){
+			if($copy_value != 0 && $copy_value != '' && $visit_value >= $copy_value){
 				$fopen = fopen($file_local_path,"w+");
 				if($fopen != false){
 					fwrite($fopen,$result);

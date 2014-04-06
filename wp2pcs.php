@@ -293,7 +293,7 @@ function wp_to_pcs_pannel(){
 		<form method="post" autocomplete="off">
 			<h3>WP2PCS开关 <a href="javascript:void(0)" class="tishi-btn right">+</a></h3>
 			<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;" id="wp2pcs-information-pend">
-				<p><?php if('CuOLkaVfoz1zGsqFKDgfvI0h' != WP2PCS_APP_KEY)echo '当前使用的是开发者自己的PCS API。'; ?>如果有问题，请及时<a href="http://www.wp2pcs.com/?cat=1" target="_blank">查阅插件是否有更新</a>。</p>
+				<p><?php if('CuOLkaVfoz1zGsqFKDgfvI0h' != WP2PCS_APP_KEY)echo '当前使用的是开发者自己的PCS API。';if(!function_exists('curl_exec'))echo '<span style="color:red;">你的网站空间不支持curl_exec函数，请联系主机商开启。</span>'; ?>如果有问题，请及时<a href="http://www.wp2pcs.com/?cat=1" target="_blank">查阅插件是否有更新</a>。</p>
 				<p>WP2PCS Oauth Code：
 					<input type="text" name="wp2pcs_oauth_code" value="<?php echo WP2PCS_OAUTH_CODE; ?>" id="wp2pcs-oauth-code" data-oauth-code="<?php echo WP2PCS_OAUTH_CODE; ?>" data-oauth-type="<?php echo $wp2pcs_oauth_type; ?>" /> 
 					<a href="javascript:void(0)" id="oauth-code-delete" title="删除Oauth Code">×</a>
