@@ -27,7 +27,9 @@ function wp2pcs_video_shortcode($atts){
 	),$atts));
 
 	static $video_id = 1;
-	if($video_id == 1)echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
+	if($video_id == 1){
+		echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
+	}
 	else $video ++;
 
 	$width = $width ? $width : '640';
@@ -67,25 +69,6 @@ function wp2pcs_video_shortcode($atts){
 	return $player;
 }
 add_shortcode('video','wp2pcs_video_shortcode');
-
-// 在网页头部输出音乐播放要使用到的javascript
-//add_action('wp_head','wp2pcs_video_player_script');
-function wp2pcs_video_player_script($force = false){
-	// 如果你不打算让播放器出现在除了文章页之外的页面，如首页、列表页等，那么可以加上if(!is_singular())return;
-	global $wp_query;
-	$has_video = false;
-	if($wp_query->posts){
-		$count = count($wp_query->posts);
-		for($i=0;$i<$count;$i++){
-			if(preg_match('/\[video([^\]]+)?\]/',$wp_query->posts[$i]->post_content)){
-				$has_video = true;
-				break;
-			}
-		}
-	}
-	if($has_video || $force)
-		echo '<script type="text/javascript" src="http://cybertran.baidu.com/cloud/media/assets/cyberplayer/1.0/cyberplayer.min.js"></script>';
-}
 
 // 通过对URI的判断来获得图片远程信息
 add_action('init','wp_storage_print_video',-1);

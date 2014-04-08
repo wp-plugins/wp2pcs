@@ -140,7 +140,7 @@ function wp_backup_to_pcs_action(){
 				@unlink($database_file);
 				$zip_file_url = home_url(str_replace(ABSPATH,'',WP2PCS_TMP_DIR).'/'.$zip_file_name);
 				$zip_delete_url = add_query_arg(array('action'=>'delete_zip_file','path'=>$zip_file));
-				wp_die("<p>点击下载 <a href='$zip_file_url'>$zip_file_name</a></p><p>注意，下载后你需要手动 <a href='$zip_delete_url'>删除</a> 这个文件。注意，这是绝对保密的！而且只有本次操作有效！</p>");
+				wp_die("<p>点击下载 <a href='$zip_file_url'>$zip_file_name</a></p><p>注意，下载后你需要手动 <a href='$zip_delete_url'>删除</a> 这个文件。注意，这是绝对保密的，里面包含了你的网站数据，一定要删除！</p>");
 				exit;
 			}else{
 				header("Content-type: application/octet-stream");
@@ -477,8 +477,10 @@ function wp_backup_to_pcs_panel(){
 			<?php if(!class_exists('ZipArchive')){echo '<b>当前服务器不支持ZipArchive(请联系主机商)，只有数据库可以被备份。</b>';} ?>
 			<?php endif; ?>
 		</p>
-		<?php if(!WP2PCS_IS_WRITABLE) : ?>
-		<p style="color:red">当前环境下/wp-content/目录没有可写权限，不能备份网站，请赋予这个目录可写权限！</p>
+		<?php if(!file_exists(WP2PCS_TMP_DIR)) : ?>
+		<p style="color:red">请先手动在你的网站根目录下创建<?php echo str_replace(ABSPATH,'',WP2PCS_TMP_DIR); ?>目录，并赋予可写权限！</p>
+		<?php elseif(!WP2PCS_IS_WRITABLE) : ?>
+		<p style="color:red">当前环境下<?php echo WP2PCS_TMP_DIR; ?>目录没有可写权限，不能备份网站，请赋予这个目录可写权限！</p>
 		<?php endif; ?>
 		<input type="hidden" name="action" value="wp_backup_to_pcs_send_file" />
 		<input type="hidden" name="page" value="<?php echo $_GET['page']; ?>" />

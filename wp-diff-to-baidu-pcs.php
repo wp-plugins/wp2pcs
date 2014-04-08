@@ -262,7 +262,9 @@ function wp_diff_to_pcs_panel(){
 			<?php endif; ?>
 			<input type="submit" name="wp_diff_to_pcs_future" value="<?php echo $btn_text; ?>" class="<?php echo $btn_class; ?>" />
 		</p>
-		<?php if(!is_really_writable($local_files_record)): ?><p style="color:red;"><?php echo trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN); ?>local_files.php这个文件不可写，无法进行增量备份。赋予它可写权限后必须再点击一次更新按钮。</p><?php endif; ?>
+		<?php if(!file_exists($local_files_record)) : ?>
+		<p style="color:red">请先手动在你的网站根目录下创建<?php echo str_replace(ABSPATH,'',$local_files_record); ?>文件，并赋予可写权限！</p>
+		<?php elseif(!is_really_writable($local_files_record)): ?><p style="color:red;"><?php echo trailing_slash_path(WP2PCS_TMP_DIR,WP2PCS_IS_WIN); ?>local_files.php这个文件不可写，无法进行增量备份。赋予它可写权限后必须再点击一次更新按钮。</p><?php endif; ?>
 		<p class="tishi hidden">为避免误操作，开启备份后需要两分钟才会开始正式执行。</p>
 		<p class="tishi hidden">点击确定不会让新的备份任务立即生效，只有在下一轮更新中才会生效。如果你希望当前的设置马上生效，点击更新后再启动备份任务，就会马上按照新设置的信息进行备份。</p>
 		<input type="hidden" name="action" value="wp_diff_to_pcs_send_file" />

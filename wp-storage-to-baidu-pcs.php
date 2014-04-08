@@ -88,7 +88,7 @@ function wp_storage_to_pcs_panel(){
 	$media_hd = get_option('wp_storage_to_pcs_media_hd');
 ?>
 <div class="postbox" id="wp-to-pcs-storage-form">
-	<h3>PCS存储设置 <a href="javascript:void(0)" class="tishi-btn">+</a></h3>	
+	<h3>PCS存储设置 <a href="javascript:void(0)" class="tishi-btn" id="wp-to-pcs-storage-tishi-btn">+</a></h3>	
 	<div class="inside" style="border-bottom:1px solid #CCC;margin:0;padding:8px 10px;">
 	<form method="post">
 		<p>使用网盘中的哪个目录：<?php echo WP2PCS_REMOTE_ROOT; ?><input type="text" name="wp_storage_to_pcs_remote_dir"  class="regular-text" value="<?php echo str_replace(WP2PCS_REMOTE_ROOT,'',$remote_dir); ?>" /></p>
@@ -99,7 +99,7 @@ function wp_storage_to_pcs_panel(){
 			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">
 			<input type="checkbox" name="wp_storage_to_pcs_image_hd" value="301" <?php checked($image_hd,'301'); ?> />外链
 			</span>
-			<span class="hide-for-copy">被访问<input type="text" name="wp_storage_to_pcs_image_copy" value="<?php echo get_option('wp_storage_to_pcs_image_copy'); ?>" style="width:30px;" />次以上强制缓存到本地</span>
+			<span class="hide-for-copy tishi hidden">被访问<input type="text" name="wp_storage_to_pcs_image_copy" value="<?php echo get_option('wp_storage_to_pcs_image_copy'); ?>" style="width:30px;" />次以上强制缓存到本地</span>
 		</p>
 		<p class="tishi hidden">访问前缀是指用户访问你的网站的什么URL时才会调用网盘中的图片，例如你填写的是“img”，那么用户在访问“<?php echo home_url('/img/test.jpg'); ?>”时，屏幕上就会打印在你的网盘目录“<?php echo WP2PCS_REMOTE_ROOT; ?>uploads/test.jpg”这张图片。为了提高不同空间的兼容性，默认为“?img”的形式。</p>
 		<p class="tishi hidden">强制缓存到本地：当你的某个图片或视频被访问的次数超过了你设置的这个次数，说明这个图片或视频需要经常使用，缓存到你的网站空间更有利。要使用该功能需要满足：1.你没有勾选外链；2.你的网站空间有可写的权限；3.访问前缀中不能包含?。填写0或留空时，表示不使用这个功能。具体细节可以阅读<a href="http://www.wp2pcs.com/?p=313" target="_blank">这篇文章</a>。</p>
@@ -114,7 +114,7 @@ function wp_storage_to_pcs_panel(){
 			<span class="hide-for-oauth-code<?php if(!WP2PCS_OAUTH_CODE)echo ' hidden'; ?>">
 			<input type="checkbox" name="wp_storage_to_pcs_video_hd" value="301" <?php checked($video_hd,'301'); ?> />外链
 			</span>
-			<span class="hide-for-copy">被访问<input type="text" name="wp_storage_to_pcs_video_copy" value="<?php echo get_option('wp_storage_to_pcs_video_copy'); ?>" style="width:30px;" />次以上强制缓存到本地</span>
+			<span class="hide-for-copy tishi hidden">被访问<input type="text" name="wp_storage_to_pcs_video_copy" value="<?php echo get_option('wp_storage_to_pcs_video_copy'); ?>" style="width:30px;" />次以上强制缓存到本地</span>
 		</p>
 		<p <?php if(!AUDIO_SHORTCODE)echo 'class="tishi hidden"'; ?>>MP3音乐前缀：
 			<input type="text" name="wp_storage_to_pcs_audio_perfix" value="<?php echo $audio_perfix; ?>" /> 
@@ -142,25 +142,40 @@ function wp_storage_to_pcs_panel(){
 </div>
 <script>
 jQuery(function($){
-	$('.hide-for-oauth-code:visible').each(function(){
+	/*
+	$('.hide-for-oauth-code').each(function(){
 		if($(this).find('input[type=checkbox]').is(':checked')){
 			$(this).next('.hide-for-copy').hide();
 		}else{
 			$(this).next('.hide-for-copy').show();
 		}
+	});
+	*/
+
+	$('.hide-for-copy').each(function(){
+		var value = $(this).find('input').val();
+		if(value > 0){
+			$(this).removeClass('tishi').show();
+		}
+	}).find('input').focusout(function(){
+		var value = $(this).parent().parent().find('input:first').val();
+		if(value.indexOf('?') >= 0 || value.indexOf('index.php') >= 0){
+			$(this).val('');
+			alert('访问前缀中包含?或index.php，不能使用该功能。');
+			return;
+		}
+		$(this).parent().removeClass('tishi');
 	});
 	$('.hide-for-oauth-code:visible').change(function(){
 		if($(this).find('input[type=checkbox]').is(':checked')){
 			$(this).next('.hide-for-copy').hide();
 		}else{
-			$(this).next('.hide-for-copy').show();
-		}
-	});
-	$('.hide-for-copy').find('input').focusout(function(){
-		var value = $(this).parent().parent().find('input:first').val();
-		if(value.indexOf('?') >= 0 || value.indexOf('index.php') >= 0){
-			$(this).val('');
-			alert('访问前缀中包含?或index.php，不能使用该功能。');
+			var value = $(this).next('.hide-for-copy').find('input').val();
+			if(value > 0 || $('#wp-to-pcs-storage-tishi-btn').text() == '-'){
+				$(this).next('.hide-for-copy').show();
+			}else {
+				$(this).next('.hide-for-copy').hide();				
+			}
 		}
 	});
 });
