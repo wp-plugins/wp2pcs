@@ -48,18 +48,19 @@ function wp2pcs_video_shortcode($atts){
 	$src = implode('/',$src_arr);
 
 	$player_id = get_php_run_time();
+	$player_id = str_replace('.','',$player_id);
 
-	$player = '<div style="background:#000;display:block;margin:0 auto;width:640px;height:480px;"><div id="videoplayer_'.$player_id.'"></div></div>';
-	if($refresh === 'true')$player .= '<p align="center" class="videoplayer-source"><a href="'.$src.'" target="_blank" style="color:#999;font-size:0.8em;" title="刷新后重新加载本页才能观看完整的视频">刷新视频资源</a></p>';
-	$player .= '<script type="text/javascript">var player=cyberplayer("videoplayer_'.$player_id.'").setup({
+	$player = '<div style="background:#000;display:block;margin:0 auto;width:'.$width.'px;height:'.$height.'px;"><div id="videoplayer_'.$player_id.'"></div></div>';
+	if($refresh === 'true')$player .= '<p align="center" class="videoplayer-source"><a href="'.$src.'" target="refreshvideo" style="color:#999;font-size:0.8em;" title="刷新后重新加载本页才能观看完整的视频">刷新视频资源</a><iframe frameborder="0" framescroll="no" name="refreshvideo" style="float:right;width:1px;height:1px;overflow:hidden;"></iframe></p>';
+	$player .= '<script type="text/javascript">var player_'.$player_id.' = cyberplayer("videoplayer_'.$player_id.'").setup({
 		width:'.$width.',
 		height:'.$height.',
-		backcolor:"#FFFFFF",
+		backcolor:"#000",
 		stretching:"'.$stretch.'",
 		file:"'.$src.'",
 		image:"'.$cover.'",
-		autoStart:!1,
-		repeat:"always",
+		autoStart:0,
+		repeat:"none",
 		volume:100,
 		controlbar:"over",
 		ak:"'.WP2PCS_APP_KEY.'",

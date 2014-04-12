@@ -31,7 +31,7 @@ define('WP2PCS_SITE_DOMAIN',$_SERVER['HTTP_HOST']);
 define('WP2PCS_REMOTE_ROOT','/apps/'.get_option('wp_to_pcs_remote_aplication').'/'.WP2PCS_SITE_DOMAIN.'/');
 define('WP2PCS_PLUGIN_VER',str_replace('.','','2014.04.4.15.00'));// 以最新一次更新的时间点（到分钟）作为版本号
 define('WP2PCS_IS_WIN',strpos(PHP_OS,'WIN')!==false);
-define('WP2PCS_TMP_DIR',ABSPATH.'wp2pcs_tmp');// WP2PCS暂时性存储目录
+define('WP2PCS_TMP_DIR',realpath(ABSPATH.'wp2pcs_tmp'));// WP2PCS暂时性存储目录
 define('WP2PCS_IS_WRITABLE',is_really_writable(WP2PCS_TMP_DIR));
 
 // 当你发现自己错过了很多定时任务时，可以帮助你执行没有执行完的定时任务
