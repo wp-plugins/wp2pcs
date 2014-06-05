@@ -12,7 +12,7 @@ function get_files_in_dir($path){
 	$dir = opendir($path);
 	while($file = readdir($dir)){
 		if($file == '.' || $file == '..')continue;
-		$file_path = realpath($path.'/'.$file);
+		$file_path = get_real_path($path.'/'.$file);
 		// 这个地方要注意，要排除缓存目录，不能把缓存文件也给备份了
 		if(strpos($file_path,WP2PCS_TMP_DIR) !== false){
 			continue;

@@ -232,6 +232,15 @@ function get_real_filesize($file) {
     return $size;
 }
 
+function get_real_path ($path) {
+	if(DIRECTORY_SEPARATOR == '\\') {
+		return str_replace('/','\\',$path);
+	}
+	else {
+		return str_replace('\\','/',$path);
+	}
+}
+
 // 解决路径最后的slah尾巴，如果没有则加上，而且根据不同的服务器，采用/或者\
 function trailing_slash_path($path_string,$is_win = false){
 	$trail = substr($path_string,-1);

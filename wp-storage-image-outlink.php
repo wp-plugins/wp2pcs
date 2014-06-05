@@ -239,7 +239,11 @@ function wp_storage_print_image(){
 		else{
 			global $baidupcs;
 			$result = $baidupcs->downloadStream($image_path);
-
+			/*
+			$url = 'https://d.pcs.baidu.com/rest/2.0/pcs/file?method=download&access_token='.WP2PCS_APP_TOKEN.'&path='.$image_path;
+			$result = file_get_contents($url);
+			*/
+			
 			$meta = json_decode($result,true);
 			if(isset($meta['error_msg'])){
 				echo $meta['error_msg'];
