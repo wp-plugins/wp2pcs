@@ -6,7 +6,6 @@
  * @author   duanzhenxing(duanzhenxing@baidu.com)
  * @version  2.1.0
  */
-require_once dirname ( __FILE__ ) . '/' . 'RequestCore.class.php';
 
 /**
  * @desc BaiduPCS类
@@ -17,7 +16,7 @@ class BaiduPCS {
 	 * 百度PCS RESTFUL API SERVER调用地址前缀
 	 * @var array
 	 */
-	private $_pcs_uri_prefixs = array ('https' => 'https://pcs.baidu.com/rest/2.0/pcs/' );
+	private $_pcs_uri_prefixs = array ('https' => 'https://d.pcs.baidu.com/rest/2.0/pcs/' );
 
 	private $_accessToken = '';
 
@@ -57,7 +56,7 @@ class BaiduPCS {
 	 */
 	private function _baseControl($apiMethod, $params, $method = 'GET', $headers = array()) {
 
-		$method = strtoupper ( $method );
+		$method = strtoupper($method);
 
 		if (is_array ( $params )) {
 			$params = http_build_query ( $params, '', '&' );
@@ -65,6 +64,7 @@ class BaiduPCS {
 
 		$url = $this->_pcs_uri_prefixs ['https'] . $apiMethod . ($method == 'GET' ? '&' . $params : '');
 
+		/*
 		$requestCore = new RequestCore ();
 		$requestCore->set_request_url ( $url );
 
@@ -79,6 +79,22 @@ class BaiduPCS {
 
 		$requestCore->send_request ();
 		$result = $requestCore->get_response_body ();
+		*/
+		
+		if($method == 'POST'){
+			$post_data = parse_str($params);
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 			$url);
+			curl_setopt($ch, CURLOPT_HEADER, 		0);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+			curl_setopt($ch, CURLOPT_POST, 			1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS,	$post_data);
+			$result = curl_exec($ch);
+			curl_close($ch);
+		}
+		else {
+			$result = file_get_contents($url);
+		}
 
 		return $result;
 	}
