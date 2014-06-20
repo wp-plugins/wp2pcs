@@ -8,7 +8,7 @@ function str_replace_first($find,$replace,$string){
 		$string = substr_replace($string,$replace,$position,$length);
 		return $string;
 	}else{
-		return false;
+		return $string;
 	}
 }
 
@@ -20,7 +20,7 @@ function str_replace_last($find,$replace,$string){
 		$string = substr_replace($string,$replace,$position,$length);
 		return $string;
 	}else{
-		return false;
+		return $string;
 	}
 }
 
