@@ -51,7 +51,7 @@ class WP2PCS {
   }
   function scripts_init() {
     if(@$_GET['page'] == 'wp2pcs') {
-      add_action('admin_enqueue_scripts',array($this,'scripts_init'));
+      add_action('admin_enqueue_scripts',array($this,'add_scripts'));
     }
   }
   function add_scripts() {
