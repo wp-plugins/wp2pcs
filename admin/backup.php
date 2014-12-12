@@ -46,7 +46,7 @@
         <option <?php selected($wp2pcs_backup_time,'03:00'); ?>>03:00</option>
       </select>
     </p>
-    <p>所有备份文件将被保存在百度云盘的<code><?php echo BAIDUPCS_REMOTE_ROOT; ?>/backup</code>路径中</p>
+    <p>所有备份文件将被保存在百度云盘的<code><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo urlencode(BAIDUPCS_REMOTE_ROOT.'/backup'); ?>" target="_blank"><?php echo BAIDUPCS_REMOTE_ROOT; ?>/backup</a></code>路径中</p>
     <?php if($backup_timestamp) echo '<p>下次备份时间：'.date('Y-m-d H:i:s',$backup_timestamp).'</p>'; ?>
   </div>
 </div>
