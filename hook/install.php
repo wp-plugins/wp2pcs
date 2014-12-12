@@ -9,7 +9,11 @@ function wp2pcs_install(){
 
 add_action('admin_init','wp2pcs_install_redirect');
 function wp2pcs_install_redirect() {
-  if(get_option('wp2pcs_do_activation_redirect',false)) {
+  if(get_option('wp_to_pcs_app_key')) { // 如果存在这个值，说明是从老版本升级过来的
+    add_option('wp2pcs_do_activation_redirect',true);
+    delete_option('wp_to_pcs_app_key');
+  }
+  if(get_option('wp2pcs_do_activation_redirect')) {
     delete_option('wp2pcs_do_activation_redirect');
     wp_redirect(admin_url('plugins.php?page=wp2pcs&tab=about'));
   }
