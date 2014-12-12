@@ -46,7 +46,6 @@ jQuery(function($){
             is_play = $input.attr('data-play'),
             video_path = $input.attr('data-file-path'),
             video_md5 = $input.attr('data-file-md5'),
-            video_bg = $input.attr('data-background'),
             is_music = $input.attr('data-music'),
             url = $input.val();
         // 如果被选择的是图片
@@ -58,7 +57,7 @@ jQuery(function($){
         // 如果是视频
         else if(is_video == 1) {
           if(is_play == 1) {
-            html += '<p><div class="wp2pcs-video-player" style="display:block;width:480px;height:360px;" data-path="' + video_path + '" data-md5="' + video_md5 + '"><a href="' + url + '" style="display:block;width:100%;height:100%;border:#dedede dashed 5px;background:url(' + video_bg + ') no-repeat center #f5f5f5;">&nbsp;</a></div></p>';
+            html += '<p><div class="wp2pcs-video-player" data-path="' + video_path + '" data-md5="' + video_md5 + '"><a href="' + url + '">&nbsp;</a></div></p>';
           }
           else {
             html += '<p>' + url + '</p>';

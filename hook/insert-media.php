@@ -124,7 +124,7 @@ function wp2pcs_insert_media_iframe_content() {
         echo '<img src="'.$file_url.'" title="图片 '.$file_name.'">';
       }
       elseif($file_format == 'video') {
-        echo '<input type="checkbox" value="'.$file_url.'" data-video="1" data-play="'.get_option('wp2pcs_load_videoplay').'" data-background="'.plugins_url('assets/video-bg.png',WP2PCS_PLUGIN_NAME).'" data-file-path="'.$file->path.'" data-file-md5="'.$file->md5.'">';
+        echo '<input type="checkbox" value="'.$file_url.'" data-video="1" data-play="'.get_option('wp2pcs_load_videoplay').'" data-file-path="'.$file->path.'" data-file-md5="'.$file->md5.'">';
         echo '<a title="视频 '.$file_name.'">'.$file_name.'</a>';
       }
       elseif($file_format == 'music') {
