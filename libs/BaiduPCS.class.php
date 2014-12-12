@@ -17,12 +17,7 @@ class BaiduPCS {
 	 * 百度PCS RESTFUL API SERVER调用地址前缀
 	 * @var array
 	 */
-	private $_pcs_uri_prefixs = array (
-		'https' => 'https://pcs.baidu.com/rest/2.0/pcs/',
-		'createSuperFile' => 'https://c.pcs.baidu.com/rest/2.0/pcs/',
-		'download' => 'https://d.pcs.baidu.com/rest/2.0/pcs/',
-		'downloadStream' => 'https://d.pcs.baidu.com/rest/2.0/pcs/'
-	);
+	private $_pcs_uri_prefixs = array ('https' => 'https://pcs.baidu.com/rest/2.0/pcs/' );
 
 	private $_accessToken = '';
 
@@ -69,34 +64,6 @@ class BaiduPCS {
 		}
 
 		$url = $this->_pcs_uri_prefixs ['https'] . $apiMethod . ($method == 'GET' ? '&' . $params : '');
-
-		$requestCore = new RequestCore ();
-		$requestCore->set_request_url ( $url );
-
-		$requestCore->set_method ( $method );
-		if ($method == 'POST') {
-			$requestCore->set_body ( $params );
-		}
-
-		foreach ( $headers as $key => $value ) {
-			$requestCore->add_header ( $key, $value );
-		}
-
-		$requestCore->send_request ();
-		$result = $requestCore->get_response_body ();
-
-		return $result;
-	}
-	// 在baseControl的基础上选择域名
-	private function _preControl($http, $apiMethod, $params, $method = 'GET', $headers = array()) {
-
-		$method = strtoupper ( $method );
-
-		if (is_array ( $params )) {
-			$params = http_build_query ( $params, '', '&' );
-		}
-
-		$url = $this->_pcs_uri_prefixs[$http] . $apiMethod . ($method == 'GET' ? '&' . $params : '');
 
 		$requestCore = new RequestCore ();
 		$requestCore->set_request_url ( $url );
