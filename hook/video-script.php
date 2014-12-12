@@ -1,6 +1,6 @@
 <?php
 
-add_action('wp_footer','wp2pcs_video_player_script');
+add_action('wp_footer','wp2pcs_video_player_script',99);
 function wp2pcs_video_player_script() {
 ?>
 <script>
