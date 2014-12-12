@@ -24,12 +24,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 <strong>不适用范围</strong>
 
-* 超大型网站（打包后超过G）
-* 开启MULTISITE的多站点网站
-* 网站空间剩余不足1/2
-* 没有读写权限或读写权限受限制的空间（如BAE、SAE不能备份网站文件）
+* 超大型网站（打包压缩后超过G）
+* 尽可能不使用在开启MULTISITE的多站点网站
+* 没有读写权限或读写权限受限制的空间（如BAE、SAE）
 * 服务器memory limit, time limit比较小，又不能自己修改的
-* 主机PHP不支持ZipArchive类
 * 免费主机、海外主机等性能差或与PCS通信弱的主机
 
 == Installation ==
