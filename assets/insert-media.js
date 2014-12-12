@@ -61,7 +61,7 @@ jQuery(function($){
             html += '<p><div class="wp2pcs-video-player" style="display:block;width:480px;height:360px;" data-path="' + video_path + '" data-md5="' + video_md5 + '"><a href="' + url + '" style="display:block;width:100%;height:100%;border:#dedede dashed 5px;background:url(' + video_bg + ') no-repeat center #f5f5f5;">&nbsp;</a></div></p>';
           }
           else {
-            html += url.replace(/\//g,'&#47;');
+            html += '<p>' + url + '</p>';
           }
         }
         else if(is_music == 1) {
