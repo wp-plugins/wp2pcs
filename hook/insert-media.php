@@ -63,7 +63,7 @@ function wp2pcs_insert_media_iframe_content() {
 <div id="wp2pcs-insert-media-iframe-buttons">
   <button class="button float-left" onclick="jQuery('html,body').animate({scrollTop:0},500)">返回顶部</button>
   <button href="<?php echo add_query_arg('refresh',1); ?>" class="button float-left" id="wp2pcs-insert-media-btn-refresh" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">刷新界面</button>
-  <?php if((is_multisite() && current_user_can('manage_network')) || (!is_multisite() && current_user_can('edit_theme_options'))): ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_path; ?>" class="button float-left" target="_blank">管理云盘</a><?php endif; ?>
+  <?php if((is_multisite() && current_user_can('manage_network')) || (!is_multisite() && current_user_can('edit_theme_options'))): ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_path; ?>" class="button float-left" target="_blank">管理上传</a><?php endif; ?>
   <button class="button float-left" id="wp2pcs-insert-media-btn-help">帮助</button>
   <button class="button" id="wp2pcs-insert-media-btn-clear">清除选中</button>
   <button class="button-primary" id="wp2pcs-insert-media-btn-insert">插入选中</button>
