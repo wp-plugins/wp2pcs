@@ -3,7 +3,7 @@
 function wp2pcs_video_player_css_in_admin_editor() {
 ?>
 .wp2pcs-video-player {display:block;width:480px;height:360px;margin: 1em auto;}
-.wp2pcs-video-player a {display:block;width:100%;height:100%;border:#dedede dashed 5px;background:url(../assets/video-play.png) no-repeat center;}
+.wp2pcs-video-player a {display:block;width:100%;height:100%;border:#dedede dashed 5px;background-repeat:no-repeat;background-position:center;}
 .wp2pcs-video-player iframe {display:block;width:100%;height:100%;}
 <?php
 }
@@ -12,6 +12,7 @@ function wp2pcs_video_player_css_in_admin_editor() {
 if(isset($_GET['script']) && $_GET['script'] == 'style.css') {
   header('Content-Type: text/css; charset=utf-8');
   wp2pcs_video_player_css_in_admin_editor();
+  echo '.wp2pcs-video-player a {background-image:url(../assets/video-play.png);}';
   exit;
 }
 
