@@ -45,7 +45,14 @@ jQuery(function($){
 function wp2pcs_video_player_css_in_admin_editor() {
 ?>
 .wp2pcs-video-player {display:block;width:480px;height:360px;margin: 1em auto;}
-.wp2pcs-video-player a {display:block;width:100%;height:100%;border:#dedede dashed 5px;background-repeat:no-repeat;background-position:center;}
+.wp2pcs-video-player a {display:block;width:100%;height:100%;border:#dedede dashed 5px;background-repeat:no-repeat;background-position:center;text-decoration:none;
+  -moz-opacity: 0.6;
+  opacity:      0.6;
+}
+.wp2pcs-video-player a:hover {
+  -moz-opacity: 1;
+  opacity:      1;
+}
 .wp2pcs-video-player iframe {display:block;width:100%;height:100%;}
 <?php
 }
@@ -80,13 +87,14 @@ function get_extension_by_file_name(pathfilename) {
   return arrfn[arrfn.length - 1];  
 }
 jQuery(function($){
-  $(document).on('click','.wp2pcs-video-player',function(e){
+  $(document).on('click','.wp2pcs-video-player a',function(e){
     e.preventDefault();
-    var $this = $(this),
+    var $this = $(this).parent(),
         path = $this.attr('data-path'),
         md5 = $this.attr('data-md5'),
         ext = get_extension_by_file_name(path);
     $this.html('<iframe src="<?php echo plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME); ?>?path=' + path + '&md5=' + md5 + '&video=.' + ext + '" frameborder="0" framescroll="none"></iframe>');
+    return false;
   });
 });
 </script>
