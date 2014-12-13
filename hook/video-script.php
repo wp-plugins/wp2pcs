@@ -1,5 +1,53 @@
 <?php
 
+if(!function_exists('get_by_curl')) :
+function get_by_curl($url,$post = false,$referer = false){
+  $ch = curl_init();
+  curl_setopt($ch,CURLOPT_URL,$url);
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  if($referer) {
+    curl_setopt ($ch,CURLOPT_REFERER,$referer);
+  }
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  if($post){
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
+  }
+  $result = curl_exec($ch);
+  curl_close($ch);
+  return $result;
+}
+endif;
+
+// 显示播放器
+if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empty($_GET['md5']) && isset($_GET['video']) && !empty($_GET['video'])) {
+  $path = $_GET['path'];
+  $md5 = $_GET['md5'];
+  $url = 'http://pan.baidu.com/res/static/thirdparty/guanjia/guanjia_play.html?path='.$path.'&md5='.$md5;
+  header("Location: $url");
+  exit();
+  /*
+  $html = get_by_curl($url,false,$url);
+  $html = str_replace('href="/res/static/thirdparty','href="http://pan.baidu.com/res/static/thirdparty',$html);
+  $html = str_replace('src="/res/static/thirdparty','src="http://pan.baidu.com/res/static/thirdparty',$html);
+  $html = str_replace('"/api/streaming',' "http://pan.baidu.com/api/streaming',$html);
+  $html = str_replace('</body>','',$html);
+  $html = str_replace('</html>','',$html);
+  echo $html;
+  */
+?>
+<script>window.jQuery || document.write('<script type="text/javascript" src="../assets/jquery-2.1.1.min.js">\x3C/script>');</script>
+<script>
+jQuery(function($){
+  $('.video-functions-tips').remove();
+});
+</script>
+</body>
+</html>
+<?php
+  exit();
+}
+
 function wp2pcs_video_player_css_in_admin_editor() {
 ?>
 .wp2pcs-video-player {display:block;width:480px;height:360px;margin: 1em auto;}
@@ -29,13 +77,22 @@ function wp2pcs_video_player_script() {
 </style>
 <script>window.jQuery || document.write('<script type="text/javascript" src="<?php echo plugins_url("assets/jquery-2.1.1.min.js",WP2PCS_PLUGIN_NAME); ?>">\x3C/script>');</script>
 <script type="text/javascript">
+function get_extension_by_file_name(pathfilename) {
+  var reg = /(\\+)/g;  
+  var pfn = pathfilename.replace(reg, "#");  
+  var arrpfn = pfn.split("#");  
+  var fn = arrpfn[arrpfn.length - 1];  
+  var arrfn = fn.split(".");  
+  return arrfn[arrfn.length - 1];  
+}
 jQuery(function($){
   $(document).on('click','.wp2pcs-video-player',function(e){
     e.preventDefault();
     var $this = $(this),
         path = $this.attr('data-path'),
-        md5 = $this.attr('data-md5');
-    $this.html('<iframe src="http://pan.baidu.com/res/static/thirdparty/guanjia/guanjia_play.html?path=' + path + '&md5=' + md5 + '" frameborder="0" framescroll="none"></iframe>');
+        md5 = $this.attr('data-md5'),
+        ext = get_extension_by_file_name(path);
+    $this.html('<iframe src="<?php echo plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME); ?>?path=' + path + '&md5=' + md5 + '&video=.' + ext + '" frameborder="0" framescroll="none"></iframe>');
   });
 });
 </script>
