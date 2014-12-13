@@ -122,5 +122,35 @@ jQuery(function($){
     
     } // -- endif --
   });
+  // 刷新按钮
+  $('#wp2pcs-insert-media-btn-refresh').click(function(e){
+    e.preventDefault();
+    var $this = $(this),
+        $body = $('#wp2pcs-insert-media-iframe-content'),
+        href = $this.attr('href'),
+        loading = $this.attr('data-loading'),
+        ajaxing = $this.attr('data-ajaxing');
+    if(ajaxing == 'true') return;
+    $this.attr('data-ajaxing','true');
+    $.ajax({
+      url : href,
+      dataType : 'html',
+      type : 'GET',
+      timeout : 10000,
+      beforeSend : function() {
+        $body.html('<img src="' + loading + '" style="display:block;margin: 0 auto;margin-top: 10%;">');
+      },
+      success : function(data) {
+        var DATA = $(data),
+            DATA = $('<code></code>').append(DATA),
+            CONTENT = $('#wp2pcs-insert-media-iframe-content',DATA);
+        $body.html(CONTENT.html());
+        $this.removeAttr('data-ajaxing');
+      },
+      error : function() {
+        $this.removeAttr('data-ajaxing');
+      }
+    });
+  });
 
 });

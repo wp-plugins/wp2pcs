@@ -13,6 +13,7 @@ date_default_timezone_set('PRC');
 define('WP2PCS_PLUGIN_NAME',__FILE__);
 
 // 包含一些必备的函数和类，以提供下面使用
+require 'libs/functions.lib.php';
 require 'libs/BaiduPCS.class.php';
 require 'libs/FileZip.class.php';
 require 'libs/DbZip.class.php';

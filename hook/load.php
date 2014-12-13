@@ -31,25 +31,27 @@ set_time_limit(0);
 $result = $BaiduPCS->downloadStream($path);
 $meta = json_decode($result,true);
 if(isset($meta['error_msg'])){
-	header("Content-Type: text/html; charset=utf8");
-	echo $meta['error_msg'];
-	exit;
+  header("Content-Type: text/html; charset=utf8");
+  echo $meta['error_msg'];
+  exit;
 }
 
 if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp'))){
-	header('Content-type: image/jpeg');
+  wp2pcs_cache();
+  header('Content-type: image/jpeg');
 }
 elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi'))) {
-	if($file_ext == 'mp3' || $file_ext == 'mp3pro') header("Content-Type: audio/mpeg");
-	elseif($file_ext == 'ogg') header('Content-Type: application/ogg');
-	elseif($file_ext == 'wma') header('Content-Type: audio/x-ms-wma');
-	elseif($file_ext == 'wav') header('Content-Type: audio/x-wav');
-	elseif($file_ext == 'mid' || $file_ext == 'midi') header('Content-Type: audio/midi');
-	else header('Content-Type: application/octet-stream');
-	header('Content-Length: '.strlen($result));
-	header('Content-Disposition: inline; filename="'.$file_name.'"');
-	header('Accept-Ranges: bytes');
-	header('X-Pad: avoid browser bug');
+  wp2pcs_cache();
+  if($file_ext == 'mp3' || $file_ext == 'mp3pro') header("Content-Type: audio/mpeg");
+  elseif($file_ext == 'ogg') header('Content-Type: application/ogg');
+  elseif($file_ext == 'wma') header('Content-Type: audio/x-ms-wma');
+  elseif($file_ext == 'wav') header('Content-Type: audio/x-wav');
+  elseif($file_ext == 'mid' || $file_ext == 'midi') header('Content-Type: audio/midi');
+  else header('Content-Type: application/octet-stream');
+  header('Content-Length: '.strlen($result));
+  header('Content-Disposition: inline; filename="'.$file_name.'"');
+  header('Accept-Ranges: bytes');
+  header('X-Pad: avoid browser bug');
 }
 elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt'))) {
   if($file_ext == 'asf') header('Content-Type: video/x-ms-asf');
@@ -116,9 +118,10 @@ elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp',
 
 }
 else{
-	header("Content-Type: application/octet-stream");
-	header('Content-Disposition:inline;filename="'.$file_name.'"');
-	header('Accept-Ranges: bytes');
+  wp2pcs_cache();
+  header("Content-Type: application/octet-stream");
+  header('Content-Disposition:inline;filename="'.$file_name.'"');
+  header('Accept-Ranges: bytes');
 }
 
 ob_clean();

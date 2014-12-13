@@ -40,6 +40,12 @@ function wp2pcs_insert_media_iframe_remove_actions(){
   if(!isset($_GET['tab']) || $_GET['tab'] != 'wp2pcs'){
     return;
   }
+
+  // 读取http缓存
+  if(!isset($_GET['refresh']) || $_GET['refresh'] != 1) {
+    wp2pcs_cache();
+  }
+
   remove_all_actions('admin_head');
   remove_all_actions('in_admin_header');
   add_action('admin_enqueue_scripts','wp2pcs_insert_media_scripts');
@@ -62,7 +68,7 @@ function wp2pcs_insert_media_iframe_content() {
 ?>
 <div id="wp2pcs-insert-media-iframe-buttons">
   <button class="button float-left" onclick="jQuery('html,body').animate({scrollTop:0},500)">返回顶部</button>
-  <button class="button float-left" onclick="window.location.reload(true);">刷新界面</button>
+  <button href="<?php echo add_query_arg('refresh',1); ?>" class="button float-left" id="wp2pcs-insert-media-btn-refresh" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">刷新界面</button>
   <?php if((is_multisite() && current_user_can('manage_network')) || (!is_multisite() && current_user_can('edit_theme_options'))): ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_path; ?>" class="button float-left" target="_blank">管理云盘</a><?php endif; ?>
   <button class="button float-left" id="wp2pcs-insert-media-btn-help">帮助</button>
   <button class="button" id="wp2pcs-insert-media-btn-clear">清除选中</button>
@@ -72,13 +78,14 @@ function wp2pcs_insert_media_iframe_content() {
 
 <div id="wp2pcs-insert-media-iframe-content">
 <div id="wp2pcs-insert-media-iframe-place">
-  <p>当前位置：<a href="<?php echo remove_query_arg(array('dir','paged')); ?>">HOME</a><?php
+  <p>当前位置：<a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>">HOME</a><?php
     $current_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
     $place_path_arr = array();
     if(!empty($current_path)) foreach($current_path as $dir) {
       $place_path_arr[] = $dir;
-      $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr));
+      $place_path_link = remove_query_arg('refresh');
+      $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
       echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
     }
   ?>
@@ -90,7 +97,19 @@ function wp2pcs_insert_media_iframe_content() {
   $files_per_page = 3*5;// 每行7个，行数可以自己修改
   $begin = ($paged-1)*$files_per_page;
   $end = $paged*$files_per_page;
-  $files_on_pcs = wp2pcs_insert_media_list_files($dir_path,'0-');
+  // 下面通过SESSION来做超级简单的缓存
+  $URI = $_SERVER['REQUEST_URI'];
+  if(isset($_GET['refresh']) && $_GET['refresh'] == 1) {
+    $URI = remove_query_arg('refresh',$URI);
+    unset($_SESSION['wp2pcs_files_on_pcs'][$URI]);
+  }
+  if(!isset($_SESSION['wp2pcs_files_on_pcs'][$URI])) {
+    $files_on_pcs = wp2pcs_insert_media_list_files($dir_path,'0-');
+    $_SESSION['wp2pcs_files_on_pcs'][$URI] = $files_on_pcs;
+  }
+  else {
+    $files_on_pcs = $_SESSION['wp2pcs_files_on_pcs'][$URI];
+  }
   $files_amount = count($files_on_pcs);
   $files_on_pcs = array_slice($files_on_pcs,$begin,$end-$begin);
   $files_total_page = ceil($files_amount/$files_per_page);
@@ -112,7 +131,7 @@ function wp2pcs_insert_media_iframe_content() {
     }
     echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-type="'.$file_type.'" data-file-size="'.$file->size.'">';
     if($file_type == 'dir') {
-      echo '<a href="'.add_query_arg('dir',$file->path).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
+      echo '<a href="'.remove_query_arg('refresh',add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
     }
     else {
       $load_linktype = get_option('wp2pcs_load_linktype');
@@ -153,7 +172,7 @@ function wp2pcs_insert_media_iframe_content() {
   }
   ?>
 </div>
-</div>
+</div><!-- // end content area -->
 <div id="wp2pcs-insert-media-iframe-help">
   <p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
   <p>最后，强烈建议文件名、文件夹名使用常规的命名方法，不包含特殊字符，尽可能使用小写字母，使用-作为连接符，使用小写扩展名，由于命名特殊引起的问题，请自行排查。</p>
