@@ -3,7 +3,7 @@
 // 先获取文件的相对路径
 $path = null;
 if(get_option('permalink_structure')) {
-  $URI = $_SERVER['REQUEST_URI'];
+  $URI = urldecode($_SERVER['REQUEST_URI']);
   $pos = strpos($URI,'?');
   if($pos !== false) {
     $URI = substr($URI,0,$pos);

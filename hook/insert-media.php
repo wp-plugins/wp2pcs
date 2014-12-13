@@ -108,7 +108,7 @@ function wp2pcs_insert_media_iframe_content() {
   $files_on_pcs = array_slice($files_on_pcs,$begin,$end-$begin);
   $files_total_page = ceil($files_amount/$files_per_page);
   if(!empty($files_on_pcs))foreach($files_on_pcs as $file){
-    $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',$file->path);
+    $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
     $file_name = substr($file->path,strrpos($file->path,'/')+1);
     $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';
     if(in_array($file_type,array('jpg','jpeg','png','gif','bmp'))) {
