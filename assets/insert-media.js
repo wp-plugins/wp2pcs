@@ -149,6 +149,8 @@ jQuery(function($){
       },
       error : function() {
         $this.removeAttr('data-ajaxing');
+        var cf = confirm('连接超时，强制刷新？');
+        if(cf) {window.location.reload(false);}
       }
     });
   });
