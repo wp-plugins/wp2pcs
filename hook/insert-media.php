@@ -40,12 +40,6 @@ function wp2pcs_insert_media_iframe_remove_actions(){
   if(!isset($_GET['tab']) || $_GET['tab'] != 'wp2pcs'){
     return;
   }
-
-  // 读取http缓存
-  if(!isset($_GET['refresh']) || $_GET['refresh'] != 1) {
-    wp2pcs_cache();
-  }
-
   remove_all_actions('admin_head');
   remove_all_actions('in_admin_header');
   add_action('admin_enqueue_scripts','wp2pcs_insert_media_scripts');
