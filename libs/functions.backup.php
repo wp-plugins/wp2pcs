@@ -45,7 +45,7 @@ function run_backup($backup_file = true,$backup_data = true) {
         }
       }
       else {
-        $fileZip->process($webroot,$webroot);
+        $FileZip->process($webroot,$webroot);
       }
     }
   
