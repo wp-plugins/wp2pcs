@@ -5,7 +5,7 @@ jQuery(function($){
     $('#wp2pcs-insert-media-iframe-help').fadeToggle();
   });
   // 点击文件区域
-  $('#wp2pcs-insert-media-iframe-files').on('click','.file-on-pcs:not(.file-type-dir)',function(e){
+  $(document).on('click','#wp2pcs-insert-media-iframe-files .file-on-pcs:not(.file-type-dir)',function(e){
     if($(e.target).prop('tagName') == 'INPUT') return;
     var $this = $(this),
         $input = $this.children('input');
@@ -18,7 +18,7 @@ jQuery(function($){
     }
   });
   // 变化勾选状况
-  $('#wp2pcs-insert-media-iframe-files').on('change','.file-on-pcs input',function(){
+  $(document).on('change','#wp2pcs-insert-media-iframe-files .file-on-pcs input',function(){
     var $this = $(this),
         $box = $this.parent();
     if($this.prop('checked') == true) {
