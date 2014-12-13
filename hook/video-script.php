@@ -24,17 +24,11 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
   $path = $_GET['path'];
   $md5 = $_GET['md5'];
   $url = 'http://pan.baidu.com/res/static/thirdparty/guanjia/guanjia_play.html?path='.$path.'&md5='.$md5;
-  header("Location: $url");
-  exit();
-  /*
   $html = get_by_curl($url,false,$url);
-  $html = str_replace('href="/res/static/thirdparty','href="http://pan.baidu.com/res/static/thirdparty',$html);
-  $html = str_replace('src="/res/static/thirdparty','src="http://pan.baidu.com/res/static/thirdparty',$html);
-  $html = str_replace('"/api/streaming',' "http://pan.baidu.com/api/streaming',$html);
+  $html = str_replace('</title>','</title><base href="http://pan.baidu.com/" />',$html);
   $html = str_replace('</body>','',$html);
   $html = str_replace('</html>','',$html);
   echo $html;
-  */
 ?>
 <script>window.jQuery || document.write('<script type="text/javascript" src="../assets/jquery-2.1.1.min.js">\x3C/script>');</script>
 <script>
