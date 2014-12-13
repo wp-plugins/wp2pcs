@@ -27,21 +27,30 @@ global $BaiduPCS;
 $file_ext = strtolower(substr($path,strrpos($path,'.')+1));
 $file_name = substr($path,strrpos($path,'/')+1);
 
-set_time_limit(0);
-$result = $BaiduPCS->downloadStream($path);
-$meta = json_decode($result,true);
-if(isset($meta['error_msg'])){
-  header("Content-Type: text/html; charset=utf8");
-  echo $meta['error_msg'];
-  exit;
-}
-
 if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp'))){
   wp2pcs_cache();
+  set_time_limit(0);
+  $result = $BaiduPCS->downloadStream($path);
+  $meta = json_decode($result,true);
+  if(isset($meta['error_msg'])){
+    header("Content-Type: text/html; charset=utf8");
+    echo $meta['error_msg'];
+    exit;
+  }
+
   header('Content-type: image/jpeg');
 }
 elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi'))) {
   wp2pcs_cache();
+  set_time_limit(0);
+  $result = $BaiduPCS->downloadStream($path);
+  $meta = json_decode($result,true);
+  if(isset($meta['error_msg'])){
+    header("Content-Type: text/html; charset=utf8");
+    echo $meta['error_msg'];
+    exit;
+  }
+
   if($file_ext == 'mp3' || $file_ext == 'mp3pro') header("Content-Type: audio/mpeg");
   elseif($file_ext == 'ogg') header('Content-Type: application/ogg');
   elseif($file_ext == 'wma') header('Content-Type: audio/x-ms-wma');
@@ -54,6 +63,15 @@ elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi')))
   header('X-Pad: avoid browser bug');
 }
 elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt'))) {
+  set_time_limit(0);
+  $result = $BaiduPCS->downloadStream($path);
+  $meta = json_decode($result,true);
+  if(isset($meta['error_msg'])){
+    header("Content-Type: text/html; charset=utf8");
+    echo $meta['error_msg'];
+    exit;
+  }
+
   if($file_ext == 'asf') header('Content-Type: video/x-ms-asf');
   elseif($file_ext == 'avi') header('Content-Type: video/x-msvideo');
   elseif($file_ext == 'flv') header('Content-Type: video/x-flv');
@@ -119,6 +137,15 @@ elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp',
 }
 else{
   wp2pcs_cache();
+  set_time_limit(0);
+  $result = $BaiduPCS->downloadStream($path);
+  $meta = json_decode($result,true);
+  if(isset($meta['error_msg'])){
+    header("Content-Type: text/html; charset=utf8");
+    echo $meta['error_msg'];
+    exit;
+  }
+
   header("Content-Type: application/octet-stream");
   header('Content-Disposition:inline;filename="'.$file_name.'"');
   header('Accept-Ranges: bytes');
