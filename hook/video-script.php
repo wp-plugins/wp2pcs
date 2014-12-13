@@ -93,6 +93,7 @@ jQuery(function($){
         path = $this.attr('data-path'),
         md5 = $this.attr('data-md5'),
         ext = get_extension_by_file_name(path);
+    if(md5 == undefined || md5 == '') return true;
     $this.html('<iframe src="<?php echo plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME); ?>?path=' + path + '&md5=' + md5 + '&video=.' + ext + '" frameborder="0" framescroll="none"></iframe>');
     return false;
   });
