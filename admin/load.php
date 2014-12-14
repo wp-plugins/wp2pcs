@@ -32,21 +32,6 @@
   </div>
 </div>
 
-<div class="postbox">
-  <div class="handlediv" title="点击以切换"><br></div>
-  <h3 class="hndle">媒体插入</h3>
-  <div class="inside">
-    <p>插入图片时是否带链接？<select name="wp2pcs_load_imglink"><?php $wp2pcs_load_imglink = get_option('wp2pcs_load_imglink'); ?>
-        <option <?php selected($wp2pcs_load_imglink,0); ?> value="0">否</option>
-        <option <?php selected($wp2pcs_load_imglink,1); ?> value="1">是</option>
-      </select></p>
-    <p>插入视频时嵌入播放器？<select name="wp2pcs_load_videoplay"><?php $wp2pcs_load_videoplay = get_option('wp2pcs_load_videoplay'); ?>
-        <option <?php selected($wp2pcs_load_videoplay,0); ?> value="0">否</option>
-        <option <?php selected($wp2pcs_load_videoplay,1); ?> value="1">是</option>
-      </select> <small>容易被封，慎用</small></p>
-  </div>
-</div>
-
 <button type="submit" class="button-primary">确定</button>
 <input type="hidden" name="action" value="update-load-setting">
 <?php wp_nonce_field(); ?>

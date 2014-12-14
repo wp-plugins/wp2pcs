@@ -84,9 +84,8 @@ function wp2pcs_insert_media_iframe_content() {
   ?>
   </div>
   <div id="wp2pcs-insert-media-iframe-check">
-    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-imglink" <?php checked(get_option('wp2pcs_load_imglink'),1); ?>> 图片带链接</label>
-    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay" <?php checked(get_option('wp2pcs_load_videoplay'),1); ?>> 视频播放器</label>
-    <a href="javascript:void(0)" title="这两个选项是临时性的，仅在最近的操作中会被记录，请到WP2PCS资源调用设置中去设置默认值">?</a>
+    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-imglink"> 图片带链接</label>
+    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay"> 视频播放器</label>
   </div>
   <div class="clear"></div>
 </div>
