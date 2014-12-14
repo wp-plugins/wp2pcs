@@ -21,6 +21,14 @@ endif;
 
 // 显示播放器
 if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empty($_GET['md5']) && isset($_GET['video']) && !empty($_GET['video'])) {
+  header("Cache-Control: private, max-age=10800, pre-check=10800");
+  header("Pragma: private");
+  header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
+  if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
+    header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
+    exit;
+  }
+
   $path = $_GET['path'];
   $md5 = $_GET['md5'];
   $url = 'http://pan.baidu.com/res/static/thirdparty/guanjia/guanjia_play.html?path='.$path.'&md5='.$md5;
@@ -93,7 +101,7 @@ jQuery(function($){
         md5 = $this.attr('data-md5'),
         ext = get_extension_by_file_name(path);
     if(md5 == undefined || md5 == '') return true;
-    $this.html('<iframe src="<?php echo plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME); ?>?path=' + path + '&md5=' + md5 + '&video=.' + ext + '" frameborder="0" framescroll="none"></iframe>');
+    $this.css('background-color','#f5f5f5').html('<iframe src="<?php echo plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME); ?>?path=' + path + '&md5=' + md5 + '&video=.' + ext + '" frameborder="0" framescroll="none"></iframe>');
     return false;
   });
 });
