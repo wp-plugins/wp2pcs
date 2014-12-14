@@ -7,13 +7,13 @@ html,body {
 }
 
 #wp2pcs-insert-media-iframe-buttons {
-	position: fixed;
-	left: 0;
-	bottom: 0;
+  position: fixed;
+  left: 0;
+  bottom: 0;
   padding: 10px;
   border-top: 1px solid #dedede;
-	width: 100%;
-	text-align: right;
+  width: 100%;
+  text-align: right;
   z-index: 9999;
   background-color: #fff;
 }
@@ -27,7 +27,27 @@ html,body {
   float: left;
 }
 
+#wp2pcs-insert-media-iframe-topbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 10px;
+  border-bottom: 1px solid #dedede;
+  width: 100%;
+  z-index: 9999;
+  background-color: #fff;
+}
+#wp2pcs-insert-media-iframe-place {
+  float: left;
+}
+#wp2pcs-insert-media-iframe-check {
+  float: right;
+  margin-right: 30px;
+}
+
+
 #wp2pcs-insert-media-iframe-content {
+  padding-top: 40px;
   padding-bottom: 60px;
 }
 .file-on-pcs {

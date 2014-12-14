@@ -1,3 +1,42 @@
+jQuery.cookie = function(name, value, options) {
+  if (typeof value != 'undefined') { // name and value given, set cookie
+    options = options || {};
+    if (value === null) {
+      value = '';
+      options.expires = -1;
+    }
+    var expires = '';
+    if (options.expires && (typeof options.expires == 'number' || options.expires.toUTCString)) {
+      var date;
+      if (typeof options.expires == 'number') {
+        date = new Date();
+        date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
+      } else {
+        date = options.expires;
+      }
+      expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
+    }
+    var path = options.path ? '; path=' + options.path : '';
+    var domain = options.domain ? '; domain=' + options.domain : '';
+    var secure = options.secure ? '; secure' : '';
+    document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
+  } else { // only name given, get cookie
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i]);
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+};
+
 jQuery(function($){
   // 点击帮助按钮
   $('#wp2pcs-insert-media-btn-help').on('click',function(){
@@ -28,6 +67,26 @@ jQuery(function($){
       $box.removeClass('selected');
     }
   });
+  // 勾选是否插入图片链接
+  if($.cookie('wp2pcs-insert-media-iframe-check-imglink')) {
+    $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked',true);
+  }
+  else {
+    $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked',false);
+  }
+  $('#wp2pcs-insert-media-iframe-check-imglink').on('change',function(){
+    $.cookie('wp2pcs-insert-media-iframe-check-imglink',$(this).prop('checked') ? true : false);
+  });
+  // 勾选是否插入视频播放器
+  if($.cookie('wp2pcs-insert-media-iframe-check-videoplay')) {
+    $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked',true);
+  }
+  else {
+    $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked',false);
+  }
+  $('#wp2pcs-insert-media-iframe-check-videoplay').on('change',function(){
+    $.cookie('wp2pcs-insert-media-iframe-check-videoplay',$(this).prop('checked') ? true : false);
+  });
   // 清除选择的图片
   $('#wp2pcs-insert-media-btn-clear').click(function(){
     $('.file-on-pcs').removeClass('selected');
@@ -40,30 +99,27 @@ jQuery(function($){
       $('.file-on-pcs.selected').each(function(){
         var $this = $(this),
             $input = $this.children('input'),
-            is_img = $input.attr('data-img'),
-            is_link = $input.attr('data-link'),
-            is_video = $input.attr('data-video'),
-            is_play = $input.attr('data-play'),
+            is_imglink = $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked'),
+            is_videoplay = $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked'),
             video_path = $input.attr('data-file-path'),
             video_md5 = $input.attr('data-file-md5'),
-            is_music = $input.attr('data-music'),
             url = $input.val();
         // 如果被选择的是图片
-        if(is_img == 1){
-          if(is_link == 1) html += '<a href="' + url + '">';
+        if($this.hasClass('file-format-image')){
+          if(is_imglink) html += '<a href="' + url + '">';
           html += '<img src="' + url + '" class="wp2pcs-img">';
-          if(is_link == 1) html += '</a>';
+          if(is_imglink) html += '</a>';
         }
         // 如果是视频
-        else if(is_video == 1) {
-          if(is_play == 1) {
+        else if($this.hasClass('file-format-video')) {
+          if(is_videoplay) {
             html += '<p><div class="wp2pcs-video-player" data-path="' + video_path + '" data-md5="' + video_md5 + '"><a href="' + url + '">&nbsp;</a></div></p>';
           }
           else {
             html += '<p>' + url + '</p>';
           }
         }
-        else if(is_music == 1) {
+        else if($this.hasClass('file-format-music')) {
           html += '<p>' + url + '</p>';
         }
         // 如果是其他文件，就直接给媒体链接

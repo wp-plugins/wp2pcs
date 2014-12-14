@@ -70,9 +70,8 @@ function wp2pcs_insert_media_iframe_content() {
   <div class="clear"></div>
 </div>
 
-<div id="wp2pcs-insert-media-iframe-content">
-<div id="wp2pcs-insert-media-iframe-place">
-  <p>当前位置：<a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>">HOME</a><?php
+<div id="wp2pcs-insert-media-iframe-topbar">
+  <div id="wp2pcs-insert-media-iframe-place">当前位置：<a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>">HOME</a><?php
     $current_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
     $place_path_arr = array();
@@ -83,8 +82,16 @@ function wp2pcs_insert_media_iframe_content() {
       echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
     }
   ?>
-  </p>
+  </div>
+  <div id="wp2pcs-insert-media-iframe-check">
+    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-imglink" <?php checked(get_option('wp2pcs_load_imglink'),1); ?>> 图片带链接</label>
+    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay" <?php checked(get_option('wp2pcs_load_videoplay'),1); ?>> 视频播放器</label>
+    <a href="javascript:void(0)" title="这两个选项是临时性的，仅在最近的操作中会被记录，请到WP2PCS资源调用设置中去设置默认值">?</a>
+  </div>
+  <div class="clear"></div>
 </div>
+
+<div id="wp2pcs-insert-media-iframe-content">
 <div id="wp2pcs-insert-media-iframe-files">
 <?php
   $paged = isset($_GET['paged']) && is_numeric($_GET['paged']) && $_GET['paged'] > 1 ? $_GET['paged'] : 1;
@@ -123,7 +130,7 @@ function wp2pcs_insert_media_iframe_content() {
     else {
       $file_format = 'file';
     }
-    echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-type="'.$file_type.'" data-file-size="'.$file->size.'">';
+    echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-size="'.$file->size.'">';
     if($file_type == 'dir') {
       echo '<a href="'.remove_query_arg('refresh',add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
     }
@@ -133,15 +140,15 @@ function wp2pcs_insert_media_iframe_content() {
       $file_url = $load_linktype > 0 ? home_url('/wp2pcs'.$file_path) : home_url('?wp2pcs='.$file_path);
       $file_url = $site_id && $load_linktype > 1 ? 'http://static.wp2pcs.com/'.$site_id.$file_path : $file_url;
       if($file_format == 'image') {
-        echo '<input type="checkbox" value="'.$file_url.'" data-img="1" data-link="'.get_option('wp2pcs_load_imglink').'">';
+        echo '<input type="checkbox" value="'.$file_url.'">';
         echo '<img src="'.$file_url.'" title="图片 '.$file_name.'">';
       }
       elseif($file_format == 'video') {
-        echo '<input type="checkbox" value="'.$file_url.'" data-video="1" data-play="'.get_option('wp2pcs_load_videoplay').'" data-file-path="'.$file->path.'" data-file-md5="'.$file->md5.'">';
+        echo '<input type="checkbox" value="'.$file_url.'" data-file-path="'.$file->path.'" data-file-md5="'.$file->md5.'">';
         echo '<a title="视频 '.$file_name.'">'.$file_name.'</a>';
       }
       elseif($file_format == 'music') {
-        echo '<input type="checkbox" value="'.$file_url.'" data-music="1">';
+        echo '<input type="checkbox" value="'.$file_url.'">';
         echo '<a title="音乐 '.$file_name.'">'.$file_name.'</a>';
       }
       else {

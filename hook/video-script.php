@@ -30,7 +30,6 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
   $html = str_replace('</html>','',$html);
   echo $html;
 ?>
-<script>window.jQuery || document.write('<script type="text/javascript" src="../assets/jquery-2.1.1.min.js">\x3C/script>');</script>
 <script>
 jQuery(function($){
   $('.video-functions-tips').remove();
