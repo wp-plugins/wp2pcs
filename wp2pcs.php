@@ -13,12 +13,12 @@ date_default_timezone_set('PRC');
 define('WP2PCS_PLUGIN_NAME',__FILE__);
 
 // 包含一些必备的函数和类，以提供下面使用
+require 'config.php';
 require 'libs/functions.lib.php';
 require 'libs/BaiduPCS.class.php';
 require 'libs/FileZip.class.php';
 require 'libs/DbZip.class.php';
 require 'libs/functions.backup.php';
-require 'config.php';
 
 // 直接初始化全局变量
 $BaiduPCS = new BaiduPCS(BAIDUPCS_ACCESS_TOKEN);
@@ -27,10 +27,9 @@ $DbZip = new DbZip(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
 
 class WP2PCS {
   function __construct() {
-    add_action('init',array($this,'menu_init'));
-    add_action('init',array($this,'hook'));
+    add_action('init',array($this,'init'));
   }
-  function menu_init() {
+  function init() {
     if((is_multisite() && !current_user_can('manage_network')) || (!is_multisite() && !current_user_can('edit_theme_options'))) return;
     if(is_multisite()) add_action('network_admin_menu',array($this,'add_menu'));
     else add_action('admin_menu',array($this,'add_menu'));
@@ -61,16 +60,15 @@ class WP2PCS {
     wp_register_script('wp2pcs_script',plugins_url('/assets/javascript.js',WP2PCS_PLUGIN_NAME));
     wp_enqueue_script('wp2pcs_script');
   }
-  function hook() {
-    $function_files_path = dirname(WP2PCS_PLUGIN_NAME).'/hook';
-    if(file_exists($function_files_path)):
-    $function_files = scandir($function_files_path);
-    if($function_files){
-      foreach($function_files as $function_file)
-        if(substr($function_file,-4) == '.php')
-          include_once($function_files_path.'/'.$function_file);
-    }
-    endif;
-  }
 }
 $WP2PCS = new WP2PCS;
+
+$hook_dir = dirname(WP2PCS_PLUGIN_NAME).'/hook';
+if(is_dir($hook_dir)) :
+$hook_files = scandir($hook_dir);
+if($hook_files){
+  foreach($hook_files as $hook_file)
+    if(substr($hook_file,-4) == '.php')
+      include_once($hook_dir.'/'.$hook_file);
+}
+endif;

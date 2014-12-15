@@ -54,7 +54,10 @@ jQuery(function($){
 }
 
 // 加入到后台编辑器中css
-add_editor_style(plugins_url('hook/video-script.php?script=style.css',WP2PCS_PLUGIN_NAME));
+add_action('init','wp2pcs_admin_editor_videoplay_style');
+function wp2pcs_admin_editor_videoplay_style() {
+  add_editor_style(plugins_url('hook/video-script.php?script=style.css',WP2PCS_PLUGIN_NAME));
+}
 
 }
 // 如果没有加载WordPress的话
@@ -73,6 +76,8 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
       curl_setopt ($ch,CURLOPT_REFERER,$referer);
     }
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FAILONERROR, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     if($post){
       curl_setopt($ch, CURLOPT_POST, 1);
       curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
@@ -89,6 +94,7 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
   if(!$referer || strpos($_SERVER["HTTP_REFERER"],$host) === false) {
     exit;
   }
+  // 缓存
   header("Cache-Control: private, max-age=10800, pre-check=10800");
   header("Pragma: private");
   header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
@@ -96,7 +102,7 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
     header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
     exit;
   }
-
+  // 抓取显示
   $path = $_GET['path'];
   $md5 = $_GET['md5'];
   $url = 'https://pan.baidu.com/res/static/thirdparty/guanjia/guanjia_play.html?path='.$path.'&md5='.$md5;

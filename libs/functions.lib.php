@@ -24,6 +24,8 @@ function get_by_curl($url,$post = false,$referer = false){
     curl_setopt ($ch,CURLOPT_REFERER,$referer);
   }
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_FAILONERROR, false);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   if($post){
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
