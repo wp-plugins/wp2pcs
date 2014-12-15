@@ -110,6 +110,7 @@ function wp2pcs_insert_media_iframe_content() {
   else {
     $files_on_pcs = $_SESSION['wp2pcs_files_on_pcs'][$URI];
   }
+  if(!$files_on_pcs) return;// 如果没有文件，直接退出函数
   $files_amount = count($files_on_pcs);
   $files_on_pcs = array_slice($files_on_pcs,$begin,$end-$begin);
   $files_total_page = ceil($files_amount/$files_per_page);
