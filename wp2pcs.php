@@ -25,7 +25,7 @@ $BaiduPCS = new BaiduPCS(BAIDUPCS_ACCESS_TOKEN);
 $FileZip = new FileZip;
 $DbZip = new DbZip(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
 
-class WP2PCS {
+class WP2PCS_ADMIN {
   function __construct() {
     add_action('init',array($this,'menu_init'));
     add_action('admin_init',array($this,'action'));
@@ -46,6 +46,7 @@ class WP2PCS {
     if(file_exists($file)) include($file);
   }
   function action() {
+    if((is_multisite() && !current_user_can('manage_network')) || (!is_multisite() && !current_user_can('edit_theme_options'))) return;
     $tab = isset($_GET['tab']) && !empty($_GET['tab']) ? $_GET['tab'] : 'default';
     $file = dirname(WP2PCS_PLUGIN_NAME)."/action/$tab.php";
     if(file_exists($file)) include($file);
@@ -60,7 +61,7 @@ class WP2PCS {
     wp_enqueue_script('wp2pcs_script');
   }
 }
-$WP2PCS = new WP2PCS;
+$WP2PCS = new WP2PCS_ADMIN;
 
 $function_files_path = dirname(WP2PCS_PLUGIN_NAME).'/hook';
 if(file_exists($function_files_path)):

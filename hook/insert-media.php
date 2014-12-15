@@ -1,6 +1,7 @@
 <?php
 
 if(!is_admin() || !BAIDUPCS_ACCESS_TOKEN) return;
+if((is_multisite() && !current_user_can('manage_network')) || (!is_multisite() && !current_user_can('edit_theme_options'))) return;
 
 /*
 *

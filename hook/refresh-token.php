@@ -34,21 +34,6 @@ function wp2pcs_refresh_baidupcs_token() {
   }
 }
 
-if(!function_exists('get_by_curl')) :
-function get_by_curl($url,$post = false){
-	$ch = curl_init();
-	curl_setopt($ch,CURLOPT_URL,$url);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	if($post){
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
-	}
-	$result = curl_exec($ch);
-	curl_close($ch);
-	return $result;
-}
-endif;
 add_action('wp_footer','wp2pcs_footer_copyright');
 function wp2pcs_footer_copyright() {
   echo '<!-- 本站由WP2PCS驱动，自动备份网站到云盘，调用云盘资源 http://www.wp2pcs.com -->'."\n";

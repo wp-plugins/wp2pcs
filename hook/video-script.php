@@ -21,6 +21,12 @@ endif;
 
 // 显示播放器
 if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empty($_GET['md5']) && isset($_GET['video']) && !empty($_GET['video'])) {
+  $host = $_SERVER["HTTP_HOST"];
+  $host = strpos($host,':') === false ? $host : substr($host,0,strpos($host,':'));
+  $referer = isset($_SERVER["HTTP_REFERER"]) && !empty($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : null;
+  if(!$referer || strpos($_SERVER["HTTP_REFERER"],$host) === false) {
+    exit;
+  }
   header("Cache-Control: private, max-age=10800, pre-check=10800");
   header("Pragma: private");
   header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
@@ -41,6 +47,9 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
 <script>
 jQuery(function($){
   $('.video-functions-tips').remove();
+  $(document).bind("contextmenu",function(e){   
+    return false;   
+  });
 });
 </script>
 </body>
