@@ -25,15 +25,16 @@ $BaiduPCS = new BaiduPCS(BAIDUPCS_ACCESS_TOKEN);
 $FileZip = new FileZip;
 $DbZip = new DbZip(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
 
-class WP2PCS_ADMIN {
+class WP2PCS {
   function __construct() {
     add_action('init',array($this,'menu_init'));
-    add_action('admin_init',array($this,'action'));
+    add_action('init',array($this,'hook'));
   }
   function menu_init() {
     if((is_multisite() && !current_user_can('manage_network')) || (!is_multisite() && !current_user_can('edit_theme_options'))) return;
     if(is_multisite()) add_action('network_admin_menu',array($this,'add_menu'));
     else add_action('admin_menu',array($this,'add_menu'));
+    add_action('admin_init',array($this,'action'));
   }
   function add_menu() {
     $this->scripts_init();
@@ -60,15 +61,16 @@ class WP2PCS_ADMIN {
     wp_register_script('wp2pcs_script',plugins_url('/assets/javascript.js',WP2PCS_PLUGIN_NAME));
     wp_enqueue_script('wp2pcs_script');
   }
+  function hook() {
+    $function_files_path = dirname(WP2PCS_PLUGIN_NAME).'/hook';
+    if(file_exists($function_files_path)):
+    $function_files = scandir($function_files_path);
+    if($function_files){
+      foreach($function_files as $function_file)
+        if(substr($function_file,-4) == '.php')
+          include_once($function_files_path.'/'.$function_file);
+    }
+    endif;
+  }
 }
-$WP2PCS = new WP2PCS_ADMIN;
-
-$function_files_path = dirname(WP2PCS_PLUGIN_NAME).'/hook';
-if(file_exists($function_files_path)):
-$function_files = scandir($function_files_path);
-if($function_files){
-  foreach($function_files as $function_file)
-    if(substr($function_file,-4) == '.php')
-      include_once($function_files_path.'/'.$function_file);
-}
-endif;
+$WP2PCS = new WP2PCS;
