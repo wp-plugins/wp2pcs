@@ -146,7 +146,7 @@ jQuery(function($){
         }
         // 如果是其他文件，就直接给媒体链接
         else{
-          html += url;
+          html += '&nbsp;' + url + '&nbsp;';
         }
         html += "\r\n\r\n";
       });
