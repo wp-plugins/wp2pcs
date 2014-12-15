@@ -3,7 +3,9 @@
 // 先获取文件的相对路径
 $path = null;
 if(get_option('permalink_structure')) {
-  $URI = urldecode($_SERVER['REQUEST_URI']);
+  $URI = str_replace('+','{plus}',$_SERVER['REQUEST_URI']);
+  $URI = urldecode($URI);
+  $URI = str_replace('{plus}','+',$URI);
   $pos = strpos($URI,'?');
   if($pos !== false) {
     $URI = substr($URI,0,$pos);
@@ -23,12 +25,17 @@ else :
 // 获取完整的路径
 $path = BAIDUPCS_REMOTE_ROOT.'/load'.$path;
 
-global $BaiduPCS;
 $file_ext = strtolower(substr($path,strrpos($path,'.')+1));
 $file_name = substr($path,strrpos($path,'/')+1);
 
-if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp'))){
+// 读取http缓存
+if(!in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt'))) {
   wp2pcs_cache();
+}
+
+global $BaiduPCS;
+
+if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp')) && !isset($_GET['download'])){
   set_time_limit(0);
   $result = $BaiduPCS->downloadStream($path);
   $meta = json_decode($result,true);
@@ -40,8 +47,7 @@ if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp'))){
 
   header('Content-type: image/jpeg');
 }
-elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi'))) {
-  wp2pcs_cache();
+elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi')) && !isset($_GET['download'])) {
   set_time_limit(0);
   $result = $BaiduPCS->downloadStream($path);
   $meta = json_decode($result,true);
@@ -62,7 +68,7 @@ elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi')))
   header('Accept-Ranges: bytes');
   header('X-Pad: avoid browser bug');
 }
-elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt'))) {
+elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt')) && !isset($_GET['download'])) {
   set_time_limit(0);
   $result = $BaiduPCS->downloadStream($path);
   $meta = json_decode($result,true);
@@ -136,9 +142,8 @@ elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp',
 
 }
 else{
-  wp2pcs_cache();
   set_time_limit(0);
-  $result = $BaiduPCS->downloadStream($path);
+  $result = $BaiduPCS->download($path);
   $meta = json_decode($result,true);
   if(isset($meta['error_msg'])){
     header("Content-Type: text/html; charset=utf8");
@@ -153,5 +158,6 @@ else{
 
 ob_clean();
 echo $result;
+flush();
 exit;
 endif;// end of path usefullness

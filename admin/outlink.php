@@ -21,7 +21,7 @@
   <div class="inside"><?php $wp2pcs_outlink_code = get_option('wp2pcs_outlink_code');$wp2pcs_site_id = get_option('wp2pcs_site_id');  ?>
     <p>当前站点：<input type="text" value="<?php echo substr(home_url(),strpos(home_url(),'://')+3); ?>" class="regular-text" readonly></p>
     <p>外链码：<input type="text" name="wp2pcs_outlink_code" value="<?php echo $wp2pcs_outlink_code; ?>"></p>
-    <?php if($wp2pcs_site_id) { ?><p>站点外链形式：http://static.wp2pcs.com/<?php echo $wp2pcs_site_id; ?>/dir/file.jpg</p><?php } ?>
+    <?php if($wp2pcs_site_id) { ?><p style="color:red">站点外链形式：http://static.wp2pcs.com/<?php echo $wp2pcs_site_id; ?><span style="color:#999;">/dir/file.jpg</span></p><?php } ?>
   </div>
 </div>
 
