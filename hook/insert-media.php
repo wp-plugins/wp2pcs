@@ -63,7 +63,7 @@ function wp2pcs_insert_media_iframe_content() {
 <div id="wp2pcs-insert-media-iframe-buttons">
   <button class="button float-left" onclick="jQuery('html,body').animate({scrollTop:0},500)">返回顶部</button>
   <button href="<?php echo add_query_arg('refresh',1); ?>" class="button float-left" id="wp2pcs-insert-media-btn-refresh" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">刷新界面</button>
-  <?php if((is_multisite() && current_user_can('manage_network')) || (!is_multisite() && current_user_can('edit_theme_options'))): ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_path; ?>" class="button float-left" target="_blank">管理上传</a><?php endif; ?>
+  <?php if((is_multisite() && current_user_can('manage_network')) || (!is_multisite() && current_user_can('edit_theme_options'))): ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_path; ?>" class="button float-left" target="_blank" id="wp2pcs-insert-media-btn-upload">上传</a><?php endif; ?>
   <button class="button float-left" id="wp2pcs-insert-media-btn-help">帮助</button>
   <button class="button" id="wp2pcs-insert-media-btn-clear">清除选中</button>
   <button class="button-primary" id="wp2pcs-insert-media-btn-insert">插入选中</button>
@@ -84,8 +84,8 @@ function wp2pcs_insert_media_iframe_content() {
   ?>
   </div>
   <div id="wp2pcs-insert-media-iframe-check">
-    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-imglink"> 图片带链接</label>
-    <label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay"> 视频播放器</label>
+    <?php if(get_option('wp2pcs_load_imglink')) { ?><label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-imglink" checked> 图片带链接</label><?php } ?>
+    <?php if(get_option('wp2pcs_load_videoplay')) { ?><label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay" checked> 视频播放器</label><?php } ?>
   </div>
   <div class="clear"></div>
 </div>
@@ -177,6 +177,8 @@ function wp2pcs_insert_media_iframe_content() {
   <p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
   <p>最后，强烈建议文件名、文件夹名使用常规的命名方法，不包含特殊字符，尽可能使用小写字母，使用-作为连接符，使用小写扩展名，由于命名特殊引起的问题，请自行排查。</p>
 </div>
+<div id="wp2pcs-insert-media-iframe-upload"></div>
+<div class="clear body-bottom">&nbsp;</div>
 <?php
 }
 // 用一个函数来列出PCS中某个目录下的所有文件（夹）

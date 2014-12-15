@@ -40,8 +40,30 @@ jQuery.cookie = function(name, value, options) {
 jQuery(function($){
   // 点击帮助按钮
   $('#wp2pcs-insert-media-btn-help').on('click',function(){
-    $('#wp2pcs-insert-media-iframe-content').toggle();
-    $('#wp2pcs-insert-media-iframe-help').fadeToggle();
+    if($('#wp2pcs-insert-media-iframe-help').is(':hidden')) {
+      $('#wp2pcs-insert-media-iframe-content,#wp2pcs-insert-media-iframe-upload').hide();
+      $('#wp2pcs-insert-media-iframe-help').fadeIn(500);
+    }
+    else {
+      $('#wp2pcs-insert-media-iframe-help,#wp2pcs-insert-media-iframe-upload').hide();
+      $('#wp2pcs-insert-media-iframe-content').fadeIn(500);
+    }
+  });
+  // 点击上传按钮
+  $('#wp2pcs-insert-media-btn-upload').on('click',function(e){
+    e.preventDefault();
+    var $this = $(this),
+        $upload_box = $('#wp2pcs-insert-media-iframe-upload');
+    if($upload_box.is(':hidden')) {
+      $('#wp2pcs-insert-media-iframe-content,#wp2pcs-insert-media-iframe-help').hide();
+      $upload_box.html('<iframe src="' + $this.attr('href') + '"></iframe>')
+      $upload_box.fadeIn(500);
+    }
+    else {
+      $('#wp2pcs-insert-media-iframe-help,#wp2pcs-insert-media-iframe-upload').hide();
+      $('#wp2pcs-insert-media-iframe-content').fadeIn(500);
+    }
+    return false;
   });
   // 点击文件区域
   $(document).on('click','#wp2pcs-insert-media-iframe-files .file-on-pcs:not(.file-type-dir)',function(e){
@@ -116,7 +138,7 @@ jQuery(function($){
             html += '<p><div class="wp2pcs-video-player" data-path="' + video_path + '" data-md5="' + video_md5 + '"><a href="' + url + '">&nbsp;</a></div></p>';
           }
           else {
-            html += '<p>' + url + '</p>';
+            html += '<p>' + url.replace(/\//g,'&frasl;') + '</p>';
           }
         }
         else if($this.hasClass('file-format-music')) {
@@ -172,11 +194,18 @@ jQuery(function($){
         }
       },
       error : function() {
-        $pagenavi.html('<a href="' + href + '">下一页</a>').removeAttr('data-ajaxing');
+        $pagenavi.html('<a href="' + href + '" class="next-page">下一页</a>').removeAttr('data-ajaxing');
       }
     });
     
     } // -- endif --
+  });
+  $(document).on('click','#wp2pcs-insert-media-iframe-pagenavi a.next-page',function(e){
+    if($(this).parent().attr('data-ajaxing') != 'true') {
+      e.preventDefault();
+      $(window).scroll();
+      return false;
+    }
   });
   // 刷新按钮
   $('#wp2pcs-insert-media-btn-refresh').click(function(e){
@@ -186,6 +215,8 @@ jQuery(function($){
         href = $this.attr('href'),
         loading = $this.attr('data-loading'),
         ajaxing = $this.attr('data-ajaxing');
+    $('#wp2pcs-insert-media-iframe-help,#wp2pcs-insert-media-iframe-upload').hide();
+    $('#wp2pcs-insert-media-iframe-content').fadeIn(500);
     if(ajaxing == 'true') return;
     $this.attr('data-ajaxing','true');
     $.ajax({
