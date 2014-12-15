@@ -107,7 +107,7 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
   $md5 = $_GET['md5'];
   $url = 'https://pan.baidu.com/res/static/thirdparty/guanjia/guanjia_play.html?path='.$path.'&md5='.$md5;
   $html = get_by_curl($url,false,$url);
-  $html = str_replace('</title>','</title><base href="http://pan.baidu.com/" />',$html);
+  $html = str_replace('</title>','</title><base href="https://pan.baidu.com/" />',$html);
   $html = str_replace('</body>','',$html);
   $html = str_replace('</html>','',$html);
   echo $html;
