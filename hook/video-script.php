@@ -72,10 +72,6 @@ if(isset($_GET['path']) && !empty($_GET['path']) && isset($_GET['md5']) && !empt
 <head>
 <meta charset="utf-8"/>
 <title>WP2PCS视频播放</title>
-<base href="http://pan.baidu.com"/>
-<link href="/res/static/thirdparty/guanjia/css/guanjia_video_all.css?t=201412054621" rel="stylesheet"/>
-</head>
-<body>
 <?php
 // 判断来路，如果不是当前网站，不显示任何内容
 $host = $_SERVER["HTTP_HOST"];
@@ -83,6 +79,10 @@ $host = strpos($host,':') === false ? $host : substr($host,0,strpos($host,':'));
 $referer = isset($_SERVER["HTTP_REFERER"]) && !empty($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : null;
 if($referer && strpos($_SERVER["HTTP_REFERER"],$host) !== false) {
 ?>
+<base href="http://pan.baidu.com"/>
+<link href="/res/static/thirdparty/guanjia/css/guanjia_video_all.css?t=201412054621" rel="stylesheet"/>
+</head>
+<body>
 <div class="guanjia_panl" id="guanjia_panl">
 </div>
 <script src="/res/static/thirdparty/guanjia/js/guanjia_video_all.js?t=201412054621" type="text/javascript"></script>
@@ -96,9 +96,10 @@ jQuery(function($){
   });
 });
 </script>
-<?php
-}
-?>
+<?php }else{ ?>
+</head>
+<body>
+<?php } ?>
 </body>
 </html>
 <?php
