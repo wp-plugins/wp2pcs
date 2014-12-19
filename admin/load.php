@@ -2,8 +2,8 @@
 
 <h2 class="nav-tab-wrapper">
   <a href="<?php echo admin_url('plugins.php?page=wp2pcs'); ?>" class="nav-tab">基本信息</a>
-  <a href="<?php echo admin_url('plugins.php?page=wp2pcs&tab=backup'); ?>" class="nav-tab">定时备份</a>
   <a href="javascript:void(0)" class="nav-tab nav-tab-active">资源调用</a>
+  <a href="<?php echo admin_url('plugins.php?page=wp2pcs&tab=backup'); ?>" class="nav-tab">定时备份</a>
   <a href="<?php echo admin_url('plugins.php?page=wp2pcs&tab=payfor'); ?>" class="nav-tab">付费</a>
 </h2>
 
@@ -45,6 +45,18 @@
       <option value="0" <?php selected($wp2pcs_load_videoplay,0); ?>>关闭</option>
       <option value="1" <?php selected($wp2pcs_load_videoplay,1); ?>>开启</option>
     </select></p>
+  </div>
+</div>
+
+<div class="postbox">
+  <div class="handlediv" title="点击以切换"><br></div>
+  <h3 class="hndle">本地缓存</h3>
+  <div class="inside">
+    <p><select name="wp2pcs_load_cache"><?php $wp2pcs_load_cache = (int)get_option('wp2pcs_load_cache');  ?>
+      <option value="0" <?php selected($wp2pcs_load_cache,0); ?>>关闭</option>
+      <option value="1" <?php selected($wp2pcs_load_cache,1); ?>>开启</option>
+    </select> 一个文件再被访问<?php echo WP2PCS_CACHE_COUNT; ?>次后会被缓存在本地。媒体列表缓存在本地。</p>
+    <p><a href="<?php echo add_query_arg(array('action'=>'clean-cache','_wpnonce'=>wp_create_nonce())); ?>" class="button">清空所有缓存</a></p>
   </div>
 </div>
 

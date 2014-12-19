@@ -30,31 +30,41 @@ $file_name = substr($path,strrpos($path,'/')+1);
 
 // 读取http缓存
 if(!in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt'))) {
-  wp2pcs_cache();
+  wp2pcs_http_cache();
 }
 
 global $BaiduPCS;
+$wp2pcs_cache_count = (int)get_option('WP2PCS_CACHE_'.$path);
+$wp2pcs_load_cache = (int)get_option('wp2pcs_load_cache');
 
 if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp')) && !isset($_GET['download'])){
-  set_time_limit(0);
-  $result = $BaiduPCS->downloadStream($path);
-  $meta = json_decode($result,true);
-  if(isset($meta['error_msg'])){
-    header("Content-Type: text/html; charset=utf8");
-    echo $meta['error_msg'];
-    exit;
+  if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
+    $result = wp2pcs_get_cache($path);
+  }
+  else {
+    $result = $BaiduPCS->downloadStream($path);
+    $meta = json_decode($result,true);
+    if(isset($meta['error_msg'])){
+      header("Content-Type: text/html; charset=utf8");
+      echo $meta['error_msg'];
+      exit;
+    }
   }
 
   header('Content-type: image/jpeg');
 }
 elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi')) && !isset($_GET['download'])) {
-  set_time_limit(0);
-  $result = $BaiduPCS->downloadStream($path);
-  $meta = json_decode($result,true);
-  if(isset($meta['error_msg'])){
-    header("Content-Type: text/html; charset=utf8");
-    echo $meta['error_msg'];
-    exit;
+  if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
+    $result = wp2pcs_get_cache($path);
+  }
+  else {
+    $result = $BaiduPCS->downloadStream($path);
+    $meta = json_decode($result,true);
+    if(isset($meta['error_msg'])){
+      header("Content-Type: text/html; charset=utf8");
+      echo $meta['error_msg'];
+      exit;
+    }
   }
 
   if($file_ext == 'mp3' || $file_ext == 'mp3pro') header("Content-Type: audio/mpeg");
@@ -69,7 +79,6 @@ elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi')) 
   header('X-Pad: avoid browser bug');
 }
 elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt')) && !isset($_GET['download'])) {
-  set_time_limit(0);
   $result = $BaiduPCS->downloadStream($path);
   $meta = json_decode($result,true);
   if(isset($meta['error_msg'])){
@@ -77,7 +86,7 @@ elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp',
     echo $meta['error_msg'];
     exit;
   }
-
+  
   if($file_ext == 'asf') header('Content-Type: video/x-ms-asf');
   elseif($file_ext == 'avi') header('Content-Type: video/x-msvideo');
   elseif($file_ext == 'flv') header('Content-Type: video/x-flv');
@@ -139,16 +148,19 @@ elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp',
     flush();
   }
   exit();
-
 }
 else{
-  set_time_limit(0);
-  $result = $BaiduPCS->download($path);
-  $meta = json_decode($result,true);
-  if(isset($meta['error_msg'])){
-    header("Content-Type: text/html; charset=utf8");
-    echo $meta['error_msg'];
-    exit;
+  if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
+    $result = wp2pcs_get_cache($path);
+  }
+  else {
+    $result = $BaiduPCS->download($path);
+    $meta = json_decode($result,true);
+    if(isset($meta['error_msg'])){
+      header("Content-Type: text/html; charset=utf8");
+      echo $meta['error_msg'];
+      exit;
+    }
   }
 
   header("Content-Type: application/octet-stream");
@@ -159,5 +171,14 @@ else{
 ob_clean();
 echo $result;
 flush();
+
+// 缓存起来
+if($wp2pcs_load_cache && !is_admin()) {
+  if($wp2pcs_cache_count == WP2PCS_CACHE_COUNT) {
+    wp2pcs_set_cache($path,$result);
+  }
+  update_option('WP2PCS_CACHE_'.$path,$wp2pcs_cache_count ++);
+}
+
 exit;
 endif;// end of path usefullness

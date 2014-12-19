@@ -98,17 +98,13 @@ function wp2pcs_insert_media_iframe_content() {
   $begin = ($paged-1)*$files_per_page;
   $end = $paged*$files_per_page;
   // 下面通过SESSION来做超级简单的缓存
-  $URI = $_SERVER['REQUEST_URI'];
   if(isset($_GET['refresh']) && $_GET['refresh'] == 1) {
-    $URI = remove_query_arg('refresh',$URI);
-    unset($_SESSION['wp2pcs_files_on_pcs'][$URI]);
+    wp2pcs_delete_cache($dir_path.'.dir');
   }
-  if(!isset($_SESSION['wp2pcs_files_on_pcs'][$URI])) {
+  $files_on_pcs = get_option('wp2pcs_load_cache') ? unserialize(wp2pcs_get_cache($dir_path.'.dir')) : false;
+  if(!$files_on_pcs) {
     $files_on_pcs = wp2pcs_insert_media_list_files($dir_path,'0-');
-    $_SESSION['wp2pcs_files_on_pcs'][$URI] = $files_on_pcs;
-  }
-  else {
-    $files_on_pcs = $_SESSION['wp2pcs_files_on_pcs'][$URI];
+    if(get_option('wp2pcs_load_cache')) wp2pcs_set_cache($dir_path.'.dir',serialize($files_on_pcs));
   }
   if(!$files_on_pcs) return;// 如果没有文件，直接退出函数
   $files_amount = count($files_on_pcs);

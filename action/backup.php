@@ -21,8 +21,6 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-backup-setting') {
 // 立即备份
 elseif(isset($_GET['action']) && $_GET['action'] == 'backup-now') {
   check_admin_referer();
-  set_time_limit(0);
-  ini_set('memory_limit','512M');
   $zip_file = run_backup();
   upload_baidupcs($zip_file);
   remove_dir(WP2PCS_TEMP_DIR,false);// 清空临时目录

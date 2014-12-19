@@ -2,8 +2,8 @@
 
 <h2 class="nav-tab-wrapper">
   <a href="<?php echo admin_url('plugins.php?page=wp2pcs'); ?>" class="nav-tab">基本信息</a>
-  <a href="javascript:void(0);" class="nav-tab nav-tab-active">定时备份</a>
   <a href="<?php echo admin_url('plugins.php?page=wp2pcs&tab=load'); ?>" class="nav-tab">资源调用</a>
+  <a href="javascript:void(0);" class="nav-tab nav-tab-active">定时备份</a>
   <a href="<?php echo admin_url('plugins.php?page=wp2pcs&tab=payfor'); ?>" class="nav-tab">付费</a>
 </h2>
 

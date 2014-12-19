@@ -44,8 +44,6 @@ function wp2pcs_backup_cron_task_function() {
   $wp2pcs_backup_amount ++; 
   update_option('wp2pcs_backup_amount',$wp2pcs_backup_amount);
   
-  set_time_limit(0);
-  ini_set('memory_limit','512M');
   $zip_file = run_backup($backup_file,$backup_data);
   upload_baidupcs($zip_file);
   remove_dir(WP2PCS_TEMP_DIR,false);// 清空临时目录

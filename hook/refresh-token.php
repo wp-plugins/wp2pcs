@@ -4,10 +4,9 @@ add_action('wp2pcs_token_cron_task','wp2pcs_refresh_baidupcs_token');
 function wp2pcs_refresh_baidupcs_token() {
   $wp2pcs_baidupcs_refresh_token = get_option('wp2pcs_baidupcs_refresh_token');
   if(time() > $wp2pcs_baidupcs_refresh_token['time'] + 3600*24*27) {
-    $post = array(
+    $data = get_by_curl('https://api.wp2pcs.com/oauth_baidupcs_refresh_token.php',array(
       'refresh_token' => $wp2pcs_baidupcs_refresh_token['token']
-    );
-    $data = get_by_curl('https://api.wp2pcs.com/oauth_baidupcs_refresh_token.php',$post);
+    ));
     $data = json_decode($data);
     if(isset($data->access_token) && isset($data->refresh_token)) {
       $access_token = $data->access_token;

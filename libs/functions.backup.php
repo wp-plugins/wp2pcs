@@ -36,6 +36,7 @@ function run_backup($backup_file = true,$backup_data = true) {
           if($path) $FileZip->exclude_path($path);
         }
         $FileZip->exclude_path(WP2PCS_TEMP_DIR);
+        $FileZip->exclude_path(WP2PCS_CACHE_DIR);
       }
       // 按照给定的路径进行打包
       if($path_include) {
@@ -79,12 +80,12 @@ function upload_baidupcs($zip_file_path){
   $handle = @fopen($zip_file_path,'rb');
   while(!@feof($handle)){
     $file_block_content = fread($handle,$file_block_size);
-    $temp = $BaiduPCS->upload($file_block_content,$remote_dir,$file_name,false,true);
-    if(!is_array($temp)){
-      $temp = json_decode($temp,true);
+    $block = $BaiduPCS->upload($file_block_content,$remote_dir,$file_name,false,true);
+    if(!is_array($block)){
+      $block = json_decode($block,true);
     }
-    if(isset($temp['md5'])){
-      array_push($file_blocks,$temp['md5']);
+    if(isset($block['md5'])){
+      array_push($file_blocks,$block['md5']);
     }
   }
   fclose($handle);
