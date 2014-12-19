@@ -46,12 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.4.0 =
-一切重新开始。
-
+= 1.4.1 =
+增加本地缓存附件功能。
 
 == Upgrade Notice ==
 
-
-= 1.4.0 =
-一切重新开始。
+= 1.4.1 =
+增加本地缓存附件功能。
