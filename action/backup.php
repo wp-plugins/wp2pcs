@@ -10,7 +10,7 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-backup-setting') {
   update_option('wp2pcs_backup_path_must',trim($_POST['wp2pcs_backup_path_must']));
   // 开启定时任务
   if(wp_next_scheduled('wp2pcs_backup_cron_task')) wp_clear_scheduled_hook('wp2pcs_backup_cron_task');
-  if($_POST['wp2pcs_backup_file'] != 'never' && $_POST['wp2pcs_backup_data'] != 'never') {
+  if($_POST['wp2pcs_backup_file'] != 'never' || $_POST['wp2pcs_backup_data'] != 'never') {
     $run_time = strtotime(date('Y-m-d '.$_POST['wp2pcs_backup_time'].':00',strtotime('+1 day')));
     //$run_time = strtotime('+1 minutes');// debug
     wp_schedule_event($run_time,'daily','wp2pcs_backup_cron_task');
