@@ -106,54 +106,56 @@ function wp2pcs_insert_media_iframe_content() {
     $files_on_pcs = wp2pcs_insert_media_list_files($dir_path,'0-');
     if(get_option('wp2pcs_load_cache')) wp2pcs_set_cache($dir_path.'.dir',serialize($files_on_pcs));
   }
-  if(!$files_on_pcs) return;// 如果没有文件，直接退出函数
-  $files_amount = count($files_on_pcs);
-  $files_on_pcs = array_slice($files_on_pcs,$begin,$end-$begin);
-  $files_total_page = ceil($files_amount/$files_per_page);
-  if(!empty($files_on_pcs))foreach($files_on_pcs as $file){
-    $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
-    $file_name = substr($file->path,strrpos($file->path,'/')+1);
-    $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';
-    if(in_array($file_type,array('jpg','jpeg','png','gif','bmp'))) {
-      $file_format = 'image';
-    }
-    elseif(in_array($file_type,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb'))) {
-      $file_format = 'video';
-    }
-    elseif(in_array($file_type,array('mp3','ogg','wma','wav','mp3pro','mid','midi'))) {
-      $file_format = 'music';
-    }
-    else {
-      $file_format = 'file';
-    }
-    echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-size="'.$file->size.'">';
-    if($file_type == 'dir') {
-      echo '<a href="'.remove_query_arg('refresh',add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
-    }
-    else {
-      $load_linktype = get_option('wp2pcs_load_linktype');
-      $site_id = get_option('wp2pcs_site_id');
-      $file_url = $load_linktype > 0 ? home_url('/wp2pcs'.$file_path) : home_url('?wp2pcs='.$file_path);
-      $file_url = $site_id && $load_linktype > 1 ? 'http://static.wp2pcs.com/'.$site_id.$file_path : $file_url;
-      if($file_format == 'image') {
-        echo '<input type="checkbox" value="'.$file_url.'">';
-        echo '<img src="'.$file_url.'" title="图片 '.$file_name.'">';
+  // 只有拥有文件列表才列出，防止没有上传文件的时候出现各种问题
+  if(is_array($files_on_pcs) && !empty($files_on_pcs)) {
+    $files_amount = count($files_on_pcs);
+    $files_on_pcs = array_slice($files_on_pcs,$begin,$end-$begin);
+    $files_total_page = ceil($files_amount/$files_per_page);
+    foreach($files_on_pcs as $file) {
+      $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
+      $file_name = substr($file->path,strrpos($file->path,'/')+1);
+      $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';
+      if(in_array($file_type,array('jpg','jpeg','png','gif','bmp'))) {
+        $file_format = 'image';
       }
-      elseif($file_format == 'video') {
-        echo '<input type="checkbox" value="'.$file_url.'" data-file-path="'.$file->path.'" data-file-md5="'.$file->md5.'">';
-        echo '<a title="视频 '.$file_name.'">'.$file_name.'</a>';
+      elseif(in_array($file_type,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb'))) {
+        $file_format = 'video';
       }
-      elseif($file_format == 'music') {
-        echo '<input type="checkbox" value="'.$file_url.'">';
-        echo '<a title="音乐 '.$file_name.'">'.$file_name.'</a>';
+      elseif(in_array($file_type,array('mp3','ogg','wma','wav','mp3pro','mid','midi'))) {
+        $file_format = 'music';
       }
       else {
-        echo '<input type="checkbox" value="'.$file_url.'">';
-        echo '<a title="文件 '.$file_name.'">'.$file_name.'</a>';
+        $file_format = 'file';
       }
-    }
-    echo '</div>';
-  }
+      echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-size="'.$file->size.'">';
+      if($file_type == 'dir') {
+        echo '<a href="'.remove_query_arg('refresh',add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
+      }
+      else {
+        $load_linktype = get_option('wp2pcs_load_linktype');
+        $site_id = get_option('wp2pcs_site_id');
+        $file_url = $load_linktype > 0 ? home_url('/wp2pcs'.$file_path) : home_url('?wp2pcs='.$file_path);
+        $file_url = $site_id && $load_linktype > 1 ? 'http://static.wp2pcs.com/'.$site_id.$file_path : $file_url;
+        if($file_format == 'image') {
+          echo '<input type="checkbox" value="'.$file_url.'">';
+          echo '<img src="'.$file_url.'" title="图片 '.$file_name.'">';
+        }
+        elseif($file_format == 'video') {
+          echo '<input type="checkbox" value="'.$file_url.'" data-file-path="'.$file->path.'" data-file-md5="'.$file->md5.'">';
+          echo '<a title="视频 '.$file_name.'">'.$file_name.'</a>';
+        }
+        elseif($file_format == 'music') {
+          echo '<input type="checkbox" value="'.$file_url.'">';
+          echo '<a title="音乐 '.$file_name.'">'.$file_name.'</a>';
+        }
+        else {
+          echo '<input type="checkbox" value="'.$file_url.'">';
+          echo '<a title="文件 '.$file_name.'">'.$file_name.'</a>';
+        }
+      }
+      echo '</div>';
+    } // end foreach
+  } // endif
 ?>
 </div>
 <div class="clear"></div>
