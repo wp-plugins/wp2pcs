@@ -90,7 +90,7 @@ jQuery(function($){
     }
   });
   // 勾选是否插入图片链接
-  if($.cookie('wp2pcs-insert-media-iframe-check-imglink')) {
+  if($.cookie('wp2pcs-insert-media-iframe-check-imglink') || $.cookie('wp2pcs-insert-media-iframe-check-imglink') === null) {
     $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked',true);
   }
   else {
@@ -100,7 +100,7 @@ jQuery(function($){
     $.cookie('wp2pcs-insert-media-iframe-check-imglink',$(this).prop('checked') ? true : false);
   });
   // 勾选是否插入视频播放器
-  if($.cookie('wp2pcs-insert-media-iframe-check-videoplay')) {
+  if($.cookie('wp2pcs-insert-media-iframe-check-videoplay') || $.cookie('wp2pcs-insert-media-iframe-check-videoplay') === null) {
     $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked',true);
   }
   else {
