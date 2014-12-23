@@ -4,7 +4,7 @@
 Plugin Name: WP2PCS
 Plugin URI: http://www.wp2pcs.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站定时备份，调用网盘资源在网站中使用。
-Version: 1.4.1
+Version: 1.4.2
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
