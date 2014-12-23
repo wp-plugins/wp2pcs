@@ -3,7 +3,7 @@ Contributors: 否子戈
 Donate link: http://www.wp2pcs.com
 Tags:wp2pcs, 数据备份, 资源调用, baidu, cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
-Tested up to: 4.0.1
+Tested up to: 4.1.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
