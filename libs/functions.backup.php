@@ -4,7 +4,7 @@
 function run_backup($backup_file = true,$backup_data = true) {
   if(!$backup_file && !$backup_data) return null;
   global $DbZip,$FileZip;
-  $zip_file_name = 'wp2pcs-'.date('Y-m-d.H.i.s').'-'.rand(1000,9999).'.zip';
+  $zip_file_name = 'wp2pcs-'.date('Y.m.d.H.i.s').'-'.(int)$backup_file.(int)$backup_data.'-'.rand(10,99).'.zip';
   $zip_file_path = WP2PCS_TEMP_DIR.DIRECTORY_SEPARATOR.$zip_file_name;
   $zip_data_path = WP2PCS_TEMP_DIR.DIRECTORY_SEPARATOR.'database-backup';
   $webroot_path = realpath(ABSPATH.'/../');
