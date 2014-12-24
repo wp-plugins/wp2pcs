@@ -3,16 +3,10 @@
 // 基本的视频播放器样式css，因为两种情况下都要用，所以放在最前面
 function wp2pcs_video_player_css_in_admin_editor() {
 ?>
-.wp2pcs-video-player {display:block;width:480px;height:360px;margin: 1em auto;}
-.wp2pcs-video-player a {display:block;width:100%;height:100%;border:#dedede dashed 5px;background-repeat:no-repeat;background-position:center;text-decoration:none;
-  -moz-opacity: 0.6;
-  opacity:      0.6;
-}
-.wp2pcs-video-player a:hover {
-  -moz-opacity: 1;
-  opacity:      1;
-}
-.wp2pcs-video-player iframe {display:block;width:100%;height:100%;}
+.wp2pcs-video-player{display:block;width:480px;height:360px;margin: 1em auto;}
+.wp2pcs-video-player a{display:block;width:100%;height:100%;border:#dedede dashed 5px;background-repeat:no-repeat;background-position:center;text-decoration:none;-moz-opacity:0.6;opacity:0.6;}
+.wp2pcs-video-player a:hover{-moz-opacity:1;opacity:1;}
+.wp2pcs-video-player iframe{display:block;width:100%;height:100%;}
 <?php
 }
 
@@ -23,10 +17,6 @@ if(defined('ABSPATH')) {
 add_action('wp_footer','wp2pcs_video_player_script',99);
 function wp2pcs_video_player_script() {
 ?>
-<style>
-<?php wp2pcs_video_player_css_in_admin_editor(); ?>
-.wp2pcs-video-player a {background-image:url(<?php echo plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME); ?>);}
-</style>
 <script>window.jQuery || document.write('<script type="text/javascript" src="<?php echo plugins_url("assets/jquery-2.1.1.min.js",WP2PCS_PLUGIN_NAME); ?>">\x3C/script>');</script>
 <script type="text/javascript">
 function get_extension_by_file_name(pathfilename) {
@@ -50,6 +40,10 @@ jQuery(function($){
   });
 });
 </script>
+<style>
+<?php wp2pcs_video_player_css_in_admin_editor(); ?>
+.wp2pcs-video-player a {background-image:url(<?php echo plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME); ?>);}
+</style>
 <?php
 }
 

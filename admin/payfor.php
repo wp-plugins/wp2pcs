@@ -32,6 +32,13 @@
 </div>
 <div class="postbox">
   <div class="handlediv" title="点击以切换"><br></div>
+  <h3 class="hndle">购买单一站点外链码</h3>
+  <div class="inside">
+    <p>付费用户拥有20个免费的站点申请外链的资格，但你可能不想要那么多，就只需要一个或两个站点的外链码，可以申请单个站点外链码。每个站点20元/年，外链码可以在WP2PCS官网获得外链码。请发送邮件到476206120@qq.com沟通申请。</p>
+  </div>
+</div>
+<div class="postbox">
+  <div class="handlediv" title="点击以切换"><br></div>
   <h3 class="hndle">如何成为付费用户</h3>
   <div class="inside">
     <h4>第一步 成为用户</h4>
