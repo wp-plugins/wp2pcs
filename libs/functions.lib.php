@@ -95,7 +95,7 @@ function wp2pcs_clean_cache($dir = WP2PCS_CACHE_DIR) {
 
 // 使用get_by_curl来执行curl抓取
 if(!function_exists('get_by_curl')) :
-function get_by_curl($url,$post = false,$https = true,$referer = false){
+function get_by_curl($url,$post = false,$https = true,$referer = false,$headers = null){
   $ch = curl_init();
   curl_setopt($ch,CURLOPT_URL,$url);
   curl_setopt($ch, CURLOPT_HEADER, 0);

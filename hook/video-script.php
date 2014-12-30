@@ -70,6 +70,7 @@ echo 'height = $this.height(),';
 echo 'stretch = $this.attr("data-stretch"),';
 echo 'image = $this.attr("data-image"),';
 echo 'src = "'.plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME).'?md5=" + md5 + "&path='.BAIDUPCS_REMOTE_ROOT.'" + path;';
+echo 'src = src.replace("'.BAIDUPCS_REMOTE_ROOT.BAIDUPCS_REMOTE_ROOT.'","'.BAIDUPCS_REMOTE_ROOT.'");';
 echo 'if(md5 == undefined || md5 == "") return;';
 echo '$this.after("<iframe width=" + width + " height=" + height + " style=display:block;margin:auto; src=" + src + " frameborder=0 scrolling=no></iframe>");';
 echo '$this.remove();';
