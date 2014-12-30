@@ -63,7 +63,7 @@
     <p>
       站点码：<input type="password" name="wp2pcs_site_code" value="<?php echo $wp2pcs_site_code; ?>"> 
       <button type="submit" class="button-primary">确定</button>
-      <a href="http://www.wp2pcs.com/wp-admin/admin.php?page=wp2pcs_service&tab=sites" target="_blank" class="button">获取站点码</a>
+      <a href="http://www.wp2pcs.com/wp-admin/admin.php?page=work-manager-service" target="_blank" class="button">获取站点码</a>
       <input type="hidden" name="action" value="update-site-code">
       <?php wp_nonce_field(); ?>
     </p>

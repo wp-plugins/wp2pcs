@@ -5,7 +5,7 @@
     <p>当前站点：<input type="text" value="<?php echo substr(home_url(),strpos(home_url(),'://')+3); ?>" class="regular-text" readonly></p>
     <p>
       站点码：<input type="password" value="<?php echo $wp2pcs_site_code; ?>" disabled>
-      <a href="http://www.wp2pcs.com/wp-admin/admin.php?page=wp2pcs_service&tab=sites" target="_blank" class="button">获取站点码</a>
+      <a href="http://www.wp2pcs.com/wp-admin/admin.php?page=work-manager-service" target="_blank" class="button">获取站点码</a>
     </p>
     <?php if($wp2pcs_site_id) { ?>
     <p>站点号：<?php echo $wp2pcs_site_id; ?></p>
