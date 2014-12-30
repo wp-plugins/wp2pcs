@@ -1,7 +1,7 @@
 jQuery.cookie = function(name, value, options) {
-  if (typeof value != 'undefined') { // name and value given, set cookie
+  if(typeof value != 'undefined') { // name and value given, set cookie
     options = options || {};
-    if (value === null) {
+    if(value === null) {
       value = '';
       options.expires = -1;
     }
@@ -20,9 +20,10 @@ jQuery.cookie = function(name, value, options) {
     var domain = options.domain ? '; domain=' + options.domain : '';
     var secure = options.secure ? '; secure' : '';
     document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
-  } else { // only name given, get cookie
+  }
+  else { // only name given, get cookie
     var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+    if(document.cookie && document.cookie != '') {
       var cookies = document.cookie.split(';');
       for (var i = 0; i < cookies.length; i++) {
         var cookie = jQuery.trim(cookies[i]);
@@ -90,24 +91,24 @@ jQuery(function($){
     }
   });
   // 勾选是否插入图片链接
-  if($.cookie('wp2pcs-insert-media-iframe-check-imglink') || $.cookie('wp2pcs-insert-media-iframe-check-imglink') === null) {
+  if($.cookie('wp2pcs-insert-media-iframe-check-imglink') == 'true' || $.cookie('wp2pcs-insert-media-iframe-check-imglink') === null) {
     $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked',true);
   }
   else {
     $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked',false);
   }
   $('#wp2pcs-insert-media-iframe-check-imglink').on('change',function(){
-    $.cookie('wp2pcs-insert-media-iframe-check-imglink',$(this).prop('checked') ? true : false);
+    $.cookie('wp2pcs-insert-media-iframe-check-imglink',$(this).prop('checked') ? 'true' : 'false');
   });
   // 勾选是否插入视频播放器
-  if($.cookie('wp2pcs-insert-media-iframe-check-videoplay') || $.cookie('wp2pcs-insert-media-iframe-check-videoplay') === null) {
+  if($.cookie('wp2pcs-insert-media-iframe-check-videoplay') == 'true' || $.cookie('wp2pcs-insert-media-iframe-check-videoplay') === null) {
     $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked',true);
   }
   else {
     $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked',false);
   }
   $('#wp2pcs-insert-media-iframe-check-videoplay').on('change',function(){
-    $.cookie('wp2pcs-insert-media-iframe-check-videoplay',$(this).prop('checked') ? true : false);
+    $.cookie('wp2pcs-insert-media-iframe-check-videoplay',$(this).prop('checked') ? 'true' : 'false');
   });
   // 清除选择的图片
   $('#wp2pcs-insert-media-btn-clear').click(function(){
@@ -123,8 +124,8 @@ jQuery(function($){
             $input = $this.children('input'),
             is_imglink = $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked'),
             is_videoplay = $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked'),
-            video_path = $input.attr('data-file-path'),
-            video_md5 = $input.attr('data-file-md5'),
+            video_path = $input.attr('data-video-path'),
+            video_md5 = $input.attr('data-video-md5'),
             url = $input.val();
         // 如果被选择的是图片
         if($this.hasClass('file-format-image')){
@@ -135,10 +136,10 @@ jQuery(function($){
         // 如果是视频
         else if($this.hasClass('file-format-video')) {
           if(is_videoplay) {
-            html += '<p><div class="wp2pcs-video-player" data-path="' + video_path + '" data-md5="' + video_md5 + '"><a href="' + url + '">&nbsp;</a></div></p>';
+            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"></iframe></p>';
           }
           else {
-            html += '<p>' + url.replace(/\//g,'&frasl;') + '</p>';
+            html += '<p>' + url + '</p>';
           }
         }
         else if($this.hasClass('file-format-music')) {
@@ -148,7 +149,6 @@ jQuery(function($){
         else{
           html += '&nbsp;' + url + '&nbsp;';
         }
-        html += "\r\n\r\n";
       });
       $('#wp2pcs-insert-media-btn-clear').click();
       // http://stackoverflow.com/questions/13680660/insert-content-to-wordpress-post-editor

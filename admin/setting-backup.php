@@ -1,14 +1,13 @@
 <div class="wrap">
 
 <h2 class="nav-tab-wrapper">
-  <a href="<?php echo admin_url('plugins.php?page=wp2pcs'); ?>" class="nav-tab">基本信息</a>
-  <a href="<?php echo admin_url('plugins.php?page=wp2pcs&tab=load'); ?>" class="nav-tab">资源调用</a>
+  <a href="<?php menu_page_url('wp2pcs-setting'); ?>" class="nav-tab">基本信息</a>
+  <a href="<?php echo add_query_arg('tab','load',menu_page_url('wp2pcs-setting',false)); ?>" class="nav-tab">资源调用</a>
   <a href="javascript:void(0);" class="nav-tab nav-tab-active">定时备份</a>
-  <a href="<?php echo admin_url('plugins.php?page=wp2pcs&tab=payfor'); ?>" class="nav-tab">付费</a>
 </h2>
 
 <div class="metabox-holder"><div class="meta-box-sortables">
-<form method="post">
+<form method="post" autocomplete="off">
 
 <?php if(!BAIDUPCS_ACCESS_TOKEN) { ?>
 <div class="error"><p><strong>提示</strong>：还没有百度授权。</p></div>

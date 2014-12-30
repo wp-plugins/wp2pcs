@@ -62,7 +62,7 @@ function wp2pcs_insert_media_iframe_content() {
 ?>
 <div id="wp2pcs-insert-media-iframe-buttons">
   <button class="button float-left" onclick="jQuery('html,body').animate({scrollTop:0},500)">返回顶部</button>
-  <button href="<?php echo add_query_arg('refresh',1); ?>" class="button float-left" id="wp2pcs-insert-media-btn-refresh" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">刷新界面</button>
+  <a href="<?php echo add_query_arg('refresh',1); ?>" class="button float-left" id="wp2pcs-insert-media-btn-refresh" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">刷新界面</a>
   <?php if((is_multisite() && current_user_can('manage_network')) || (!is_multisite() && current_user_can('edit_theme_options'))): ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_path; ?>" class="button float-left" target="_blank" id="wp2pcs-insert-media-btn-upload">上传</a><?php endif; ?>
   <button class="button float-left" id="wp2pcs-insert-media-btn-help">帮助</button>
   <button class="button" id="wp2pcs-insert-media-btn-clear">清除选中</button>
@@ -115,7 +115,10 @@ function wp2pcs_insert_media_iframe_content() {
       $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
       $file_name = substr($file->path,strrpos($file->path,'/')+1);
       $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';
-      if(in_array($file_type,array('jpg','jpeg','png','gif','bmp'))) {
+      if($file_type == 'dir') {
+        $file_format = 'dir';
+      }
+      elseif(in_array($file_type,array('jpg','jpeg','png','gif','bmp'))) {
         $file_format = 'image';
       }
       elseif(in_array($file_type,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb'))) {
@@ -141,7 +144,7 @@ function wp2pcs_insert_media_iframe_content() {
           echo '<img src="'.$file_url.'" title="图片 '.$file_name.'">';
         }
         elseif($file_format == 'video') {
-          echo '<input type="checkbox" value="'.$file_url.'" data-file-path="'.$file->path.'" data-file-md5="'.$file->md5.'">';
+          echo '<input type="checkbox" value="'.$file_url.'" data-video-path="'.$file_path.'" data-video-md5="'.$file->md5.'">';
           echo '<a title="视频 '.$file_name.'">'.$file_name.'</a>';
         }
         elseif($file_format == 'music') {

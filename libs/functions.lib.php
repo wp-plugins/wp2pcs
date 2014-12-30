@@ -116,3 +116,11 @@ function get_by_curl($url,$post = false,$https = true,$referer = false){
   return $result;
 }
 endif;
+
+// 获取当前访问的URL的文件名
+if(!function_exists('get_url_file_name')) :
+function get_url_file_name() {
+  $file_name = substr($_SERVER['PHP_SELF'],strrpos($_SERVER['PHP_SELF'],'/')+1);
+  return $file_name;
+}
+endif;

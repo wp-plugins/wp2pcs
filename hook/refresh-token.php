@@ -16,17 +16,20 @@ function wp2pcs_refresh_baidupcs_token() {
       );
       update_option('wp2pcs_baidupcs_access_token',$access_token);
       update_option('wp2pcs_baidupcs_refresh_token',$refresh_token);
-      $outlink_code = get_option('wp2pcs_outlink_code');
-      if($outlink_code) {
+      $site_code = get_option('wp2pcs_site_code');
+      if($site_code) {
         $site_url = substr(home_url(),strpos(home_url(),'://')+3);
         $result = get_by_curl('https://api.wp2pcs.com/get_site_id.php',array(
           'site_url' => $site_url,
-          'outlink_code' => $outlink_code,
+          'site_code' => $site_code,
           'access_token' => $access_token
         ));
         if($result) {
           $result = json_decode($result);
-          if(isset($result->site_id))update_option('wp2pcs_site_id');
+          if(isset($result->site_id)) {
+            update_option('wp2pcs_site_id',$result->site_id);
+            update_option('wp2pcs_vip_expire',$result->expire_time);
+          }
         }
       }
     }
