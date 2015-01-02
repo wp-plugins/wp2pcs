@@ -124,6 +124,7 @@ jQuery(function($){
             $input = $this.children('input'),
             is_imglink = $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked'),
             is_videoplay = $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked'),
+            is_sharepath = $('#wp2pcs-insert-media-iframe-check-sharepath').val(),
             video_path = $input.attr('data-video-path'),
             video_md5 = $input.attr('data-video-md5'),
             url = $input.val();
@@ -136,7 +137,9 @@ jQuery(function($){
         // 如果是视频
         else if($this.hasClass('file-format-video')) {
           if(is_videoplay) {
-            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"></iframe></p>';
+            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"';
+            if(is_sharepath == 1) html += ' data-share="1"';
+            html += '></iframe></p>';
           }
           else {
             html += '<p>' + url + '</p>';

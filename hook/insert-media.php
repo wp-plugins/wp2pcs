@@ -103,6 +103,7 @@ function wp2pcs_insert_media_iframe_content() {
   <div id="wp2pcs-insert-media-iframe-check">
     <?php if(get_option('wp2pcs_load_imglink')) { ?><label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-imglink" checked> 图片带链接</label><?php } ?>
     <?php if(get_option('wp2pcs_load_videoplay')) { ?><label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay" checked> 视频播放器</label><?php } ?>
+    <?php if(strpos($dir_path,'/apps/wp2pcs/share') === 0) { ?><input type="hidden" id="wp2pcs-insert-media-iframe-check-sharepath" value="1"><?php } ?>
   </div>
   <div class="clear"></div>
 </div>

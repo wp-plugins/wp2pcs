@@ -34,6 +34,7 @@ if($site_id && get_option('wp2pcs_site_code') && get_option('wp2pcs_video_m3u8')
   echo 'width = $this.attr("width"),';
   echo 'height = $this.attr("height"),';
   echo 'stretch = $this.attr("data-stretch"),';
+  echo 'share = $this.attr("data-share"),';
   echo 'image = $this.attr("data-image");';
   echo '$this.attr("src","http://static.wp2pcs.com/player?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&image=" + image + "&path=" + path);';
   echo '$this.removeClass("wp2pcs-video-player").addClass("wp2pcs-video-playing");';
@@ -52,8 +53,9 @@ else{
   echo 'width = $this.attr("width"),';
   echo 'height = $this.attr("height"),';
   echo 'stretch = $this.attr("data-stretch"),';
+  echo 'share = $this.attr("data-share"),';
   echo 'image = $this.attr("data-image");';
-  echo '$this.after("<div class=wp2pcs-video-player style=display:block;width:" + width + "px;height:" + height + "px; width=" + width + " height=" + height + " data-stretch=" + stretch + " data-image=" + image + " data-path=" + path + " data-md5=" + md5 + ">" + (image ? "<img src=" + image + ">" : "&nbsp") + "</div>");';
+  echo '$this.after("<div class=wp2pcs-video-player style=display:block;width:" + width + "px;height:" + height + "px; width=" + width + " height=" + height + " data-stretch=" + stretch + " data-image=" + image + " data-path=" + path + " data-md5=" + md5 + (share == 1 ? " data-share=1" : "") + ">" + (image ? "<img src=" + image + ">" : "&nbsp") + "</div>");';
   echo '$this.remove();';
   echo '});';
   echo '}';
@@ -69,8 +71,10 @@ echo 'width = $this.width(),';
 echo 'height = $this.height(),';
 echo 'stretch = $this.attr("data-stretch"),';
 echo 'image = $this.attr("data-image"),';
+echo 'share = $this.attr("data-share"),';
 echo 'src = "'.plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME).'?md5=" + md5 + "&path='.BAIDUPCS_REMOTE_ROOT.'/load" + path;';
 echo 'src = src.replace("'.BAIDUPCS_REMOTE_ROOT.'/load'.BAIDUPCS_REMOTE_ROOT.'/load","'.BAIDUPCS_REMOTE_ROOT.'/load");';// 这一句是兼容老版本的关键
+echo 'if(share == 1) src = src.replace("'.BAIDUPCS_REMOTE_ROOT.'/load","/apps/wp2pcs/share");';
 echo 'if(md5 == undefined || md5 == "") return;';
 echo '$this.after("<iframe class=wp2pcs-video-playing width=" + width + " height=" + height + " src=" + src + " frameborder=0 scrolling=no></iframe>");';
 echo '$this.remove();';
