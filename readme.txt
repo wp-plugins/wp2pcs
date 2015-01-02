@@ -46,10 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.4.3 =
-修复了BUG，增加多项功能。
+= 1.4.4 =
+修复了BUG，增加功能。
 
 == Upgrade Notice ==
 
-= 1.4.3 =
-修复了BUG，增加了多项功能。
+= 1.4.4 =
+修复了BUG，增加功能。

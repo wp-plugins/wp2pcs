@@ -71,7 +71,10 @@ function wp2pcs_insert_media_iframe_content() {
 </div>
 
 <div id="wp2pcs-insert-media-iframe-topbar">
-  <div id="wp2pcs-insert-media-iframe-place">当前位置：<a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>">HOME</a><?php
+  <div id="wp2pcs-insert-media-iframe-place">
+  当前位置：
+  <a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>" <?php if(strpos($dir_path,BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#999;"'; ?>>站点目录</a><?php
+  if(strpos($dir_path,'/apps/wp2pcs/share') === false) {
     $current_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
     $place_path_arr = array();
@@ -81,6 +84,20 @@ function wp2pcs_insert_media_iframe_content() {
       $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
       echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
     }
+  }
+  ?>
+  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share'); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#999;"'; ?>>共享目录</a><?php
+  if(strpos($dir_path,'/apps/wp2pcs/share') !== false) {
+    $current_path = str_replace('/apps/wp2pcs/share','',$dir_path);
+    $current_path = array_filter(explode('/',$current_path));
+    $place_path_arr = array();
+    if(!empty($current_path)) foreach($current_path as $dir) {
+      $place_path_arr[] = $dir;
+      $place_path_link = remove_query_arg('refresh');
+      $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
+      echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
+    }
+  }
   ?>
   </div>
   <div id="wp2pcs-insert-media-iframe-check">
@@ -104,7 +121,9 @@ function wp2pcs_insert_media_iframe_content() {
   $files_on_pcs = get_option('wp2pcs_load_cache') ? unserialize(wp2pcs_get_cache($dir_path.'.dir')) : false;
   if(!$files_on_pcs) {
     $files_on_pcs = wp2pcs_insert_media_list_files($dir_path,'0-');
-    if(get_option('wp2pcs_load_cache')) wp2pcs_set_cache($dir_path.'.dir',serialize($files_on_pcs));
+    if(get_option('wp2pcs_load_cache')) {
+      wp2pcs_set_cache($dir_path.'.dir',serialize($files_on_pcs));
+    }
   }
   // 只有拥有文件列表才列出，防止没有上传文件的时候出现各种问题
   if(is_array($files_on_pcs) && !empty($files_on_pcs)) {
@@ -113,6 +132,7 @@ function wp2pcs_insert_media_iframe_content() {
     $files_total_page = ceil($files_amount/$files_per_page);
     foreach($files_on_pcs as $file) {
       $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
+      $file_path = str_replace('/apps/wp2pcs/share','',$file_path);
       $file_name = substr($file->path,strrpos($file->path,'/')+1);
       $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';
       if($file_type == 'dir') {

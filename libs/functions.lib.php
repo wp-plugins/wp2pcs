@@ -15,6 +15,14 @@ function wp2pcs_http_cache() {
   }
 }
 
+// 判断cache是否存在
+function wp2pcs_has_cache($path) {
+  $path = str_replace(BAIDUPCS_REMOTE_ROOT,'',$path);
+  if(!file_exists(WP2PCS_CACHE_DIR.DIRECTORY_SEPARATOR.$path)) {// 该缓存文件不存在
+    return false;
+  }
+  return true;
+}
 // 获取cache
 function wp2pcs_get_cache($path) {
   $path = str_replace(BAIDUPCS_REMOTE_ROOT,'',$path);
@@ -34,6 +42,7 @@ function wp2pcs_get_cache($path) {
 // 添加cache
 function wp2pcs_set_cache($path,$content) {
   $path = str_replace(BAIDUPCS_REMOTE_ROOT,'',$path);
+  $path = str_replace('/apps/wp2pcs','',$path);
   $cache_file = WP2PCS_CACHE_DIR.'/'.$path;
   if(DIRECTORY_SEPARATOR == '\\') {
     $cache_file = str_replace('/','\\',$cache_file);

@@ -25,7 +25,10 @@ if(isset($_GET['dir']) && !empty($_GET['dir'])){
     <a href="<?php echo add_query_arg('refresh',1); ?>" class="button float-left" id="wp2pcs-manage-media-btn-refresh" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">刷新界面</a>
     <?php if(!is_multisite() && current_user_can('edit_theme_options')): ?><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo $dir_path; ?>" class="button float-left" target="_blank" id="wp2pcs-manage-media-btn-upload">上传</a><?php endif; ?>
   </div>
-  <div id="wp2pcs-manage-media-page-place">当前位置：<a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>">HOME</a><?php
+  <div id="wp2pcs-manage-media-page-place">
+  当前位置：
+  <a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>" <?php if(strpos($dir_path,BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#999;"'; ?>>站点目录</a><?php
+  if(strpos($dir_path,'/apps/wp2pcs/share') === false) {
     $current_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
     $place_path_arr = array();
@@ -35,6 +38,20 @@ if(isset($_GET['dir']) && !empty($_GET['dir'])){
       $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
       echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
     }
+  }
+  ?>
+  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share'); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#999;"'; ?>>共享目录</a><?php
+  if(strpos($dir_path,'/apps/wp2pcs/share') !== false) {
+    $current_path = str_replace('/apps/wp2pcs/share','',$dir_path);
+    $current_path = array_filter(explode('/',$current_path));
+    $place_path_arr = array();
+    if(!empty($current_path)) foreach($current_path as $dir) {
+      $place_path_arr[] = $dir;
+      $place_path_link = remove_query_arg('refresh');
+      $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
+      echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
+    }
+  }
   ?>
   </div>
   <div id="wp2pcs-manage-media-page-file-info">
@@ -73,6 +90,7 @@ if(isset($_GET['dir']) && !empty($_GET['dir'])){
     $files_total_page = ceil($files_amount/$files_per_page);
     foreach($files_on_pcs as $file) {
       $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
+      $file_path = str_replace('/apps/wp2pcs/share','',$file_path);
       $file_name = substr($file->path,strrpos($file->path,'/')+1);
       $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';
       if($file_type == 'dir') {

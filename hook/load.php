@@ -15,16 +15,17 @@ if(get_option('permalink_structure')) {
     $path = substr($URI,$pos+7);
   }
 }
-$path = !$path && isset($_GET['wp2pcs']) && !empty($_GET['wp2pcs']) ? urldecode($_GET['wp2pcs']) : $path;
+$GET = str_replace('+','{plus}',$_GET['wp2pcs']);
+$GET = urldecode($GET);
+$GET = str_replace('{plus}','+',$GET);
+$path = !$path && $GET ? $GET : $path;
 
 if(!$path) : return;
 elseif($path == '/') : return;
 elseif(strpos($path,'.') === false) : return;
 else :
 
-// 获取完整的路径
 $path = BAIDUPCS_REMOTE_ROOT.'/load'.$path;
-
 $file_ext = strtolower(substr($path,strrpos($path,'.')+1));
 $file_name = substr($path,strrpos($path,'/')+1);
 
@@ -34,39 +35,41 @@ if(!in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g
 }
 
 global $BaiduPCS;
+
+// 先检查文件是否存在
+$meta = $BaiduPCS->getMeta($path);
+$meta = json_decode($meta);
+// 如果文件不存在，就试图从共享目录中抓取文件
+if(isset($meta->error_code) && $meta->error_code == '31066') {
+  $path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load/','/apps/wp2pcs/share/',$path);
+  $meta = $BaiduPCS->getMeta($path);
+  $meta = json_decode($meta);
+}
+// 如果抓取错误
+if(isset($meta->error_msg)){
+  header("Content-Type: text/html; charset=utf8");
+  echo $meta->error_msg;
+  exit;
+}
+
 $wp2pcs_cache_count = (int)get_option('WP2PCS_CACHE_'.$path);
 $wp2pcs_load_cache = (int)get_option('wp2pcs_load_cache');
+$result = null;
+// 获取缓存
+if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
+  $result = wp2pcs_get_cache($path);
+}
 
-if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp')) && !isset($_GET['download'])){
-  if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
-    $result = wp2pcs_get_cache($path);
-  }
-  else {
+if(in_array($file_ext,array('jpg','jpeg','png','gif','bmp'))) {
+  if(!$result) {
     $result = $BaiduPCS->downloadStream($path);
-    $meta = json_decode($result,true);
-    if(isset($meta['error_msg'])){
-      header("Content-Type: text/html; charset=utf8");
-      echo $meta['error_msg'];
-      exit;
-    }
   }
-
   header('Content-type: image/jpeg');
 }
-elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi')) && !isset($_GET['download'])) {
-  if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
-    $result = wp2pcs_get_cache($path);
-  }
-  else {
+elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi'))) {
+  if(!$result) {
     $result = $BaiduPCS->downloadStream($path);
-    $meta = json_decode($result,true);
-    if(isset($meta['error_msg'])){
-      header("Content-Type: text/html; charset=utf8");
-      echo $meta['error_msg'];
-      exit;
-    }
   }
-
   if($file_ext == 'mp3' || $file_ext == 'mp3pro') header("Content-Type: audio/mpeg");
   elseif($file_ext == 'ogg') header('Content-Type: application/ogg');
   elseif($file_ext == 'wma') header('Content-Type: audio/x-ms-wma');
@@ -78,9 +81,7 @@ elseif(in_array($file_ext,array('mp3','ogg','wma','wav','mp3pro','mid','midi')) 
   header('Accept-Ranges: bytes');
   header('X-Pad: avoid browser bug');
 }
-elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt')) && !isset($_GET['download'])) {
-  $meta = $BaiduPCS->getMeta($path);
-  $meta = json_decode($meta);
+elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp','3g2','mpeg','rm','rmvb','qt'))) {
   $length = @$meta->list[0]->size;
   if(!@$length) {
     header("Content-Type: text/html; charset=utf8");
@@ -169,19 +170,9 @@ elseif(in_array($file_ext,array('asf','avi','flv','mkv','mov','mp4','wmv','3gp',
   exit();
 }
 else{
-  if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
-    $result = wp2pcs_get_cache($path);
-  }
-  else {
+  if(!$result) {
     $result = $BaiduPCS->download($path);
-    $meta = json_decode($result,true);
-    if(isset($meta['error_msg'])){
-      header("Content-Type: text/html; charset=utf8");
-      echo $meta['error_msg'];
-      exit;
-    }
   }
-
   header("Content-Type: application/octet-stream");
   header('Content-Disposition:inline;filename="'.$file_name.'"');
   header('Accept-Ranges: bytes');
@@ -193,10 +184,13 @@ flush();
 
 // 缓存起来
 if($wp2pcs_load_cache && !is_admin()) {
-  if($wp2pcs_cache_count == WP2PCS_CACHE_COUNT) {
+  if($wp2pcs_cache_count < WP2PCS_CACHE_COUNT) {
+    update_option('WP2PCS_CACHE_'.$path,$wp2pcs_cache_count ++);
+  }
+  elseif(!wp2pcs_has_cache($path)) {
     wp2pcs_set_cache($path,$result);
   }
-  update_option('WP2PCS_CACHE_'.$path,$wp2pcs_cache_count ++);
+  
 }
 
 exit;
