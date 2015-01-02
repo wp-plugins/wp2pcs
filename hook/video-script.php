@@ -14,10 +14,10 @@ function wp2pcs_video_player_script() {
 ?>
 <style>
 <?php
-$bg = plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME);
-echo '.wp2pcs-video-player{display:block;margin:auto;cursor:pointer;background:url('.$bg.') no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;overflow:hidden;}';
+echo '.wp2pcs-video-player{display:block;margin:auto;cursor:pointer;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;overflow:hidden;}';
 echo '.wp2pcs-video-player:hover{-moz-opacity:1;opacity:1;}';
 echo '.wp2pcs-video-player img{-moz-opacity:0.6;opacity:0.6;width:100%;height:100%;}';
+echo '.wp2pcs-video-playing{display:block;margin:auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center;}';
 ?>
 </style>
 <script>window.jQuery || document.write('<script type="text/javascript" src="<?php echo plugins_url("assets/jquery-2.1.1.min.js",WP2PCS_PLUGIN_NAME); ?>">\x3C/script>');</script>
@@ -36,7 +36,7 @@ if($site_id && get_option('wp2pcs_site_code') && get_option('wp2pcs_video_m3u8')
   echo 'stretch = $this.attr("data-stretch"),';
   echo 'image = $this.attr("data-image");';
   echo '$this.attr("src","http://static.wp2pcs.com/player?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&image=" + image + "&path=" + path);';
-  echo '$this.removeClass("wp2pcs-video-player").css({"display":"block","margin":"auto"});';
+  echo '$this.removeClass("wp2pcs-video-player").addClass("wp2pcs-video-playing");';
   echo '$this.attr("frameborder","0");';
   echo '$this.attr("scrolling","no");';
   echo '});';
@@ -72,7 +72,7 @@ echo 'image = $this.attr("data-image"),';
 echo 'src = "'.plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME).'?md5=" + md5 + "&path='.BAIDUPCS_REMOTE_ROOT.'/load" + path;';
 echo 'src = src.replace("'.BAIDUPCS_REMOTE_ROOT.'/load'.BAIDUPCS_REMOTE_ROOT.'/load","'.BAIDUPCS_REMOTE_ROOT.'/load");';// 这一句是兼容老版本的关键
 echo 'if(md5 == undefined || md5 == "") return;';
-echo '$this.after("<iframe width=" + width + " height=" + height + " style=display:block;margin:auto; src=" + src + " frameborder=0 scrolling=no></iframe>");';
+echo '$this.after("<iframe class=wp2pcs-video-playing width=" + width + " height=" + height + " src=" + src + " frameborder=0 scrolling=no></iframe>");';
 echo '$this.remove();';
 echo 'return false;';
 echo '});';
