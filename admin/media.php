@@ -54,6 +54,7 @@ if(isset($_GET['dir']) && !empty($_GET['dir'])){
   }
   ?>
   </div>
+  <?php if(strpos($dir_path,'/apps/wp2pcs/share') === 0) { ?><input type="hidden" id="wp2pcs-manage-media-page-check-root-dir" value="share"><?php } ?>
   <div id="wp2pcs-manage-media-page-file-info">
     <a href="javascirpt:void(0);" class="close">&times;</a>
     <div class="thumb"></div>

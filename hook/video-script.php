@@ -73,6 +73,7 @@ echo 'root_dir = $this.attr("data-root-dir"),';
 echo 'src = "'.plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME).'?md5=" + md5 + "&path='.BAIDUPCS_REMOTE_ROOT.'/load" + path;';
 echo 'src = src.replace("'.BAIDUPCS_REMOTE_ROOT.'/load'.BAIDUPCS_REMOTE_ROOT.'/load","'.BAIDUPCS_REMOTE_ROOT.'/load");';// 这一句是兼容老版本的关键
 echo 'if(root_dir == "share") src = src.replace("'.BAIDUPCS_REMOTE_ROOT.'/load","/apps/wp2pcs/share");';
+echo 'else if(root_dir) src = src.replace("'.BAIDUPCS_REMOTE_ROOT.'/load",root_dir);';
 echo 'if(md5 == undefined || md5 == "") return;';
 echo '$this.after("<iframe class=wp2pcs-video-playing width=" + width + " height=" + height + " src=" + src + " frameborder=0 scrolling=no></iframe>");';
 echo '$this.remove();';

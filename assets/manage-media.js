@@ -38,6 +38,7 @@ jQuery(function($){
   $(document).on('click','#wp2pcs-manage-media-page-files .file-on-pcs',function(e){
     var $this = $(this),
         $file_info = $('#wp2pcs-manage-media-page-file-info'),
+        root_dir = $('#wp2pcs-manage-media-page-check-root-dir').val(),
         file_format = $this.attr('data-file-format'),
         file_type = $this.attr('data-file-type'),
         file_name = $this.attr('data-file-name'),
@@ -64,7 +65,7 @@ jQuery(function($){
     else if(file_format == 'video') {
       $file_info.find('.format').text('视频');
       $file_info.find('.code').text('<img src="' + file_url + '">');
-      $file_info.find('.code').text('<iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"></iframe>');
+      $file_info.find('.code').text('<iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"' + (root_dir ? ' data-root-dir="' + root_dir + '"' : '') + '></iframe>');
     }
     else {
       $file_info.find('.format').text('文件');
