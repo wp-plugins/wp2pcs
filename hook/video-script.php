@@ -15,6 +15,7 @@ function wp2pcs_video_player_script() {
 <style>
 <?php
 echo '.wp2pcs-video-player{display:block;margin:1em auto;cursor:pointer;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;overflow:hidden;}';
+echo '.wp2pcs-video-player a{display:block;min-width:480px;min-height:360px;margin: auto;}';
 echo '.wp2pcs-video-player:hover{-moz-opacity:1;opacity:1;}';
 echo '.wp2pcs-video-player img{-moz-opacity:0.6;opacity:0.6;width:100%;height:100%;}';
 echo '.wp2pcs-video-playing{display:block;margin:auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center;}';
