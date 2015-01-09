@@ -48,7 +48,7 @@
   <div class="inside">
     <p>官方网站：<a href="http://www.wp2pcs.com" target="_blank">http://www.wp2pcs.com</a></p>
     <p>交流QQ群：<a href="http://shang.qq.com/wpa/qunwpa?idkey=97278156f3def92eef226cd5b88d9e7a463e157655650f4800f577472c219786" target="_blank">292172954</a></p>
-    <p>作者微博：<a href="http://weibo.com/hz184" target="_blank">@否子戈</a> <small>最快获取WP2PCS更新、BUG修复、功能添加、活动信息</small></p>
+    <p>作者：<a href="http://weibo.com/hz184" target="_blank">@否子戈</a>，站点：<a href="http://www.utubon.com" target="_blank">乌徒帮</a>、<a href="http://www.utubon.com" target="_blank">WPSO</a></p>
     <p>向作者捐赠：支付宝<code>476206120@qq.com</code>，财付通<code>476206120</code>，比特币<code>16tezAsqEZHhVz4xAmNAp8A5r7qMg1NG9P</code>，多少都没有关系，捐赠的时候请注明一下你是要捐赠“WP2PCS WordPress插件”。</p>
     <p><a href="http://www.wp2pcs.com/?cat=1" target="_blank" class="button">查看插件更新</a></p>
   </div>
