@@ -14,7 +14,7 @@ function wp2pcs_video_player_script() {
 ?>
 <style>
 <?php
-echo '.wp2pcs-video-player{display:block;margin:auto;cursor:pointer;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;overflow:hidden;}';
+echo '.wp2pcs-video-player{display:block;margin:1em auto;cursor:pointer;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;overflow:hidden;}';
 echo '.wp2pcs-video-player:hover{-moz-opacity:1;opacity:1;}';
 echo '.wp2pcs-video-player img{-moz-opacity:0.6;opacity:0.6;width:100%;height:100%;}';
 echo '.wp2pcs-video-playing{display:block;margin:auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center;}';
@@ -143,8 +143,8 @@ jQuery(function($){
 // 直接访问文件的时候打印CSS
 if(isset($_GET['script']) && $_GET['script'] == 'style.css') {
   header('Content-Type: text/css; charset=utf-8');
-  echo 'div.wp2pcs-video-player{display:block;width:480px;height:360px;margin: 1em auto;background:url(../assets/video-play.png) no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;}';
-  echo 'div.wp2pcs-video-player:hover{-moz-opacity:1;opacity:1;}';
+  echo '.wp2pcs-video-player{display:block;width:480px;height:360px;margin: 1em auto;background:url(../assets/video-play.png) no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;}';
+  echo '.wp2pcs-video-player:hover{-moz-opacity:1;opacity:1;}';
   exit;
 }
 
