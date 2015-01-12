@@ -23,7 +23,7 @@ http://wordpress.stackexchange.com/questions/85351/remove-other-tabs-in-new-word
 add_filter('media_upload_tabs','wp2pcs_insert_media_tab');
 function wp2pcs_insert_media_tab($tabs){
   $newtab = array('wp2pcs' => 'WP2PCS');
-    return array_merge($tabs,$newtab);
+  return array_merge($tabs,$newtab);
 }
 // 这个地方需要增加一个中间介wp_iframe，这样就可以使用wordpress的脚本和样式
 add_action('media_upload_wp2pcs','wp2pcs_insert_media_iframe');// media_upload_wp2pcs = [media_upload_] + [tab_key = wp2pcs]

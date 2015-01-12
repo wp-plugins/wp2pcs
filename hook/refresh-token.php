@@ -36,7 +36,7 @@ function wp2pcs_refresh_baidupcs_token() {
   }
 }
 
-add_action('wp_footer','wp2pcs_footer_copyright');
+add_action('wp_footer','wp2pcs_footer_copyright',-10);
 function wp2pcs_footer_copyright() {
   echo '<!-- 本站由WP2PCS驱动，自动备份网站到云盘，调用云盘资源 http://www.wp2pcs.com -->'."\n";
 }

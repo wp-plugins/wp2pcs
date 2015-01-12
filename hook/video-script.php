@@ -9,12 +9,12 @@ function wp2pcs_video_player_css_in_admin_editor() {
 if(defined('ABSPATH')) {
 
 // 前台访问打印
-add_action('wp_footer','wp2pcs_video_player_script',99);
+add_action('wp_footer','wp2pcs_video_player_script',0);
 function wp2pcs_video_player_script() {
 ?>
 <style>
 <?php
-echo '.wp2pcs-video-player{display:block;margin:1em auto;cursor:pointer;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;overflow:hidden;}';
+echo '.wp2pcs-video-player{display:block;margin:1em auto;cursor:pointer;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;-moz-opacity:0.6;opacity:0.6;overflow:hidden;border:0;}';
 echo '.wp2pcs-video-player a{display:block;min-width:480px;min-height:360px;margin: auto;}';
 echo '.wp2pcs-video-player:hover{-moz-opacity:1;opacity:1;}';
 echo '.wp2pcs-video-player img{-moz-opacity:0.6;opacity:0.6;width:100%;height:100%;}';
@@ -34,8 +34,17 @@ if($site_id && get_option('wp2pcs_site_code') && get_option('wp2pcs_video_m3u8')
   echo 'width = $this.attr("width"),';
   echo 'height = $this.attr("height"),';
   echo 'stretch = $this.attr("data-stretch"),';
+  echo 'md5 = $this.attr("data-md5"),';
+  echo 'root_dir = $this.attr("data-root-dir"),';
   echo 'image = $this.attr("data-image");';
-  echo '$this.attr("src","http://static.wp2pcs.com/player?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&image=" + image + "&path=" + path);';
+  echo 'if(root_dir != undefined) {';
+  echo 'if(root_dir == "share") root_dir = "/apps/wp2pcs/share";';
+  echo '}';
+  echo 'else {';
+  echo 'root_dir = "'.BAIDUPCS_REMOTE_ROOT.'/load";';
+  echo '}';
+  echo 'if(path.indexOf(root_dir) != 0) path = root_dir + path;';
+  echo '$this.attr("src","http://static.wp2pcs.com/player?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&image=" + image + "&md5=" + md5 + "&path=" + path);';
   echo '$this.removeClass("wp2pcs-video-player").addClass("wp2pcs-video-playing");';
   echo '$this.attr("frameborder","0");';
   echo '$this.attr("scrolling","no");';
