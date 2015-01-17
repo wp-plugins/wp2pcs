@@ -12,7 +12,8 @@ function wp2pcs_media_list_files($dir_path,$limit){
 // 当前路径相关信息
 if(isset($_GET['dir']) && !empty($_GET['dir'])){
   $dir_path = $_GET['dir'];
-}else{
+}
+else{
   $dir_path = BAIDUPCS_REMOTE_ROOT.'/load';
 }
 ?>
@@ -48,7 +49,7 @@ if(isset($_GET['dir']) && !empty($_GET['dir'])){
     if(!empty($current_path)) foreach($current_path as $dir) {
       $place_path_arr[] = $dir;
       $place_path_link = remove_query_arg('refresh');
-      $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
+      $place_path_link = add_query_arg('dir','/apps/wp2pcs/share/'.implode('/',$place_path_arr),$place_path_link);
       echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
     }
   }
