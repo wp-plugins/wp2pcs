@@ -69,7 +69,7 @@ else{
   echo '}';
   echo 'wp2pcs_setup_videos();';
 }
-// 下面这段代码虽然对于付费用户选择m3u8格式视频是无效的，但它兼容1.4.0,1.4.1,1.4.2版本，这三个版本使用了div a的触发方式，而非iframe直接触发，这段代码可以对1.4.3及以后的非付费用户和以前版本的遗留代码同时起作用
+// 下面这段代码虽然对于付费用户选择m3u8格式视频是无效的，但它兼容1.4.0,1.4.1,1.4.2版本（付费用户可能也曾经使用过），这三个版本使用了div a的触发方式，而非iframe直接触发，这段代码可以对1.4.3及以后的非付费用户和以前版本的遗留代码同时起作用
 echo 'jQuery(function($){';
 echo '$(document).on("click",".wp2pcs-video-player",function(e){';
 echo 'var $this = $(this),';
@@ -131,15 +131,8 @@ if($referer && strpos($_SERVER["HTTP_REFERER"],$host) !== false) {
 <div class="guanjia_panl" id="guanjia_panl"></div>
 <script src="/res/static/thirdparty/guanjia/js/guanjia_video_all.js?t=201412054621" type="text/javascript"></script>
 <script src="/res/static/thirdparty/flashvideo/js/cyberplayer.min.js" type="text/javascript"></script>
-<script type="text/javascript">/*<![CDATA[*/$(document).ready(function(){var D=function(){disk.ui.VideoFlash.prototype.getVideoPath=function(){return"/api/streaming?path="+disk.getParam("path")+"&type=M3U8_AUTO_480";};C=decodeURIComponent(C);var A=disk.ui.VideoFlash.obtain(),_={path:C,target:"guanjia_panl",type:2,md5:E,isGuanJia:true,onSeek:function(){},onTime:function(){}};A.play(_);disk.ui.VideoFlash.getStorageItem(E,function(_){if(disk.ui.VideoFlash.flashPlayer){disk.ui.VideoFlash.flashPlayer.seek(_);}});disk.ui.GuanJiaVideo.installFuncTips();if(disk.DEBUG){}},C=disk.getParam("path"),E=disk.getParam("md5")||"",B=$("#guanjia_panl"),_=function(){B.html('<div class="nofile">\u6587\u4ef6\u52a0\u8f7d\u5931\u8d25</div>');};if(!C){_();return;}if(parseInt(disk.getParam("safebox"),10)===1){D();$.get("/api/streaming?path="+disk.getParam("path")+"&type=M3U8_AUTO_480",function(_){try{_=$.parseJSON(_);if(_.errno===27){try{BDHScript.throwEvent("LockSafebox",{lock:1});}catch(A){}}else{}}catch(A){}});}else{C=decodeURIComponent(C);var F=disk.ui.VideoFlash.obtain(),A={path:C,target:"guanjia_panl",type:2,md5:E,isGuanJia:true,onSeek:function(){},onTime:function(){}};F.play(A);disk.ui.VideoFlash.getStorageItem(E,function(_){if(disk.ui.VideoFlash.flashPlayer){disk.ui.VideoFlash.flashPlayer.seek(_);}});disk.ui.GuanJiaVideo.installFuncTips();if(disk.DEBUG){}}});/*]]>*/</script>
-<script>
-jQuery(function($){
-  $('.video-functions-tips').remove();
-  $(document).bind("contextmenu",function(e){   
-    return false;   
-  });
-});
-</script>
+<script type="text/javascript">/*<![CDATA[*/$(document).ready(function(){var D=function(){disk.ui.VideoFlash.prototype.getVideoPath=function(){return"/api/streaming?path="+disk.getParam("path")+"&type=M3U8_AUTO_480";};C=decodeURIComponent(C);var A=disk.ui.VideoFlash.obtain(),_={path:C,target:"guanjia_panl",type:2,md5:E,isGuanJia:true,onSeek:function(){},onTime:function(){}};A.play(_);disk.ui.VideoFlash.getStorageItem(E,function(_){if(disk.ui.VideoFlash.flashPlayer){disk.ui.VideoFlash.flashPlayer.seek(_);}});if(disk.DEBUG){}},C=disk.getParam("path"),E=disk.getParam("md5")||"",B=$("#guanjia_panl"),_=function(){B.html('<div class="nofile">\u6587\u4ef6\u52a0\u8f7d\u5931\u8d25</div>');};if(!C){_();return;}if(parseInt(disk.getParam("safebox"),10)===1){D();$.get("/api/streaming?path="+disk.getParam("path")+"&type=M3U8_AUTO_480",function(_){try{_=$.parseJSON(_);if(_.errno===27){try{BDHScript.throwEvent("LockSafebox",{lock:1});}catch(A){}}else{}}catch(A){}});}else{C=decodeURIComponent(C);var F=disk.ui.VideoFlash.obtain(),A={path:C,target:"guanjia_panl",type:2,md5:E,isGuanJia:true,onSeek:function(){},onTime:function(){}};F.play(A);disk.ui.VideoFlash.getStorageItem(E,function(_){if(disk.ui.VideoFlash.flashPlayer){disk.ui.VideoFlash.flashPlayer.seek(_);}});if(disk.DEBUG){}}});/*]]>*/</script>
+<script>jQuery(function($){$(document).bind("contextmenu",function(e){return false;});});</script>
 <?php }else{ ?>
 </head>
 <body>
