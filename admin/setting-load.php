@@ -25,7 +25,6 @@
 
 <?php
 $wp2pcs_load_linktype = (int)get_option('wp2pcs_load_imglink');
-$wp2pcs_load_videoplay = (int)get_option('wp2pcs_load_videoplay');
 ?>
 <div class="postbox">
   <div class="handlediv" title="点击以切换"><br></div>
@@ -35,11 +34,6 @@ $wp2pcs_load_videoplay = (int)get_option('wp2pcs_load_videoplay');
       <option value="0" <?php selected($wp2pcs_load_linktype,0); ?>>关闭</option>
       <option value="1" <?php selected($wp2pcs_load_linktype,1); ?>>开启</option>
     </select></p>
-    <p>插入视频时插入视频播放器？<select name="wp2pcs_load_videoplay">
-        <option value="0" <?php selected($wp2pcs_load_videoplay,0); ?>>关闭</option>
-        <option value="1" <?php selected($wp2pcs_load_videoplay,1); ?>>开启</option>
-      </select>
-    </p>
   </div>
 </div>
 

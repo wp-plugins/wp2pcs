@@ -1,16 +1,13 @@
 <?php
 
-// 基本的视频播放器样式css，因为两种情况下都要用，所以放在最前面
-function wp2pcs_video_player_css_in_admin_editor() {
-  
-}
-
 // 判断如果加载了WordPress
 if(defined('ABSPATH')) {
 
 // 前台访问打印
 add_action('wp_footer','wp2pcs_video_player_script',0);
 function wp2pcs_video_player_script() {
+$site_id = get_option('wp2pcs_site_id');
+if($site_id && get_option('wp2pcs_site_code') && get_option('wp2pcs_video_m3u8')) :
 ?>
 <style>
 <?php
@@ -25,8 +22,6 @@ echo '.wp2pcs-video-playing{display:block;margin:auto;background:url('.plugins_u
 <script type="text/javascript">
 <?php
 // 如果是付费用户
-$site_id = get_option('wp2pcs_site_id');
-if($site_id && get_option('wp2pcs_site_code') && get_option('wp2pcs_video_m3u8') && get_option('wp2pcs_vip_expire') > time()) {
   echo 'function wp2pcs_setup_videos() {';
   echo 'jQuery("iframe.wp2pcs-video-player").each(function(){';
   echo 'var $this = jQuery(this),';
@@ -51,50 +46,10 @@ if($site_id && get_option('wp2pcs_site_code') && get_option('wp2pcs_video_m3u8')
   echo '});';
   echo '}';
   echo 'wp2pcs_setup_videos();';
-}
-else{
-  echo 'function wp2pcs_setup_videos() {';
-  echo 'jQuery("iframe.wp2pcs-video-player").each(function(){';
-  echo 'var $this = jQuery(this),';
-  echo 'path = $this.attr("data-path"),';
-  echo 'md5 = $this.attr("data-md5"),';
-  echo 'width = $this.attr("width"),';
-  echo 'height = $this.attr("height"),';
-  echo 'stretch = $this.attr("data-stretch"),';
-  echo 'root_dir = $this.attr("data-root-dir"),';
-  echo 'image = $this.attr("data-image");';
-  echo '$this.after("<div class=wp2pcs-video-player style=display:block;width:" + width + "px;height:" + height + "px; width=" + width + " height=" + height + " data-stretch=" + stretch + " data-image=" + image + " data-path=" + path + " data-md5=" + md5 + (root_dir != undefined ? " data-root-dir=" + root_dir : "") + ">" + (image ? "<img src=" + image + ">" : "&nbsp") + "</div>");';
-  echo '$this.remove();';
-  echo '});';
-  echo '}';
-  echo 'wp2pcs_setup_videos();';
-}
-// 下面这段代码虽然对于付费用户选择m3u8格式视频是无效的，但它兼容1.4.0,1.4.1,1.4.2版本（付费用户可能也曾经使用过），这三个版本使用了div a的触发方式，而非iframe直接触发，这段代码可以对1.4.3及以后的非付费用户和以前版本的遗留代码同时起作用
-echo 'jQuery(function($){';
-echo '$(document).on("click",".wp2pcs-video-player",function(e){';
-echo 'var $this = $(this),';
-echo 'path = $this.attr("data-path"),';
-echo 'md5 = $this.attr("data-md5"),';
-echo 'width = $this.width(),';
-echo 'height = $this.height(),';
-echo 'root_dir = $this.attr("data-root-dir");';
-echo 'if(root_dir != undefined) {';
-echo 'if(root_dir == "share") root_dir = "/apps/wp2pcs/share";';
-echo '}';
-echo 'else {';
-echo 'root_dir = "'.BAIDUPCS_REMOTE_ROOT.'/load";';
-echo '}';
-echo 'if(path.indexOf(root_dir) != 0) path = root_dir + path;';
-echo 'var src = "'.plugins_url("hook/video-script.php",WP2PCS_PLUGIN_NAME).'?md5=" + md5 + "&path=" + path;';
-echo 'if(md5 == undefined || md5 == "") return;';
-echo '$this.after("<iframe class=wp2pcs-video-playing width=" + width + " height=" + height + " src=" + src + " frameborder=0 scrolling=no></iframe>");';
-echo '$this.remove();';
-echo 'return false;';
-echo '});';
-echo '});';
 ?>
 </script>
 <?php
+endif;
 }
 
 // 加入到后台编辑器中css
