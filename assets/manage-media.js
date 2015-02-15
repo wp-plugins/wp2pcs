@@ -7,6 +7,9 @@ jQuery(function($){
     e.preventDefault();
     close_file_info();
   });
+  $(document).on('dblclick',function(){
+    close_file_info();
+  });
   // 点击上传按钮
   $('#wp2pcs-manage-media-btn-upload').on('click',function(e){
     e.preventDefault();
