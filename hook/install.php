@@ -15,6 +15,6 @@ function wp2pcs_install_redirect() {
   }
   if(get_option('wp2pcs_do_activation_redirect')) {
     delete_option('wp2pcs_do_activation_redirect');
-    wp_redirect(admin_url('plugins.php?page=wp2pcs&tab=about'));
+    wp_redirect(add_query_arg(array('tab'=>'about','time'=>time()),menu_page_url('wp2pcs-setting',false)));
   }
 }
