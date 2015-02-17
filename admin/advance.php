@@ -36,7 +36,7 @@
   <h3 class="hndle">去除版权</h3>
   <div class="inside">
     <p>WP2PCS的基本功能是免费提供使用的，在网页源代码底部增加了一个HTML注释的版权信息。如果你想去除，请支付版权费用。</p>
-    <p>版权费用79元，终身受用，不限制域名。</p>
+    <p>版权费用29元，终身受用，不限制域名。</p>
   </div>
 </div>
 <div class="postbox closed">
