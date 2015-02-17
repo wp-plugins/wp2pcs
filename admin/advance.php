@@ -12,7 +12,7 @@
 
 <div class="postbox closed">
   <div class="handlediv" title="点击以切换"><br></div>
-  <h3 class="hndle">付费用户专享特权</h3>
+  <h3 class="hndle">付费会员专享特权</h3>
   <div class="inside">
     <p>没必要列出一大堆，就这几个核心权利。</p>
     <ol>
@@ -50,7 +50,7 @@
 
 <div class="postbox">
   <div class="handlediv" title="点击以切换"><br></div>
-  <h3 class="hndle">如何成为付费用户</h3>
+  <h3 class="hndle">如何成为付费会员</h3>
   <div class="inside">
     <h4>第一步 成为用户</h4>
     <p>分别注册<a href="http://www.utubon.com/bbs/" target="_blank">乌徒坛</a>和<a href="http://www.wp2pcs.com" target="_blank">WP2PCS官网</a>，注册乌徒坛是为了获取用户特权，查看专享板块，可以获得帮助和更多资源；注册官网是为了获取站点码，用以和官网调用接口对接。</p>
