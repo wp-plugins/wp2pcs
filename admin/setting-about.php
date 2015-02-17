@@ -33,6 +33,16 @@
 .feature-section .last-col {
   margin-right: 0 !important;
 }
+.feature-section ul {
+  padding-left: 1em;
+}
+.feature-section ul li {
+  list-style: disc;
+}
+.feature-section small {
+  font-size: .9em;
+  color: #999;
+}
 </style>
 
 <div class="wrap">
@@ -45,21 +55,27 @@
 </h2>
 
 <div class="update-about-feature headline-feature">
-	<h2>全新的1.4.0版本，为你带来超简化的酷爽体验！</h2>
-	<?php if(get_option('wp_to_pcs_app_token')) { echo '<p style="color: #DA4F25;">检测到你是从低版本升级上来的，1.4.0版本是一个全新的版本，以前的所有设置都无效了，你需要花点时间来看下怎么升级。点击<a href="http://www.wp2pcs.com/?p=432" target="_blank">这里</a>查看</p>'; } ?>
-	<div class="featured-image">
-		<img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
-	</div>
-	<div class="clear"></div>
+  <h2>版本1.4.6+，中规中矩，进入产品阶段！</h2>
+  <div class="featured-image">
+    <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
+  </div>
+  <div class="clear"></div>
 </div>
 
 <hr />
 
 <div class="update-about-feature">
-	<div class="feature-section two-col">
+  <div class="feature-section two-col">
     <div class="col col-1">
-      <h3>更简洁的设置和操作</h3>
-      <p>后台的设置操作被简化的更加便捷，更加人性化，我们不要追求复杂，而是简化。</p>
+      <h3>备份网站数据和文件到云端</h3>
+      <p>后台简单设置，即可规定自动备份时间、路径、黑名单和白名单，简化一切复杂操作。</p>
+      <ul>
+        <li>定时备份，不再担心错过重要的数据</li>
+        <li>自动备份，无需每天守着</li>
+        <li>定义备份选项，根据需要备份网站</li>
+        <li>备份数据库和文件，统统都在云端</li>
+      </ul>
+      <p><small>要求：1.临时目录的可写权限；2.网站空间性能不至于太差。</small></p>
     </div>
     <div class="col col-2 last-col">
       <img src="<?php echo plugins_url('assets/about-1.jpg',WP2PCS_PLUGIN_NAME); ?>" />
@@ -71,13 +87,19 @@
 <hr />
 
 <div class="update-about-feature">
-	<div class="feature-section two-col">
+  <div class="feature-section two-col">
     <div class="col col-1">
       <img src="<?php echo plugins_url('assets/about-2.jpg',WP2PCS_PLUGIN_NAME); ?>" />
     </div>
     <div class="col col-2 last-col">
-      <h3>更酷炫的媒体插入界面</h3>
-      <p>优化了媒体插入界面，去除繁复，留下最好看的界面。</p>
+      <h3>调用云盘内的附件资源到网站内使用</h3>
+      <p>媒体插入界面，或者直接引用对应的URL，去除繁复，留下最熟悉的界面。</p>
+      <ul>
+        <li>操作方便，与WordPress媒体插入和管理统一界面</li>
+        <li>使用对应的URL，任何页面都可以使用附件</li>
+        <li>支持图片、小文件、mp3、mp4</li>
+        <li>支持url重写</li>
+      </ul>
     </div>
   </div>
   <div class="clear"></div>
@@ -86,20 +108,34 @@
 <hr />
 
 <div class="update-about-feature">
-  <h3>核心功能</h3>
-  <div class="feature-section three-col">
+  <div class="feature-section two-col">
     <div class="col col-1">
-      <h4>调用云盘资源</h4>
-      <p>把云盘当做你的存储空间，调用云盘资源到网站里面用。</p>
+      <h3>付费扩展其他功能</h3>
+      <p>外链，瞬间加速；基于WP2PCS的插件，各种酷酷的功能；成为付费用户，享受专享服务。</p>
+      <ul>
+        <li>付费站长，在你的站点开启外链URL形式，加速附件调用</li>
+        <li>自助外链服务，无需站点，随处都可以调用资源</li>
+        <li>功能扩展，酷酷的感觉~</li>
+      </ul>
+      <p>具体的付费服务，请点击<a href="http://www.wp2pcs.com/?page_id=730" target="_blank">这里</a>阅读</p>
     </div>
-    <div class="col col-2">
-      <h4>定时自动备份</h4>
-      <p>在设定的时间自动备份到云盘，让你的网站文件和数据解除风险。</p>
+    <div class="col col-2 last-col">
+      <img src="<?php echo plugins_url('assets/about-3.jpg',WP2PCS_PLUGIN_NAME); ?>" />
     </div>
-    <div class="col col-3 last-col">
-      <h4>付费用户</h4>
-      <p>成为付费用户，只需108元/年，专享付费特殊服务。</p>
-    </div>
+  </div>
+  <div class="clear"></div>
+</div>
+
+<hr />
+
+<div class="update-about-feature">
+  <h3>一句话总结</h3>
+  <div class="feature-section" style="text-align: center;">
+    <p>省去繁复，专注创造，让web生活酷酷哒~</p>
+    <p style="padding: 20px 0;">
+      <a href="<?php menu_page_url('wp2pcs-setting'); ?>" class="button-primary">立即开始</a>
+      <a href="http://www.wp2pcs.com/?cat=3" class="button" target="_blank">使用指南</a>
+    </p>
   </div>
   <div class="clear"></div>
 </div>

@@ -2,19 +2,14 @@
 
 register_activation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_install');
 function wp2pcs_install(){
-  $run_time = strtotime(date('Y-m-d 01:00:00',strtotime('+7 day')));
-  wp_schedule_event($run_time,'weekly','wp2pcs_token_cron_task');
-  add_option('wp2pcs_do_activation_redirect',true);
+  wp_schedule_event(strtotime('+7 days'),'weekly','wp2pcs_token_cron_task');
 }
 
 add_action('admin_init','wp2pcs_install_redirect');
 function wp2pcs_install_redirect() {
-  if(get_option('wp_to_pcs_app_key')) { // 如果存在这个值，说明是从老版本升级过来的
-    add_option('wp2pcs_do_activation_redirect',true);
-    delete_option('wp_to_pcs_app_key');
-  }
-  if(get_option('wp2pcs_do_activation_redirect')) {
-    delete_option('wp2pcs_do_activation_redirect');
+  $plugin_version = get_option('wp2pcs_plugin_version');
+  if($plugin_version < WP2PCS_PLUGIN_VERSION) {
+    update_option('wp2pcs_plugin_version',WP2PCS_PLUGIN_VERSION);
     wp_redirect(add_query_arg(array('tab'=>'about','time'=>time()),menu_page_url('wp2pcs-setting',false)));
   }
 }

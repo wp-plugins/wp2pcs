@@ -41,10 +41,39 @@ global $BaiduPCS;
 $meta = $BaiduPCS->getMeta($path);
 $meta = json_decode($meta);
 // 如果文件不存在，就试图从共享目录中抓取文件
-if(isset($meta->error_code) && $meta->error_code == '31066') {
+if(isset($meta->error_code) && $meta->error_code == 31066) {
   $path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load/','/apps/wp2pcs/share/',$path);
   $meta = $BaiduPCS->getMeta($path);
   $meta = json_decode($meta);
+}
+// 如果该access_token无法正确获取权限
+if(isset($meta->error_code) && $meta->error_code == 111) {
+  $refresh_token = get_option('wp2pcs_baidupcs_refresh_token');
+  $refresh_token = $refresh_token['token'];
+  $site_id = get_option('wp2pcs_site_id');
+  $site_code = get_option('wp2pcs_site_code');
+  $post_data = array(
+    'refresh_token' => $wp2pcs_baidupcs_refresh_token['token']
+  );
+  if($site_id && $site_code) {
+    $post_data['site_id'] = $site_id;
+    $post_data['code'] = md5($site_code);
+  }
+  $data = get_by_curl('https://api.wp2pcs.com/oauth_baidupcs_refresh_token.php',$post_data);
+  $data = json_decode($data);
+  if($data->access_token && $data->refresh_token) {
+    $access_token = $data->access_token;
+    $refresh_token = array(
+      'time' => time(),
+      'token' => $data->refresh_token
+    );
+    update_option('wp2pcs_baidupcs_access_token',$access_token);
+    update_option('wp2pcs_baidupcs_refresh_token',$refresh_token);
+    // 用新的token获取文件信息
+    $BaiduPCS = new BaiduPCS($access_token);
+    $meta = $BaiduPCS->getMeta($path);
+    $meta = json_decode($meta);
+  }
 }
 // 如果抓取错误
 if(isset($meta->error_msg)){
