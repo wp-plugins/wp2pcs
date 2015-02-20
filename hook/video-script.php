@@ -15,10 +15,10 @@ echo '.wp2pcs-video-player{display:block;margin:1em auto;cursor:pointer;backgrou
 echo '.wp2pcs-video-player a{display:block;min-width:480px;min-height:360px;margin: auto;}';
 echo '.wp2pcs-video-player:hover{-moz-opacity:1;opacity:1;}';
 echo '.wp2pcs-video-player img{-moz-opacity:0.6;opacity:0.6;width:100%;height:100%;}';
-echo '.wp2pcs-video-playing{display:block;margin:auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center;}';
+echo '.wp2pcs-video-playing{display:block;border:0;margin:auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center;}';
 ?>
 </style>
-<script>window.jQuery || document.write('<script type="text/javascript" src="<?php echo plugins_url("assets/jquery-2.1.1.min.js",WP2PCS_PLUGIN_NAME); ?>">\x3C/script>');</script>
+<script>window.jQuery || document.write('<script type="text/javascript" src="<?php echo plugins_url("assets/jquery-1.11.2.min.js",WP2PCS_PLUGIN_NAME); ?>">\x3C/script>');</script>
 <script type="text/javascript">
 <?php
 // 如果是付费用户
