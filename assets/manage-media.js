@@ -3,6 +3,7 @@ jQuery(function($){
   var $click = {};
   $click.media_file = false;
   function close_file_info() {
+    $('#wp2pcs-manage-media-page-files .file-on-pcs').removeClass('selected');
     $('#wp2pcs-manage-media-page-file-info').hide();
   }
   $('#wp2pcs-manage-media-page-file-info .close').on('click',function(e){
