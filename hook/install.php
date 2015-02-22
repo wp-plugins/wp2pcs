@@ -11,12 +11,11 @@ function wp2pcs_install_redirect() {
   $user_id = get_current_user_id();
   if(get_user_meta($user_id,'wp2pcs_plugin_version',true) != WP2PCS_PLUGIN_VERSION) {
     echo '<script>top.location.href="'.add_query_arg(array('tab'=>'about','time'=>time()),menu_page_url('wp2pcs-setting',false)).'";</script>';
-    update_user_meta($user_id,'wp2pcs_plugin_version',WP2PCS_PLUGIN_VERSION);
     exit();
   }
   if(get_option('wp2pcs_plugin_version') != WP2PCS_PLUGIN_VERSION) {
-    update_option('wp2pcs_plugin_version',WP2PCS_PLUGIN_VERSION);
     add_action('admin_print_footer_scripts','wp2pcs_install_script_notice');
+    update_option('wp2pcs_plugin_version',WP2PCS_PLUGIN_VERSION);
     wp2pcs_install_sendmail();
   }
 }
