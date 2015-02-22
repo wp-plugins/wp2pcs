@@ -17,3 +17,4 @@ if(isset($_GET['access_token']) && !empty($_GET['access_token'])) {
   }
   wp_redirect(menu_page_url('wp2pcs-setting',false));
 }
+
