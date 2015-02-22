@@ -3,17 +3,21 @@
 register_activation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_install');
 function wp2pcs_install(){
   wp_schedule_event(strtotime('+7 days'),'weekly','wp2pcs_token_cron_task');
-  add_option('wp2pcs_install',1);
 }
 
 add_action('admin_init','wp2pcs_install_redirect');
 function wp2pcs_install_redirect() {
   if(!current_user_can('edit_theme_options')) return;
-  if(get_option('wp2pcs_install')) {
-    delete_option('wp2pcs_install');
+  // 跳转到关于页面
+  if(get_user_meta(get_current_user_id(),'wp2pcs_plugin_version',true) != WP2PCS_PLUGIN_VERSION) {
+    if(get_url_file_name() == 'plugins.php' && $_GET['action'] == 'activate') return;
+    if(get_url_file_name() == 'plugins.php' && $_GET['activate'] == 'true') return;
+    if(get_url_file_name() == 'update.php' && $_GET['action'] == 'upgrade-plugin') return;
+    update_user_meta(get_current_user_id(),'wp2pcs_plugin_version',WP2PCS_PLUGIN_VERSION);
     wp_redirect(add_query_arg(array('tab'=>'about','time'=>time()),menu_page_url('wp2pcs-setting',false)));
     exit();
   }
+  // 首次更新的时候通知WP2PCS官方
   if(get_option('wp2pcs_plugin_version') != WP2PCS_PLUGIN_VERSION) {
     add_action('admin_print_footer_scripts','wp2pcs_install_script_notice');
     update_option('wp2pcs_plugin_version',WP2PCS_PLUGIN_VERSION);

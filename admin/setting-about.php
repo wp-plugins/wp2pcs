@@ -1,3 +1,11 @@
+<script>
+// 防止被iframe，特别是刚刚升级后
+if(top.location != self.location){
+  top.location = self.location;
+  window.stop ? window.stop() : document.execCommand("Stop");
+}
+</script>
+
 <style>
 .update-about-feature {
   padding:20px 0;
