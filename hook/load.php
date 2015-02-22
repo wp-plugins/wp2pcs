@@ -166,7 +166,7 @@ elseif((in_array($file_ext,$video_exts) || in_array($file_ext,$audio_exts))) {
   echo $output;
   flush();
 
-  do_action('wp2pcs_load_file_after',$path,$meta);
+  do_action('wp2pcs_load_file_after',$path,$meta,$output,$start,$length);
   exit();
 }
 else{
@@ -193,6 +193,6 @@ if($wp2pcs_load_cache && !is_admin()) {
   
 }
 
-do_action('wp2pcs_load_file_after',$path,$meta);
+do_action('wp2pcs_load_file_after',$path,$meta,$result);
 exit();
 endif;// end of path usefullness
