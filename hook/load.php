@@ -193,6 +193,6 @@ if($wp2pcs_load_cache && !is_admin()) {
   
 }
 
-do_action('wp2pcs_load_file_after',$path,$meta,$result);
+do_action('wp2pcs_load_file_after',$path,$meta,$result,null,null);
 exit();
 endif;// end of path usefullness
