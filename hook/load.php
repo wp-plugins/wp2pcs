@@ -25,7 +25,6 @@ elseif($path == '/') : return;
 elseif(strpos($path,'.') === false) : return;
 else :
 
-$path = BAIDUPCS_REMOTE_ROOT.'/load'.$path;
 $file_ext = strtolower(substr($path,strrpos($path,'.')+1));
 $file_name = substr($path,strrpos($path,'/')+1);
 // 格式包含哪些
@@ -38,6 +37,7 @@ wp2pcs_http_cache();
 global $BaiduPCS;
 
 // 先检查文件是否存在
+$path = BAIDUPCS_REMOTE_ROOT.'/load'.$path;
 $meta = $BaiduPCS->getMeta($path);
 $meta = json_decode($meta);
 // 如果文件不存在，就试图从共享目录中抓取文件
@@ -79,6 +79,7 @@ if(isset($meta->error_code) && $meta->error_code == 111) {
 if(isset($meta->error_msg)){
   header("Content-Type: text/html; charset=utf8");
   echo $meta->error_msg;
+  do_action('wp2pcs_load_file_error',$path,$meta);
   exit;
 }
 
@@ -90,6 +91,7 @@ if($wp2pcs_cache_count >= WP2PCS_CACHE_COUNT && $wp2pcs_load_cache) {
   $result = wp2pcs_get_cache($path);
 }
 
+do_action('wp2pcs_load_file_before',$path,$meta);
 if(in_array($file_ext,$image_exts)) {
   if(!$result) {
     $result = $BaiduPCS->downloadStream($path);
@@ -163,6 +165,8 @@ elseif((in_array($file_ext,$video_exts) || in_array($file_ext,$audio_exts))) {
   ob_clean();
   echo $output;
   flush();
+
+  do_action('wp2pcs_load_file_after',$path,$meta);
   exit();
 }
 else{
@@ -189,5 +193,6 @@ if($wp2pcs_load_cache && !is_admin()) {
   
 }
 
-exit;
+do_action('wp2pcs_load_file_after',$path,$meta);
+exit();
 endif;// end of path usefullness

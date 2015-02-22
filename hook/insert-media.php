@@ -102,7 +102,7 @@ function wp2pcs_insert_media_iframe_content() {
   </div>
   <div id="wp2pcs-insert-media-iframe-check">
     <?php if(get_option('wp2pcs_load_imglink')) { ?><label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-imglink" checked> 图片带链接</label><?php } ?>
-    <?php if(get_option('wp2pcs_site_id') && get_option('wp2pcs_load_videoplay')) { ?><label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay" checked> 视频播放器</label><?php } ?>
+    <?php if(get_option('wp2pcs_site_id') && get_option('wp2pcs_video_player')) { ?><label><input type="checkbox" id="wp2pcs-insert-media-iframe-check-videoplay" checked> 视频播放器</label><?php } ?>
     <?php if(strpos($dir_path,'/apps/wp2pcs/share') === 0) { ?><input type="hidden" id="wp2pcs-insert-media-iframe-check-root-dir" value="share"><?php } ?>
   </div>
   <div class="clear"></div>
@@ -197,7 +197,7 @@ function wp2pcs_insert_media_iframe_content() {
 </div>
 </div><!-- // end content area -->
 <div id="wp2pcs-insert-media-iframe-help">
-  <p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击之后背景变绿的是图片，变红的是链接，变蓝的是视频，变紫的是音乐。点击上传按钮会进入你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。当你进入多个子目录之后，点击返回按钮返回网盘存储根目录。</p>
+  <p>如何使用：点击列表中的文件以选择它们，点击插入按钮就可以将选中的文件插入。点击上传按钮会打开一个小窗口，显示你的网盘目录，你上传完文件之后，再点击刷新按钮就可以看到上传完成后的图片。每次上传完之后，都需要点击刷新按钮，否则无法显示新上传的文件。</p>
   <p>最后，强烈建议文件名、文件夹名使用常规的命名方法，不包含特殊字符，尽可能使用小写字母，使用-作为连接符，使用小写扩展名，由于命名特殊引起的问题，请自行排查。</p>
 </div>
 <div id="wp2pcs-insert-media-iframe-upload"></div>

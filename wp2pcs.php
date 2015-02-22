@@ -4,14 +4,14 @@
 Plugin Name: WP2PCS
 Plugin URI: http://www.wp2pcs.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站定时备份，调用网盘资源在网站中使用。
-Version: 1.4.6
+Version: 1.4.7
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
 
 date_default_timezone_set('PRC');
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VERSION','1.4.6');
+define('WP2PCS_PLUGIN_VERSION','1.4.7');
 
 // 包含一些必备的函数和类，以提供下面使用
 require 'config.php';
@@ -75,7 +75,3 @@ if($hook_files){
       include_once($hook_dir.'/'.$hook_file);
 }
 endif;
-
-if(!get_option('wp2pcs_site_id')) {
-  update_option('wp2pcs_load_videoplay',0);// 关闭视频播放功能
-}

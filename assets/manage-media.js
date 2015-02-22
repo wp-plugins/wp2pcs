@@ -1,5 +1,7 @@
 jQuery(function($){
   // 关闭文件信息框
+  var $click = {};
+  $click.media_file = false;
   function close_file_info() {
     $('#wp2pcs-manage-media-page-file-info').hide();
   }
@@ -7,8 +9,9 @@ jQuery(function($){
     e.preventDefault();
     close_file_info();
   });
-  $(document).on('dblclick',function(){
-    close_file_info();
+  $(document).on('click',function() {
+    if(!$click.media_file) close_file_info();
+    $click.media_file = false;
   });
   // 点击上传按钮
   $('#wp2pcs-manage-media-btn-upload').on('click',function(e){
@@ -50,7 +53,8 @@ jQuery(function($){
         $child = $this.children(),
         file_url = $child.attr('data-url'),
         video_path = $child.attr('data-video-path'),
-        video_md5 = $child.attr('data-video-md5');
+        video_md5 = $child.attr('data-video-md5'),
+        is_vip = $('#wp2pcs-manage-media-page-check-vip').val();
     $('#wp2pcs-manage-media-page-files .file-on-pcs').removeClass('selected');
     $this.addClass('selected');
     if(file_format == 'dir') {
@@ -67,8 +71,8 @@ jQuery(function($){
     }
     else if(file_format == 'video') {
       $file_info.find('.format').text('视频');
-      $file_info.find('.code').text('<img src="' + file_url + '">');
-      $file_info.find('.code').text('<iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"' + (root_dir ? ' data-root-dir="' + root_dir + '"' : '') + '></iframe>');
+      if(is_vip) $file_info.find('.code').text('<iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"' + (root_dir ? ' data-root-dir="' + root_dir + '"' : '') + '></iframe>');
+      else $file_info.find('.code').text(file_url);
     }
     else {
       $file_info.find('.format').text('文件');
@@ -91,6 +95,13 @@ jQuery(function($){
     $file_info.find('.path').text('路径：' + file_path);
     $file_info.find('.url').html('网址：<a href="' + file_url + '" target="_blank">' + file_url + '</a>');
     $file_info.show();
+    $click.media_file = true;
+  });
+  $('#wp2pcs-manage-media-page-file-info textarea.code').on('click',function(){
+    $(this).select();
+  });
+  $('#wp2pcs-manage-media-page-top-bar').on('click',function() {
+    $click.media_file = true;
   });
   // 下拉加载
   $(window).scroll(function(){

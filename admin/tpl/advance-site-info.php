@@ -8,7 +8,11 @@
       <a href="http://www.wp2pcs.com/wp-admin/admin.php?page=work-manager-service" target="_blank" class="button">获取站点码</a>
     </p>
     <?php if($wp2pcs_site_id) { ?>
-    <p>站点号：<?php echo $wp2pcs_site_id; ?></p>
+    <p>
+      站点号：<?php echo $wp2pcs_site_id; ?>
+      到期时间：<?php echo date('Y-m-d',$wp2pcs_site_expire); ?>
+      <strong><?php if(time() > $wp2pcs_site_expire) echo '已到期';else echo '已成功开启'; ?></strong>
+    </p>
     <?php }else{ ?>
     <p>当前尚未通过站点验证。点击上方“站点”选项验证站点。</p>
     <?php } ?>

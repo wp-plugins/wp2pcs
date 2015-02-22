@@ -46,11 +46,11 @@
   <div class="handlediv" title="点击以切换"><br></div>
   <h3 class="hndle">简要说明</h3>
   <div class="inside">
+    <p>WP2PCS当前版本：<?php echo WP2PCS_PLUGIN_VERSION; ?> <a href="http://www.wp2pcs.com/?cat=1" target="_blank" class="button">查看插件更新</a></p>
     <p>官方网站：<a href="http://www.wp2pcs.com" target="_blank">http://www.wp2pcs.com</a></p>
     <p>交流QQ群：<a href="http://shang.qq.com/wpa/qunwpa?idkey=97278156f3def92eef226cd5b88d9e7a463e157655650f4800f577472c219786" target="_blank">292172954</a></p>
     <p>作者：<a href="http://weibo.com/hz184" target="_blank">@否子戈</a>，网站：<a href="http://www.utubon.com" target="_blank">乌徒帮</a></p>
-    <p>向作者捐赠：支付宝<code>476206120@qq.com</code>，财付通<code>476206120</code>，比特币<code>16tezAsqEZHhVz4xAmNAp8A5r7qMg1NG9P</code>，多少都没有关系，捐赠的时候请注明一下你是要捐赠“WP2PCS WP插件”。</p>
-    <p><a href="http://www.wp2pcs.com/?cat=1" target="_blank" class="button">查看插件更新</a></p>
+    <p>向作者捐赠：支付宝<code>476206120@qq.com</code>，财付通<code>476206120</code>，比特币<code>16tezAsqEZHhVz4xAmNAp8A5r7qMg1NG9P</code>，多少都没有关系，捐赠的时候请注明一下你是要捐赠“WP2PCS WP插件”。也可以选择<a href="http://www.wp2pcs.com/?page_id=730" target="_blank">付费服务</a>，获得更多功能。</p>
   </div>
 </div>
 

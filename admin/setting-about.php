@@ -64,6 +64,23 @@
 
 <hr />
 
+<div class="update-about-feature headline-feature">
+  <h2>1.4.7的变化</h2>
+  <div class="featured-image">
+    <ul>
+      <li>修复了媒体管理面板关闭展开内容的BUG</li>
+      <li>修改了跳转到about界面的方式</li>
+      <li>完全去除了免费版中视频播放器的功能</li>
+      <li>在附件调用中增加了action hook，具体调用方法请阅读官网更新通知</li>
+      <li>代码更加合理，扩展性更强</li>
+      <li>备份打包文件名末尾随机字串调整为4位字母+数字组合随机字串，提高暴力风险能力</li>
+    </ul>
+  </div>
+  <div class="clear"></div>
+</div>
+
+<hr />
+
 <div class="update-about-feature">
   <div class="feature-section two-col">
     <div class="col col-1">
@@ -100,6 +117,7 @@
         <li>支持图片、小文件、mp3、mp4</li>
         <li>支持url重写</li>
       </ul>
+      <p><small>要求：网站拥有完整的curl模块，能够很好的实现远程通信。</small></p>
     </div>
   </div>
   <div class="clear"></div>
@@ -131,7 +149,7 @@
 <div class="update-about-feature">
   <h3>一句话总结</h3>
   <div class="feature-section" style="text-align: center;">
-    <p>省去繁复，专注创造，让web生活酷酷哒~</p>
+    <p>省去繁复，专注产品，追求酷酷的WEB~</p>
     <p style="padding: 20px 0;">
       <a href="<?php menu_page_url('wp2pcs-setting'); ?>" class="button-primary">立即开始</a>
       <a href="http://www.wp2pcs.com/?cat=3" class="button" target="_blank">使用指南</a>

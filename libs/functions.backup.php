@@ -1,10 +1,25 @@
 <?php
 
+// 创建一个函数获取随机字符串
+if(!function_exists('get_rand_string')) {
+  function get_rand_string($length) {
+    $str = null;
+    $strPol = "0123456789abcdefghijklmnopqrstuvwxyz";
+    $max = strlen($strPol)-1;
+
+    for($i=0;$i<$length;$i++) {
+      $str .= $strPol[rand(0,$max)];//rand($min,$max)生成介于min和max两个数之间的一个随机整数
+    }
+
+    return $str;
+  }
+}
+
 // 执行备份
 function run_backup($backup_file = true,$backup_data = true) {
   if(!$backup_file && !$backup_data) return null;
   global $DbZip,$FileZip;
-  $zip_file_name = date('Y.m.d-H.i.s').'-'.(int)$backup_file.(int)$backup_data.'-'.rand(10,99).'.zip';
+  $zip_file_name = date('Y.m.d-H.i.s').'-'.(int)$backup_file.(int)$backup_data.'-'.get_rand_string(4).'.zip';
   $zip_file_path = WP2PCS_TEMP_DIR.DIRECTORY_SEPARATOR.$zip_file_name;
   $zip_data_path = WP2PCS_TEMP_DIR.DIRECTORY_SEPARATOR.'database-backup';
   $webroot_path = realpath(ABSPATH.'/../');

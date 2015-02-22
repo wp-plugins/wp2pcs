@@ -7,7 +7,7 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-site-code') {
   if(!$site_code) {
     delete_option('wp2pcs_site_code');
     delete_option('wp2pcs_site_id');
-    wp_die('请填写站点码。');
+    wp_die('请填写站点码。<a href="javascript:history.go(-1);">返回</a>');
   }
   $access_token = BAIDUPCS_ACCESS_TOKEN;
   $refresh_token = get_option('wp2pcs_baidupcs_refresh_token');
@@ -23,12 +23,12 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-site-code') {
     if(isset($result->error) && $result->error == 1) {
       delete_option('wp2pcs_site_id');
       delete_option('wp2pcs_site_code');
-      wp_die($result->msg);
+      wp_die($result->msg.'<a href="javascript:history.go(-1);">返回</a>');
     }
-    if(isset($result->site_id)) {
+    if($result->site_id) {
       update_option('wp2pcs_site_id',$result->site_id);
       update_option('wp2pcs_site_code',$site_code);
-      update_option('wp2pcs_vip_expire',$result->expire_time);
+      update_option('wp2pcs_site_expire',$result->expire_time);
     }
   }
   wp_redirect(add_query_arg(array('time'=>time()),menu_page_url('wp2pcs-advance',false)));

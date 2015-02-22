@@ -56,6 +56,7 @@ else{
   ?>
   </div>
   <?php if(strpos($dir_path,'/apps/wp2pcs/share') === 0) { ?><input type="hidden" id="wp2pcs-manage-media-page-check-root-dir" value="share"><?php } ?>
+  <?php if(get_option('wp2pcs_site_id')) { ?><input type="hidden" id="wp2pcs-manage-media-page-check-vip" value="1"><?php } ?>
   <div id="wp2pcs-manage-media-page-file-info">
     <a href="javascirpt:void(0);" class="close">&times;</a>
     <div class="thumb"></div>
@@ -64,7 +65,7 @@ else{
     <div class="size"></div>
     <div class="path"></div>
     <div class="url"></div>
-    <div class="code"></div>
+    <textarea class="code" readonly></textarea>
   </div>
   <div class="clear"></div>
 </div>

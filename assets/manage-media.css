@@ -64,7 +64,8 @@
   margin-top: 5px;
   white-space:nowrap;
   word-break : keep-all;
-  overflow-y: hidden;
+  width: 95%;
+  resize: none;
 }
 
 .file-on-pcs {
