@@ -58,6 +58,7 @@ jQuery(function($){
         is_vip = $('#wp2pcs-manage-media-page-check-vip').val();
     $('#wp2pcs-manage-media-page-files .file-on-pcs').removeClass('selected');
     $this.addClass('selected');
+    $file_info.find('.thumb').html('');
     if(file_format == 'dir') {
       return true;
     }
