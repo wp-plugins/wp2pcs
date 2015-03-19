@@ -51,5 +51,5 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Upgrade Notice ==
 
-= 1.4.7 =
+= 1.4.8 =
 增加图片水印功能
