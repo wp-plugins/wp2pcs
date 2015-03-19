@@ -4,6 +4,7 @@
   <a href="javascript:void(0)" class="nav-tab nav-tab-active">站点</a>
   <a href="<?php echo add_query_arg('tab','outlink',menu_page_url('wp2pcs-advance',false)); ?>" class="nav-tab">外链</a>
   <a href="<?php echo add_query_arg('tab','video',menu_page_url('wp2pcs-advance',false)); ?>" class="nav-tab">视频</a>
+  <a href="<?php echo add_query_arg('tab','image',menu_page_url('wp2pcs-advance',false)); ?>" class="nav-tab">图片</a>
 </h2>
 
 <div class="metabox-holder"><div class="meta-box-sortables">
@@ -23,7 +24,7 @@
     <p>当前站点：<input type="text" value="<?php echo substr(home_url(),strpos(home_url(),'://')+3); ?>" class="regular-text" readonly></p>
     <form method="post" autocomplete="off">
     <p>
-      站点码：<input type="password" name="wp2pcs_site_code" value="<?php echo $wp2pcs_site_code; ?>"> 
+      站点码：<input type="password" name="wp2pcs_site_code" value="<?php echo $wp2pcs_site_code; ?>">
       <button type="submit" class="button-primary">确定</button>
       <a href="http://www.wp2pcs.com/wp-admin/admin.php?page=work-manager-service" target="_blank" class="button">获取站点码</a>
       <input type="hidden" name="action" value="update-site-code">

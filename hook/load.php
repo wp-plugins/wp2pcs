@@ -96,6 +96,45 @@ if(in_array($file_ext,$image_exts)) {
   if(!$result) {
     $result = $BaiduPCS->downloadStream($path);
   }
+
+  // 如果是付费站点，而且还开启了水印功能
+  $image_watermark = get_option('wp2pcs_image_watermark');
+  $watermark_ext = strtolower(substr($image_watermark,strrpos($image_watermark,'.')+1));
+  if(get_option('wp2pcs_site_id') && $image_watermark && in_array($watermark_ext,$image_exts)) {
+    // 加载图片
+    $im = imagecreatefromstring($result);
+    // 加载水印
+    if($watermark_ext == 'png') {
+      $stamp = imagecreatefrompng($image_watermark);
+    }
+    elseif($watermark_ext == 'jpg' || $watermark_ext == 'jpeg') {
+      $stamp = imagecreatefromjpeg($image_watermark);
+    }
+    elseif($watermark_ext == 'gif') {
+      $stamp = imagecreatefromgif($image_watermark);
+    }
+    elseif($watermark_ext == 'bmp') {
+      $stamp = imagecreatefromwbmp($image_watermark);
+    }
+
+    // 设置水印图像的外边距，并且获取水印图像的尺寸
+    $marge_right = 10;
+    $marge_bottom = 10;
+    $sx = imagesx($stamp);
+    $sy = imagesy($stamp);
+
+    // 以 50% 的透明度合并水印和图像
+    imagecopymerge($im, $stamp, imagesx($im) - $sx - $marge_right, imagesy($im) - $sy - $marge_bottom, 0, 0, imagesx($stamp), imagesy($stamp), 50);
+
+    // 将图像保存到文件，并释放内存
+    ob_start();
+    imagejpeg($im);
+    $result = ob_get_contents();
+    ob_end_clean();
+    imagedestroy($im);
+
+  }
+
   header('Content-type: image/jpeg');
 }
 elseif((in_array($file_ext,$video_exts) || in_array($file_ext,$audio_exts))) {
@@ -116,7 +155,7 @@ elseif((in_array($file_ext,$video_exts) || in_array($file_ext,$audio_exts))) {
   elseif($file_ext == 'rm') header('Content-Type: application/vnd.rn-realmedia');
   elseif($file_ext == 'rmvb') header('Content-Type: application/vnd.rn-realmedia-vbr');
   else header('Content-Type: application/octet-stream');
-  
+
   header("Accept-Ranges: 0-$end");
   header('X-Pad: avoid browser bug');
 
@@ -190,7 +229,7 @@ if($wp2pcs_load_cache && !is_admin()) {
   elseif(!wp2pcs_has_cache($path)) {
     wp2pcs_set_cache($path,$result);
   }
-  
+
 }
 
 do_action('wp2pcs_load_file_after',$path,$meta,$result,null,null);

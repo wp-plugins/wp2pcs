@@ -73,15 +73,12 @@ if(top.location != self.location){
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.4.7的变化</h2>
+  <h2>1.4.8的变化</h2>
   <div class="featured-image">
     <ul>
-      <li>修复了媒体管理面板关闭展开内容的BUG</li>
-      <li>修改了跳转到about界面的方式</li>
-      <li>完全去除了免费版中视频播放器的功能</li>
-      <li>在附件调用中增加了action hook，具体调用方法请阅读官网更新通知</li>
-      <li>代码更加合理，扩展性更强</li>
-      <li>备份打包文件名末尾随机字串调整为4位字母+数字组合随机字串，提高暴力风险能力</li>
+      <li>修复了一些小BUG</li>
+      <li>付费功能中增加图片水印功能</li>
+      <li>对load.php进行了加密保护</li>
     </ul>
   </div>
   <div class="clear"></div>
