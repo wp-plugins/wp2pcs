@@ -51,6 +51,15 @@
     <p>交流QQ群：<a href="http://shang.qq.com/wpa/qunwpa?idkey=97278156f3def92eef226cd5b88d9e7a463e157655650f4800f577472c219786" target="_blank">292172954</a></p>
     <p>作者：<a href="http://weibo.com/hz184" target="_blank">@否子戈</a>，网站：<a href="http://www.utubon.com" target="_blank">乌徒帮</a></p>
     <p>向作者捐赠：支付宝<code>476206120@qq.com</code>，财付通<code>476206120</code>，比特币<code>16tezAsqEZHhVz4xAmNAp8A5r7qMg1NG9P</code>，多少都没有关系，捐赠的时候请注明一下你是要捐赠“WP2PCS WP插件”。也可以选择<a href="http://www.wp2pcs.com/?page_id=730" target="_blank">付费服务</a>，获得更多功能。</p>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 728x90-任意网页-图文广告 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-0625745788201806"
+     data-ad-slot="7099159194"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
   </div>
 </div>
 
