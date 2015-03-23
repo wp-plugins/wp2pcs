@@ -80,16 +80,6 @@ if(top.location != self.location){
       <li>付费功能中增加图片水印功能</li>
       <li>对load.php进行了加密保护</li>
     </ul>
-    <h3>赞助广告</h3>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- 728x90-任意网页-图文广告 -->
-    <ins class="adsbygoogle"
-         style="display:inline-block;width:728px;height:90px"
-         data-ad-client="ca-pub-0625745788201806"
-         data-ad-slot="7099159194"></ins>
-    <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
   </div>
   <div class="clear"></div>
 </div>

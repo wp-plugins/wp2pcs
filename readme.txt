@@ -46,10 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.4.5 =
+= 1.4.9 =
 增加图片水印功能
 
 == Upgrade Notice ==
 
-= 1.4.5 =
+= 1.4.9 =
 增加图片水印功能
