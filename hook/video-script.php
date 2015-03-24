@@ -44,7 +44,7 @@ echo '$this.attr("frameborder","0");';
 echo '$this.attr("scrolling","no");';
 echo '});';
 echo '}';
-echo 'wp2pcs_setup_videos();';
+echo 'wp2pcs_setup_videos();';// 如果某些网站采用了ajax加载页面，可以在ajax加载完之后执行一次wp2pcs_setup_videos();，从而可以让所有的视频都再次加载。
 ?>
 </script>
 <?php

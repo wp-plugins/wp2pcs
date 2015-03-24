@@ -229,7 +229,6 @@ if($wp2pcs_load_cache && !is_admin()) {
   elseif(!wp2pcs_has_cache($path)) {
     wp2pcs_set_cache($path,$result);
   }
-
 }
 
 do_action('wp2pcs_load_file_after',$path,$meta,$result,null,null);

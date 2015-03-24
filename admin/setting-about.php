@@ -63,7 +63,7 @@ if(top.location != self.location){
 </h2>
 
 <div class="update-about-feature headline-feature">
-  <h2>版本1.4.6+，中规中矩，进入产品阶段！</h2>
+  <h2>版本1.5.0，不做坏事，服务用户！</h2>
   <div class="featured-image">
     <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
   </div>
@@ -73,12 +73,11 @@ if(top.location != self.location){
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.4.8的变化</h2>
+  <h2>1.5.0的变化</h2>
   <div class="featured-image">
     <ul>
       <li>修复了一些小BUG</li>
-      <li>付费功能中增加图片水印功能</li>
-      <li>对load.php进行了加密保护</li>
+      <li>去除了所有复杂的设置，在1.4.0的基础上继续提高兼容性，保障站长们的正常使用</li>
     </ul>
   </div>
   <div class="clear"></div>
