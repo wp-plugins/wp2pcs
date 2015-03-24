@@ -63,7 +63,7 @@ if(top.location != self.location){
 </h2>
 
 <div class="update-about-feature headline-feature">
-  <h2>版本1.5.0，不做坏事，服务用户！</h2>
+  <h2>版本1.4.8，不做坏事，服务用户！</h2>
   <div class="featured-image">
     <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
   </div>
@@ -73,7 +73,7 @@ if(top.location != self.location){
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.5.0的变化</h2>
+  <h2>1.4.8的变化</h2>
   <div class="featured-image">
     <ul>
       <li>修复了一些小BUG</li>
