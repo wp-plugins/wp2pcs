@@ -100,7 +100,7 @@ if(in_array($file_ext,$image_exts)) {
   // 如果是付费站点，而且还开启了水印功能
   $image_watermark = get_option('wp2pcs_image_watermark');
   $watermark_ext = strtolower(substr($image_watermark,strrpos($image_watermark,'.')+1));
-  if(get_option('wp2pcs_site_id') && $image_watermark && in_array($watermark_ext,$image_exts)) {
+  if($image_watermark && in_array($watermark_ext,$image_exts)) {
     // 加载图片
     $im = imagecreatefromstring($result);
     // 加载水印
@@ -138,7 +138,6 @@ if(in_array($file_ext,$image_exts)) {
   header('Content-type: image/jpeg');
 }
 elseif((in_array($file_ext,$video_exts) || in_array($file_ext,$audio_exts))) {
-  $length = @$meta->list[0]->size;
   if($file_ext == 'mp3' || $file_ext == 'mp3pro') header("Content-Type: audio/mpeg");
   elseif($file_ext == 'ogg') header('Content-Type: application/ogg');
   elseif($file_ext == 'wma') header('Content-Type: audio/x-ms-wma');
@@ -159,6 +158,7 @@ elseif((in_array($file_ext,$video_exts) || in_array($file_ext,$audio_exts))) {
   header("Accept-Ranges: 0-$end");
   header('X-Pad: avoid browser bug');
 
+  $length = @$meta->list[0]->size;
   $size = $length;
   $start = 0;
   $end = $size - 1;

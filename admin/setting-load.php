@@ -48,6 +48,17 @@
   </div>
 </div>
 
+<?php $wp2pcs_image_watermark = get_option('wp2pcs_image_watermark'); ?>
+<div class="postbox">
+  <div class="handlediv" title="点击以切换"><br></div>
+  <h3 class="hndle">图片水印</h3>
+  <div class="inside">
+    <p>水印图片的路径：<?php echo realpath(ABSPATH); ?><input type="text" name="wp2pcs_image_watermark" value="<?php echo str_replace(realpath(ABSPATH),'',$wp2pcs_image_watermark); ?>" class="regular-text"></p>
+    <p>请先<a href="<?php echo admin_url('media-new.php'); ?>" target="_blank">上传</a>一张用来作为水印的图片，然后把图片的相对路径填写在这里（网站的根路径已经给出），注意填写的路径以/或\开头。</p>
+    <p><small>注意：1.仅在选择第一种或第二种附件格式时有效；2.你的主机必须支持GD库；3.使用该功能会占用更多主机资源；4.仅支持jpg,jpeg,png,gif,bmp这几种格式；5.默认水印在右下角，50%透明度，请使用尺寸较小的水印图片。</small></p>
+  </div>
+</div>
+
 <button type="submit" class="button-primary">确定</button>
 <input type="hidden" name="action" value="update-load-setting">
 <?php wp_nonce_field(); ?>

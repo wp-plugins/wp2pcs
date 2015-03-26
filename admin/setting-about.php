@@ -1,7 +1,7 @@
 <script>
 // 防止被iframe，特别是刚刚升级后
-if(top.location != self.location){
-  top.location = self.location;
+if(self != top) {
+  top.location.href = self.location.href;
   window.stop ? window.stop() : document.execCommand("Stop");
 }
 </script>
@@ -63,7 +63,7 @@ if(top.location != self.location){
 </h2>
 
 <div class="update-about-feature headline-feature">
-  <h2>版本1.4.8，不做坏事，服务用户！</h2>
+  <h2>版本1.4.9，已经努力，依然坚持！</h2>
   <div class="featured-image">
     <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
   </div>
@@ -73,14 +73,18 @@ if(top.location != self.location){
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.4.8的变化</h2>
+  <h2>1.4.9的变化</h2>
   <div class="featured-image">
     <ul>
       <li>修复了一些小BUG</li>
-      <li>去除了所有复杂的设置，在1.4.0的基础上继续提高兼容性，保障站长们的正常使用</li>
+      <li>免费了水印功能（到基础设置-资源调用中设置）</li>
+      <li>在插件后台增加了几个广告</li>
     </ul>
   </div>
   <div class="clear"></div>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-0625745788201806" data-ad-slot="7099159194"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 <hr />

@@ -46,10 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.4.8 =
-修复了付费版用户视频无法播放的问题
+= 1.4.9 =
+免费了图片水印功能
 
 == Upgrade Notice ==
 
-= 1.4.8 =
-修复了付费版用户视频无法播放的问题
+= 1.4.9 =
+免费了图片水印功能

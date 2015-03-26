@@ -38,7 +38,7 @@ echo 'else {';
 echo 'root_dir = "'.BAIDUPCS_REMOTE_ROOT.'/load";';
 echo '}';
 echo 'if(path.indexOf(root_dir) != 0) path = root_dir + path;';
-echo '$this.attr("src","http://static.wp2pcs.com/player?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&image=" + image + "&md5=" + md5 + "&path=" + path);';
+echo '$this.attr("src","http://static.wp2pcs.com/player?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&image=" + image + "&path=" + path);';
 echo '$this.removeClass("wp2pcs-video-player").addClass("wp2pcs-video-playing");';
 echo '$this.attr("frameborder","0");';
 echo '$this.attr("scrolling","no");';
