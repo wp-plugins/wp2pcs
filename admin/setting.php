@@ -21,7 +21,7 @@
         global $BaiduPCS;
         $quota = json_decode($BaiduPCS->getQuota());
         if(isset($quota->error_code) || $quota->error_code || (int)$quota->quota == 0){
-          echo '<p>获取百度网盘容量错误，重新授权试试吧。</p>';
+          echo '<p>获取百度网盘信息错误，'.$quota->error_code.'：'.$quota->error_msg.'</p>';
           $baidupcs_btn_class = 'button-primary';
         }
         else{
