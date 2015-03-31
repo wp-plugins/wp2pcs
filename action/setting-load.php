@@ -21,6 +21,7 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-load-setting') {
   update_option('wp2pcs_load_linktype',$linktype);
   // 更新是否插入图片链接
   update_option('wp2pcs_load_imglink',$_POST['wp2pcs_load_imglink']);
+  update_option('wp2pcs_load_remote_dir',$_POST['wp2pcs_load_remote_dir']);
   // 更新是否缓存
   update_option('wp2pcs_load_cache',$_POST['wp2pcs_load_cache']);
   // 更新水印

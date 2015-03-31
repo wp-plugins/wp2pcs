@@ -54,9 +54,13 @@ function wp2pcs_insert_media_scripts() {
 //add_action('media_upload_file_from_pcs','wp_storage_to_pcs_media_tab_box');
 function wp2pcs_insert_media_iframe_content() {
   // 当前路径相关信息
-  if(isset($_GET['dir']) && !empty($_GET['dir'])){
+  if(isset($_GET['dir']) && !empty($_GET['dir'])) {
     $dir_path = $_GET['dir'];
-  }else{
+  }
+  elseif(get_option('wp2pcs_load_remote_dir')) {
+    $dir_path = '/apps/wp2pcs/share';
+  }
+  else{
     $dir_path = BAIDUPCS_REMOTE_ROOT.'/load';
   }
 ?>
@@ -73,7 +77,7 @@ function wp2pcs_insert_media_iframe_content() {
 <div id="wp2pcs-insert-media-iframe-topbar">
   <div id="wp2pcs-insert-media-iframe-place">
   当前位置：
-  <a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>" <?php if(strpos($dir_path,BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#999;"'; ?>>站点目录</a><?php
+  <a href="<?php echo add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load',remove_query_arg(array('paged','refresh'))); ?>" <?php if(strpos($dir_path,BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#ccc;text-decoration:line-through"'; ?>>站点目录</a><?php
   if(strpos($dir_path,'/apps/wp2pcs/share') === false) {
     $current_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
@@ -86,7 +90,7 @@ function wp2pcs_insert_media_iframe_content() {
     }
   }
   ?>
-  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share'); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#999;"'; ?>>共享目录</a><?php
+  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share'); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#ccc;text-decoration:line-through"'; ?>>共享目录</a><?php
   if(strpos($dir_path,'/apps/wp2pcs/share') !== false) {
     $current_path = str_replace('/apps/wp2pcs/share','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
@@ -186,7 +190,7 @@ function wp2pcs_insert_media_iframe_content() {
 <div id="wp2pcs-insert-media-iframe-pagenavi" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">
   <?php
   if($paged > 1){
-    echo '<a href="'.remove_query_arg('paged').'">第一页</a> 
+    echo '<a href="'.remove_query_arg('paged').'">第一页</a>
     <a href="'.add_query_arg('paged',$paged-1).'">上一页</a>';
   }
   if($files_amount >= $files_per_page && ($paged == 1 || $paged < $files_total_page)) {

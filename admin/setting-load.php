@@ -23,7 +23,10 @@
 
 <?php include('tpl/set-linktype.php'); ?>
 
-<?php $wp2pcs_load_imglink = (int)get_option('wp2pcs_load_imglink'); ?>
+<?php
+$wp2pcs_load_imglink = (int)get_option('wp2pcs_load_imglink');
+$wp2pcs_load_remote_dir = (int)get_option('wp2pcs_load_remote_dir');
+?>
 <div class="postbox">
   <div class="handlediv" title="点击以切换"><br></div>
   <h3 class="hndle">媒体插入</h3>
@@ -31,6 +34,12 @@
     <p>插入图片时插入其链接？<select name="wp2pcs_load_imglink">
       <option value="0" <?php selected($wp2pcs_load_imglink,0); ?>>关闭</option>
       <option value="1" <?php selected($wp2pcs_load_imglink,1); ?>>开启</option>
+    </select></p>
+  </div>
+  <div class="inside">
+    <p>插入面板默认目录：<select name="wp2pcs_load_remote_dir">
+      <option value="0" <?php selected($wp2pcs_load_remote_dir,0); ?>>站点目录</option>
+      <option value="1" <?php selected($wp2pcs_load_remote_dir,1); ?>>分享目录</option>
     </select></p>
   </div>
 </div>

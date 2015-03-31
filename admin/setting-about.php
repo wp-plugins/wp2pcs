@@ -73,12 +73,11 @@ if(self != top) {
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.4.9的变化</h2>
+  <h2>1.4.10的变化</h2>
   <div class="featured-image">
     <ul>
       <li>修复了一些小BUG</li>
-      <li>免费了水印功能（到基础设置-资源调用中设置）</li>
-      <li>在插件后台增加了几个广告</li>
+      <li>增加插入界面默认目录，通过后台“WP2PCS-基础设置-资源调用-媒体插入”中进行选择。</li>
     </ul>
   </div>
   <div class="clear"></div>
