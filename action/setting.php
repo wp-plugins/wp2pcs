@@ -15,7 +15,7 @@ if(isset($_GET['access_token']) && !empty($_GET['access_token'])) {
       $result = get_by_curl(WP2PCS_APP_URL.'/api',array(
         'method' => 'update_site_data',
         'site_id' => $wp2pcs_site_id,
-        'code' => md5($wp2pcs_site_code.date('Y.m.d.H.i')),
+        'code' => md5($wp2pcs_site_code.date('Y.m.d')),
         'site_scheme' => array_shift(explode('://',home_url())),
         'baidu_access_token' => $access_token,
         'baidu_refresh_token' => $refresh_token
