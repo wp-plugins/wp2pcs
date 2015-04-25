@@ -1,7 +1,7 @@
 <div class="wrap">
 
 <h2 class="nav-tab-wrapper">
-  <a href="javascript:void(0)" class="nav-tab nav-tab-active">站点</a>
+  <a href="javascript:void(0)" class="nav-tab nav-tab-active">验证</a>
   <a href="<?php echo add_query_arg('tab','outlink',menu_page_url('wp2pcs-advance',false)); ?>" class="nav-tab">外链</a>
   <a href="<?php echo add_query_arg('tab','video',menu_page_url('wp2pcs-advance',false)); ?>" class="nav-tab">视频</a>
   <small style="font-size:12px;float:right;">付费用户如遇问题请发邮件到<code>476206120@qq.com</code>。不支持qq（群）提问。</small>
@@ -21,7 +21,7 @@
     <p>在上一步“WP2PCS服务-站长平台”，根据提示申请对应的服务（付费会员或单站点服务，可在下方了解），并根据提示付费，等待人工审核。</p>
     <h4>第三步 使用付费功能</h4>
     <p>在审核通过之后，获取“站点码”，填写在下方。</p>
-    <p>当前站点：<input type="text" value="<?php echo substr(home_url(),strpos(home_url(),'://')+3); ?>" class="regular-text" readonly></p>
+    <p>当前站点：<input type="text" value="<?php echo WP2PCS_SITE_URL; ?>" class="regular-text" readonly></p>
     <form method="post" autocomplete="off">
     <p>
       站点码：<input type="password" name="wp2pcs_site_code" value="<?php echo $wp2pcs_site_code; ?>">
@@ -34,8 +34,8 @@
     <?php if($wp2pcs_site_id) { ?>
     <p>
       站点号：<?php echo $wp2pcs_site_id; ?>
-      到期时间：<?php echo date('Y-m-d',$wp2pcs_site_expire); ?>
-      <strong><?php if(time() > $wp2pcs_site_expire) echo '已到期';else echo '已成功开启'; ?></strong>
+      到期时间：<?php echo $wp2pcs_site_expire; ?>
+      <strong><?php if(date('Y-m-d H:i:s') > $wp2pcs_site_expire) echo '已到期';else echo '已成功开启'; ?></strong>
     </p>
     <?php }else{ ?>
     <p style="color:red">当前尚未通过站点验证。</p>

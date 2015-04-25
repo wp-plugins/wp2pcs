@@ -46,10 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.4.10 =
+= 1.4.11 =
 增加功能：可以选择插入面板默认是打开共享目录还是站点目录
 
 == Upgrade Notice ==
 
-= 1.4.10 =
+= 1.4.11 =
 增加功能：可以选择插入面板默认是打开共享目录还是站点目录

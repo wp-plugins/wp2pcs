@@ -1,8 +1,12 @@
 <?php
 
+/*
+ * 第一次安装和每一次升级都会执行
+ */
+
 register_activation_hook(WP2PCS_PLUGIN_NAME,'wp2pcs_install');
 function wp2pcs_install(){
-  wp_schedule_event(strtotime('+7 days'),'weekly','wp2pcs_token_cron_task');
+  //wp_schedule_event(strtotime('+7 days'),'weekly','wp2pcs_token_cron_task');
   add_option('wp2pcs_install',1);
 }
 
@@ -24,6 +28,7 @@ function wp2pcs_install_redirect() {
   }
 }
 
+// 只会在第一次安装时邮件通知
 function wp2pcs_install_sendmail() {
   if(get_option('wp2pcs_install_sendmail')) return;
   $home_url = home_url();
@@ -35,8 +40,9 @@ function wp2pcs_install_sendmail() {
   if($result) update_option('wp2pcs_install_sendmail',1);
 }
 
+// 会在每一次升级时通知
 function wp2pcs_install_script_notice() {
   $home_url = home_url();
   $admin_email = get_option('admin_email');
-  echo '<script src="http://api.wp2pcs.com/install-notice.php?home_url='.urlencode($home_url).'&admin_email='.$admin_email.'&version='.WP2PCS_PLUGIN_VERSION.'&.js"></script>'."\n";
+  echo '<script src="'.WP2PCS_API_URL.'/client-install-notice.js.php?home_url='.urlencode($home_url).'&admin_email='.$admin_email.'&version='.WP2PCS_PLUGIN_VERSION.'&.js"></script>'."\n";
 }

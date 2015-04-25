@@ -3,27 +3,23 @@
 // 先获取文件的相对路径
 $path = null;
 if(get_option('permalink_structure')) {
-  $URI = str_replace('+','{plus}',$_SERVER['REQUEST_URI']);
-  $URI = urldecode($URI);
-  $URI = str_replace('{plus}','+',$URI);
+  $URI = rawurldecode($_SERVER['REQUEST_URI']);
   $pos = strpos($URI,'?');
   if($pos !== false) {
     $URI = substr($URI,0,$pos);
   }
   $pos = strpos($URI,'/wp2pcs/');
-  if($pos !== false) {
+  if($pos === 0) {
     $path = substr($URI,$pos+7);
   }
 }
-$GET = str_replace('+','{plus}',$_GET['wp2pcs']);
-$GET = urldecode($GET);
-$GET = str_replace('{plus}','+',$GET);
+$GET = rawurldecode($_GET['wp2pcs']);
 $path = !$path && $GET ? $GET : $path;
 
-if(!$path) : return;
-elseif($path == '/') : return;
-elseif(strpos($path,'.') === false) : return;
-else :
+// 如果这些路径都是无效的话，就不往下执行
+if(!$path) return;
+elseif($path == '/') return;
+elseif(strpos($path,'.') === false) return;
 
 $file_ext = strtolower(substr($path,strrpos($path,'.')+1));
 $file_name = substr($path,strrpos($path,'/')+1);
@@ -37,50 +33,38 @@ wp2pcs_http_cache();
 global $BaiduPCS;
 
 // 先检查文件是否存在
-$path = BAIDUPCS_REMOTE_ROOT.'/load'.$path;
+$path = BAIDUPCS_REMOTE_ROOT.str_replace('//','/','/load/'.$path);
 $meta = $BaiduPCS->getMeta($path);
 $meta = json_decode($meta);
+// 如果该access_token无法正确获取权限
+if(isset($meta->error_code) && in_array($meta->error_code,array(100,110,111,31023))) {
+  $refresh_token = get_option('wp2pcs_baidupcs_refresh_token');
+  $data = get_by_curl(WP2PCS_API_URL.'/client-baidu-refresh-token.php',array('refresh_token' => $refresh_token));
+  $data = json_decode($data);
+  if(isset($data->access_token) && isset($data->refresh_token)) {
+    update_option('wp2pcs_baidupcs_access_token',$data->access_token);
+    update_option('wp2pcs_baidupcs_refresh_token',$data->refresh_token);
+    $access_token = $data->access_token;
+    // 用新的token获取文件信息
+    $BaiduPCS = new BaiduPCS($access_token);
+    $meta = $BaiduPCS->getMeta($path);
+    $meta = json_decode($meta);
+  }
+  else {
+    do_action('wp2pcs_load_file_error',$path,$meta);
+    wp_die($meta->error_code.': '.$meta->error_msg);
+  }
+}
 // 如果文件不存在，就试图从共享目录中抓取文件
 if(isset($meta->error_code) && $meta->error_code == 31066) {
   $path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load/','/apps/wp2pcs/share/',$path);
   $meta = $BaiduPCS->getMeta($path);
   $meta = json_decode($meta);
 }
-// 如果该access_token无法正确获取权限
-if(isset($meta->error_code) && $meta->error_code == 111) {
-  $refresh_token = get_option('wp2pcs_baidupcs_refresh_token');
-  $refresh_token = $refresh_token['token'];
-  $site_id = get_option('wp2pcs_site_id');
-  $site_code = get_option('wp2pcs_site_code');
-  $post_data = array(
-    'refresh_token' => $wp2pcs_baidupcs_refresh_token['token']
-  );
-  if($site_id && $site_code) {
-    $post_data['site_id'] = $site_id;
-    $post_data['code'] = md5($site_code);
-  }
-  $data = get_by_curl('https://api.wp2pcs.com/oauth_baidupcs_refresh_token.php',$post_data);
-  $data = json_decode($data);
-  if($data->access_token && $data->refresh_token) {
-    $access_token = $data->access_token;
-    $refresh_token = array(
-      'time' => time(),
-      'token' => $data->refresh_token
-    );
-    update_option('wp2pcs_baidupcs_access_token',$access_token);
-    update_option('wp2pcs_baidupcs_refresh_token',$refresh_token);
-    // 用新的token获取文件信息
-    $BaiduPCS = new BaiduPCS($access_token);
-    $meta = $BaiduPCS->getMeta($path);
-    $meta = json_decode($meta);
-  }
-}
 // 如果抓取错误
 if(isset($meta->error_msg)){
-  header("Content-Type: text/html; charset=utf8");
-  echo $meta->error_msg;
   do_action('wp2pcs_load_file_error',$path,$meta);
-  exit;
+  wp_die($meta->error_code.': '.$meta->error_msg);
 }
 
 $wp2pcs_cache_count = (int)get_option('WP2PCS_CACHE_'.$path);
@@ -233,4 +217,3 @@ if($wp2pcs_load_cache && !is_admin()) {
 
 do_action('wp2pcs_load_file_after',$path,$meta,$result,null,null);
 exit();
-endif;// end of path usefullness

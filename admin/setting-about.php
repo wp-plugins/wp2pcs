@@ -63,7 +63,7 @@ if(self != top) {
 </h2>
 
 <div class="update-about-feature headline-feature">
-  <h2>版本1.4.9，已经努力，依然坚持！</h2>
+  <h2>版本1.4.11，重构！</h2>
   <div class="featured-image">
     <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
   </div>
@@ -73,11 +73,12 @@ if(self != top) {
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.4.10的变化</h2>
+  <h2>1.4.11的变化</h2>
   <div class="featured-image">
     <ul>
-      <li>修复了一些小BUG</li>
-      <li>增加插入界面默认目录，通过后台“WP2PCS-基础设置-资源调用-媒体插入”中进行选择。</li>
+      <li>部分重构WP2PCS的框架</li>
+      <li>不同站点可以使用不同的百度账号授权</li>
+      <li>增强了付费用户资源调用的稳定性</li>
     </ul>
   </div>
   <div class="clear"></div>

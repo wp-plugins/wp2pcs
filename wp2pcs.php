@@ -4,27 +4,28 @@
 Plugin Name: WP2PCS
 Plugin URI: http://www.wp2pcs.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站定时备份，调用网盘资源在网站中使用。
-Version: 1.4.10
+Version: 1.4.11
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
 
 date_default_timezone_set('PRC');
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VERSION','1.4.10');
+define('WP2PCS_PLUGIN_VERSION','1.4.11');
 
 // 包含一些必备的函数和类，以提供下面使用
-require 'config.php';
-require 'libs/functions.lib.php';
-require 'libs/BaiduPCS.class.php';
-require 'libs/FileZip.class.php';
-require 'libs/DbZip.class.php';
-require 'libs/functions.backup.php';
+if(file_exists('config.php')) include('config.php');
+else include('config-default.php');
+require('libs/functions.lib.php');
+require('libs/BaiduPCS.class.php');
+require('libs/FileZIP.class.php');
+require('libs/DBZIP.class.php');
+require('libs/functions.backup.php');
 
 // 直接初始化全局变量
-$BaiduPCS = new BaiduPCS(BAIDUPCS_ACCESS_TOKEN);
-$FileZip = new FileZip;
-$DbZip = new DbZip(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
+$BaiduPCS = new BaiduPCS(BAIDU_ACCESS_TOKEN);
+$FileZIP = new FileZIP;
+$DBZIP = new DBZIP(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
 
 // 添加菜单
 add_action('admin_menu','wp2pcs_add_admin_menu');
@@ -52,6 +53,7 @@ add_action('admin_init','wp2pcs_add_admin_init');
 function wp2pcs_add_admin_init() {
   if(is_multisite()) return;
   if(get_url_file_name() != 'admin.php') return;
+  if(!in_array($_GET['page'],array('wp2pcs','wp2pcs-setting','wp2pcs-media','wp2pcs-advance'))) return;
   // 加载脚本
   add_action('admin_enqueue_scripts','wp2pcs_admin_init_scripts');
   // 执行提交动作
@@ -69,12 +71,25 @@ function wp2pcs_admin_init_action() {
 }
 
 // 添加hooks
-$hook_dir = dirname(WP2PCS_PLUGIN_NAME).'/hook';
-if(is_dir($hook_dir)) :
-$hook_files = scandir($hook_dir);
-if($hook_files){
-  foreach($hook_files as $hook_file)
-    if(substr($hook_file,-4) == '.php')
-      include_once($hook_dir.'/'.$hook_file);
+if(!is_multisite()) {
+  $hook_dir = dirname(WP2PCS_PLUGIN_NAME).'/hook';
+  if(is_dir($hook_dir)) {
+    $hook_files = scandir($hook_dir);
+    if($hook_files){
+      foreach($hook_files as $hook_file)
+        if(substr($hook_file,-4) == '.php')
+          include_once($hook_dir.'/'.$hook_file);
+    }
+  }
+  //兼容的scandir
+  if(!function_exists('scandir')) {
+    function scandir($dir) {
+      $handle = @opendir($dir);
+      $arr = array();
+      while(($arr[] = @readdir($handle)) !== false) {}
+      @closedir($handle);
+      $arr = array_filter($arr);
+      return $arr;
+    }
+  }
 }
-endif;

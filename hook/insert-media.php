@@ -1,7 +1,5 @@
 <?php
 
-if(!is_admin() || !BAIDUPCS_ACCESS_TOKEN) return;
-
 /*
 *
 * # 这个文件是用来实现从百度网盘获取附件列表，并让站长可以选择插入到文章中
@@ -23,7 +21,9 @@ http://wordpress.stackexchange.com/questions/85351/remove-other-tabs-in-new-word
 add_filter('media_upload_tabs','wp2pcs_insert_media_tab');
 function wp2pcs_insert_media_tab($tabs){
   $newtab = array('wp2pcs' => 'WP2PCS');
-  return array_merge($tabs,$newtab);
+  // 只有管理员才能使用该功能，普通用户只能上传本地图片
+  if(current_user_can('edit_theme_options')) return array_merge($tabs,$newtab);
+  else return $tabs;
 }
 // 这个地方需要增加一个中间介wp_iframe，这样就可以使用wordpress的脚本和样式
 add_action('media_upload_wp2pcs','wp2pcs_insert_media_iframe');// media_upload_wp2pcs = [media_upload_] + [tab_key = wp2pcs]
@@ -163,7 +163,7 @@ function wp2pcs_insert_media_iframe_content() {
         $load_linktype = get_option('wp2pcs_load_linktype');
         $site_id = get_option('wp2pcs_site_id');
         $file_url = $load_linktype > 0 ? home_url('/wp2pcs'.$file_path) : home_url('?wp2pcs='.$file_path);
-        $file_url = $site_id && $load_linktype > 1 ? 'http://static.wp2pcs.com/'.$site_id.$file_path : $file_url;
+        $file_url = $site_id && $load_linktype > 1 ? WP2PCS_APP_URL.'/'.$site_id.$file_path : $file_url;
         if($file_format == 'image') {
           echo '<input type="checkbox" value="'.$file_url.'">';
           echo '<img src="'.$file_url.'" title="图片 '.$file_name.'">';

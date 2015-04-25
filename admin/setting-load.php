@@ -9,7 +9,7 @@
 <div class="metabox-holder"><div class="meta-box-sortables">
 <form method="post" autocomplete="off">
 
-<?php if(!BAIDUPCS_ACCESS_TOKEN) { ?>
+<?php if(!BAIDU_ACCESS_TOKEN) { ?>
 <div class="error"><p><strong>提示</strong>：还没有百度授权。</p></div>
 <?php } ?>
 

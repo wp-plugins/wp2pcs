@@ -119,7 +119,7 @@ else{
         $load_linktype = get_option('wp2pcs_load_linktype');
         $site_id = get_option('wp2pcs_site_id');
         $file_url = $load_linktype > 0 ? home_url('/wp2pcs'.$file_path) : home_url('?wp2pcs='.$file_path);
-        $file_url = $site_id && $load_linktype > 1 ? 'http://static.wp2pcs.com/'.$site_id.$file_path : $file_url;
+        $file_url = $site_id && $load_linktype > 1 ? WP2PCS_APP_URL.'/'.$site_id.$file_path : $file_url;
         if($file_format == 'image') {
           echo '<img src="'.$file_url.'" title="图片 '.$file_name.'" data-url="'.$file_url.'">';
         }
@@ -142,7 +142,7 @@ else{
 <div id="wp2pcs-manage-media-page-pagenavi" data-loading="<?php echo plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME); ?>">
   <?php
   if($paged > 1){
-    echo '<a href="'.remove_query_arg('paged').'">第一页</a> 
+    echo '<a href="'.remove_query_arg('paged').'">第一页</a>
     <a href="'.add_query_arg('paged',$paged-1).'">上一页</a>';
   }
   if($files_amount >= $files_per_page && ($paged == 1 || $paged < $files_total_page)) {

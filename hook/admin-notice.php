@@ -9,11 +9,16 @@ function wp2pcs_admin_notice() {
   }
   $wp2pcs_admin_notice = (int)get_option('wp2pcs_admin_notice');
   if($wp2pcs_admin_notice < strtotime(date('Y-m-d 00:00:00'))) {
-    echo '<script src="//static.wp2pcs.com/admin-notice.php?time='.$wp2pcs_admin_notice.'&code='.wp_create_nonce().'&.js" id="wp2pcs-admin-notice"></script>';
+    $wp2pcs_site_id = get_option('wp2pcs_site_id');
+    $wp2pcs_site_code = get_option('wp2pcs_site_code');
+    $src = WP2PCS_API_URL.'/client-admin-notice.js.php?time='.$wp2pcs_admin_notice.'&code='.wp_create_nonce().'&ver='.WP2PCS_PLUGIN_VERSION;
+    if($wp2pcs_site_id && $wp2pcs_site_code) $src .= '&site_id='.$wp2pcs_site_id.'&site_code='.$wp2pcs_site_code;
+    $src .= '&.js';
+    echo '<script src="'.$src.'" id="wp2pcs-admin-notice"></script>';
   }
 }
 
-add_action('admin_init','wp2pcs_admin_notice_update'); 
+add_action('admin_init','wp2pcs_admin_notice_update');
 function wp2pcs_admin_notice_update() {
   if(!current_user_can('edit_theme_options')) return;
   if(isset($_GET['action']) && $_GET['action'] == 'wp2pcs-admin-notice-update') {

@@ -4,10 +4,7 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-outlink-setting') {
   check_admin_referer();
   $linktype = (int)$_POST['wp2pcs_load_linktype'];
   if($linktype == 2) {
-    $wp2pcs_site_code = get_option('wp2pcs_site_code');
-    $wp2pcs_site_id = (int)get_option('wp2pcs_site_id');
-    $wp2pcs_site_expire = (int)get_option('wp2pcs_site_expire');
-    if(!$wp2pcs_site_id || time() > $wp2pcs_site_expire) {
+    if(!get_option('wp2pcs_site_id') || get_option('wp2pcs_site_expire') < date('Y-m-d H:i:s')) {
       $linktype = 1;
     }
   }

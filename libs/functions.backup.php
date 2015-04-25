@@ -18,18 +18,18 @@ if(!function_exists('get_rand_string')) {
 // 执行备份
 function run_backup($backup_file = true,$backup_data = true) {
   if(!$backup_file && !$backup_data) return null;
-  global $DbZip,$FileZip;
+  global $DBZIP,$FileZIP;
   $zip_file_name = date('Y.m.d-H.i.s').'-'.(int)$backup_file.(int)$backup_data.'-'.get_rand_string(4).'.zip';
   $zip_file_path = WP2PCS_TEMP_DIR.DIRECTORY_SEPARATOR.$zip_file_name;
   $zip_data_path = WP2PCS_TEMP_DIR.DIRECTORY_SEPARATOR.'database-backup';
   $webroot_path = realpath(ABSPATH.'/../');
   remove_dir(WP2PCS_TEMP_DIR,false);// 清空临时目录
   // 备份文件并生成
-  if($FileZip->startfile($zip_file_path)) {
+  if($FileZIP->startfile($zip_file_path)) {
     // 备份数据
     if($backup_data) {
-      $DbZip->backup($zip_data_path,2000);
-      $FileZip->process($zip_data_path,WP2PCS_TEMP_DIR);
+      $DBZIP->backup($zip_data_path,2000);
+      $FileZIP->process($zip_data_path,WP2PCS_TEMP_DIR);
       remove_dir($zip_data_path);
     }
     // 备份文件
@@ -41,31 +41,31 @@ function run_backup($backup_file = true,$backup_data = true) {
       if($path_must) {
         $path_must = array_filter(explode("\r\n",$path_must));
         foreach($path_must as $path) {
-          if($path) $FileZip->include_path($path);
+          if($path) $FileZIP->include_path($path);
         }
       }
       // 排除黑名单
       if($path_exclude) {
         $path_exclude = array_filter(explode("\r\n",$path_exclude));
         foreach($path_exclude as $path) {
-          if($path) $FileZip->exclude_path($path);
+          if($path) $FileZIP->exclude_path($path);
         }
       }
-      $FileZip->exclude_path(WP2PCS_TEMP_DIR);
-      $FileZip->exclude_path(WP2PCS_CACHE_DIR);
+      $FileZIP->exclude_path(WP2PCS_TEMP_DIR);
+      $FileZIP->exclude_path(WP2PCS_CACHE_DIR);
       // 按照给定的路径进行打包
       if($path_include) {
         $path_include = array_filter(explode("\r\n",$path_include));
         foreach($path_include as $path) {
-          $FileZip->process($path,$webroot_path);
+          $FileZIP->process($path,$webroot_path);
         }
       }
       else {
-        $FileZip->process(realpath(ABSPATH),$webroot_path);
+        $FileZIP->process(realpath(ABSPATH),$webroot_path);
       }
     }
-  
-    $FileZip->createfile();
+
+    $FileZIP->createfile();
     return $zip_file_path;
   }
   else {

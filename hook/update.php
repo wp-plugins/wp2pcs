@@ -4,22 +4,35 @@
 
 // 免费版关闭视频播放器功能
 if(!get_option('wp2pcs_site_id')) {
-  update_option('wp2pcs_video_m3u8',0);
-  update_option('wp2pcs_load_videoplay',0);
+  delete_option('wp2pcs_video_m3u8');
+  delete_option('wp2pcs_load_videoplay');
 }
 
 // 会员过期改为站点过期
-$wp2pcs_site_expire = get_option('wp2pcs_site_expire');
 $wp2pcs_vip_expire = get_option('wp2pcs_vip_expire');
-if(!$wp2pcs_site_expire && $wp2pcs_vip_expire) {
+if($wp2pcs_vip_expire) {
   update_option('wp2pcs_site_expire',$wp2pcs_vip_expire);
   delete_option('wp2pcs_vip_expire');
 }
 
 // wp2pcs_load_videoplay 改为 wp2pcs_video_player
-$wp2pcs_video_player = get_option('wp2pcs_video_player');
 $wp2pcs_load_videoplay = get_option('wp2pcs_load_videoplay');
-if(!$wp2pcs_video_player && $wp2pcs_load_videoplay) {
+if($wp2pcs_load_videoplay) {
   update_option('wp2pcs_video_player',$wp2pcs_load_videoplay);
   delete_option('wp2pcs_load_videoplay');
 }
+
+// baidupcs 改为 baidu
+$wp2pcs_baidupcs_access_token = get_option('wp2pcs_baidupcs_access_token');
+if($wp2pcs_baidupcs_access_token) {
+  update_option('wp2pcs_baidu_access_token',$wp2pcs_baidupcs_access_token);
+  delete_option('wp2pcs_baidupcs_access_token');
+}
+$wp2pcs_baidupcs_refresh_token = get_option('wp2pcs_baidupcs_refresh_token');
+if($wp2pcs_baidupcs_refresh_token) {
+  update_option('wp2pcs_baidu_refresh_token',$wp2pcs_baidupcs_refresh_token);
+  delete_option('wp2pcs_baidupcs_refresh_token');
+}
+
+if(wp_next_scheduled('wp2pcs_token_cron_task')) wp_clear_scheduled_hook('wp2pcs_token_cron_task');
+if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database')) wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_database');

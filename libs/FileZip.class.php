@@ -1,6 +1,6 @@
 <?php
 
-class FileZip {
+class FileZIP {
 
   var $file_count = 0 ;
   var $datastr_len   = 0;
@@ -16,7 +16,7 @@ class FileZip {
     $this->excludes = array();
     $this->includes = array();
   }
-  
+
   function unix2DosTime($unixtime = 0) {
     $timearray = ($unixtime == 0) ? getdate() : getdate($unixtime);
     if($timearray['year'] < 1980) {
@@ -84,7 +84,7 @@ class FileZip {
     $datastr .= pack('V', $c_len);               // compressed filesize
     $datastr .= pack('V', $unc_len);             // uncompressed filesize
 		//写入新的文件内容
-    fwrite($this->fp,$datastr);	
+    fwrite($this->fp,$datastr);
 		$my_datastr_len = strlen($datastr);
 		unset($datastr);
 		//新添文件目录信息
@@ -108,28 +108,28 @@ class FileZip {
 		$this->dirstr .= $dirstr;	//目录信息
 		$this -> file_count ++;
 		$this -> dirstr_len += strlen($dirstr);
-		$this -> datastr_len += $my_datastr_len;	
+		$this -> datastr_len += $my_datastr_len;
   }
 
 	// 添加一个文件夹到压缩文件中
   function adddir($name) {
-		$name = str_replace("\\", "/", $name); 
-		$datastr = "\x50\x4b\x03\x04\x0a\x00\x00\x00\x00\x00\x00\x00\x00\x00"; 
-		$datastr .= pack("V",0).pack("V",0).pack("V",0).pack("v", strlen($name) ); 
-		$datastr .= pack("v", 0 ).$name.pack("V", 0).pack("V", 0).pack("V", 0); 
+		$name = str_replace("\\", "/", $name);
+		$datastr = "\x50\x4b\x03\x04\x0a\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+		$datastr .= pack("V",0).pack("V",0).pack("V",0).pack("v", strlen($name) );
+		$datastr .= pack("v", 0 ).$name.pack("V", 0).pack("V", 0).pack("V", 0);
 		fwrite($this->fp,$datastr);	//写入新的文件内容
 		$my_datastr_len = strlen($datastr);
 		unset($datastr);
-		$dirstr = "\x50\x4b\x01\x02\x00\x00\x0a\x00\x00\x00\x00\x00\x00\x00\x00\x00"; 
-		$dirstr .= pack("V",0).pack("V",0).pack("V",0).pack("v", strlen($name) ); 
-		$dirstr .= pack("v", 0 ).pack("v", 0 ).pack("v", 0 ).pack("v", 0 ); 
-		$dirstr .= pack("V", 16 ).pack("V",$this->datastr_len).$name; 
+		$dirstr = "\x50\x4b\x01\x02\x00\x00\x0a\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+		$dirstr .= pack("V",0).pack("V",0).pack("V",0).pack("v", strlen($name) );
+		$dirstr .= pack("v", 0 ).pack("v", 0 ).pack("v", 0 ).pack("v", 0 );
+		$dirstr .= pack("V", 16 ).pack("V",$this->datastr_len).$name;
 		$this->dirstr .= $dirstr;	//目录信息
 		$this -> file_count ++;
 		$this -> dirstr_len += strlen($dirstr);
 		$this -> datastr_len += $my_datastr_len;
 	}
-	
+
 	// 增加包含路径
 	function include_path($path) {
 	  $path = realpath($path);
@@ -141,7 +141,7 @@ class FileZip {
 	  }
     $this->includes = array_unique(array_filter($this->includes));
 	}
-	
+
 	// 排除路径
 	function exclude_path($path) {
 	  $path = realpath($path);
@@ -208,7 +208,7 @@ class FileZip {
 		fwrite($this->fp,$this->dirstr.$endstr);
 		fclose($this->fp);
 	}
-	
+
 	// 获取目录中的文件列表（包括目录）
 	function get_files_in_dir($dir) {
 	  $files = array();
@@ -222,9 +222,9 @@ class FileZip {
 	      if(is_dir($file))$files = array_merge($files,$this->get_files_in_dir($file));
       }
     }
-    return array_unique(array_filter($files));	  
+    return array_unique(array_filter($files));
 	}
-	
+
 	// 获取目录的递归子目录
 	function get_dirs_in_dir($dir) {
 	  $sub_dirs = array();
@@ -240,12 +240,12 @@ class FileZip {
     }
     return array_unique(array_filter($sub_dirs));
 	}
-	
+
 	// 替换字符串中第一次出现的子串
   private function str_replace_first($find,$replace,$string){
     $position = strpos($string,$find);
     if($position !== false){
-      $length = strlen($find); 
+      $length = strlen($find);
       $string = substr_replace($string,$replace,$position,$length);
       return $string;
     }else{
@@ -257,7 +257,7 @@ class FileZip {
 
 /**
  * 使用说明：
- * 
+ *
 
 $ZIP = new WebZip;
 if($ZIP->startfile('web.zip')) { // startfile的参数就是准备生成的文件的路径，一般是相对路径，使用绝对路径没有问题

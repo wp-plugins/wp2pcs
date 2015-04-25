@@ -19,15 +19,15 @@ add_action('wp2pcs_backup_cron_task','wp2pcs_backup_cron_task_function');
 function wp2pcs_backup_cron_task_function() {
   // 已经备份了的次数
   $wp2pcs_backup_amount = (int)get_option('wp2pcs_backup_amount');
-  
+
   $wp2pcs_backup_file = get_option('wp2pcs_backup_file');
   $wp2pcs_backup_data = get_option('wp2pcs_backup_data');
   $reccurences_array = wp2pcs_more_reccurences_for_backup_array();
   $backup_file = $reccurences_array[$wp2pcs_backup_file]['interval']/(3600*24);
   $backup_data = $reccurences_array[$wp2pcs_backup_data]['interval']/(3600*24);
-  
+
   if(!$backup_file && !$backup_data) return;
-  
+
   if($backup_file > 0 && $wp2pcs_backup_amount%$backup_file == 0) {
     $backup_file = true;
   }
@@ -40,12 +40,12 @@ function wp2pcs_backup_cron_task_function() {
   else {
     $backup_data = false;
   }
- 
-  $wp2pcs_backup_amount ++; 
+
+  $wp2pcs_backup_amount ++;
   update_option('wp2pcs_backup_amount',$wp2pcs_backup_amount);
-  
+
   $zip_file = run_backup($backup_file,$backup_data);
   upload_baidupcs($zip_file);
   remove_dir(WP2PCS_TEMP_DIR,false);// 清空临时目录
-  
+
 }
