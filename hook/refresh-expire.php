@@ -9,7 +9,7 @@ function wp2pcs_refresh_expire_time() {
 
   // 每隔两个小时检查一次百度账号是否授权过期
   if($wp2pcs_site_id && $wp2pcs_site_expire <date('Y-m-d H:i:s') && strtotime($wp2pcs_site_expire_update_time) < strtotime('-2 hours')) {
-    $data = get_by_curl(WP2PCS_API_URL.'/client-get-site-expire-time.php',array('site_id' => $wp2pcs_site_id,'code' => md5($wp2pcs_site_code.date('Y.m.d.H.i'))));
+    $data = get_by_curl(WP2PCS_API_URL.'/client-get-site-expire-time.php',array('site_id' => $wp2pcs_site_id,'code' => md5($wp2pcs_site_code.date('Y.m.d'))));
     $data = json_decode($data);
     if(isset($data->expire_time)) {
       update_option('wp2pcs_site_expire',$data->expire_time);

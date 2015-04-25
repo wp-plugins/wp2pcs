@@ -11,7 +11,7 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-site-code') {
     delete_option('wp2pcs_site_id');
     wp_die('请填写站点码。<a href="javascript:history.go(-1);">返回</a>');
   }
-  $baidu_access_token = BAIDU_ACCESS_TOKEN;
+  $baidu_access_token = WP2PCS_BAIDU_ACCESS_TOKEN;
   $baidu_refresh_token = get_option('wp2pcs_baidu_refresh_token');
   $result = get_by_curl(WP2PCS_API_URL.'/client-submit-site-code.php',array(
     'site_scheme' => $site_scheme,

@@ -13,7 +13,7 @@
   <h3 class="hndle">授权信息</h3>
   <div class="inside">
     <?php
-      if(!BAIDU_ACCESS_TOKEN) {
+      if(!WP2PCS_BAIDU_ACCESS_TOKEN) {
         $baidupcs_btn_class = 'button-primary';
       }
       else {

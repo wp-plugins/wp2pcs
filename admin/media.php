@@ -14,7 +14,7 @@ if(isset($_GET['dir']) && !empty($_GET['dir'])){
   $dir_path = $_GET['dir'];
 }
 else{
-  $dir_path = BAIDUPCS_REMOTE_ROOT.'/load';
+  $dir_path = WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load';
 }
 ?>
 <link rel="stylesheet" href="<?php echo plugins_url('/assets/manage-media.css',WP2PCS_PLUGIN_NAME); ?>">
@@ -28,15 +28,15 @@ else{
   </div>
   <div id="wp2pcs-manage-media-page-place">
   当前位置：
-  <a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>" <?php if(strpos($dir_path,BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#999;"'; ?>>站点目录</a><?php
+  <a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>" <?php if(strpos($dir_path,WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#999;"'; ?>>站点目录</a><?php
   if(strpos($dir_path,'/apps/wp2pcs/share') === false) {
-    $current_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
+    $current_path = str_replace(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
     $place_path_arr = array();
     if(!empty($current_path)) foreach($current_path as $dir) {
       $place_path_arr[] = $dir;
       $place_path_link = remove_query_arg('refresh');
-      $place_path_link = add_query_arg('dir',BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
+      $place_path_link = add_query_arg('dir',WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
       echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
     }
   }
@@ -92,7 +92,7 @@ else{
     $files_on_pcs = array_slice($files_on_pcs,$begin,$end-$begin);
     $files_total_page = ceil($files_amount/$files_per_page);
     foreach($files_on_pcs as $file) {
-      $file_path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
+      $file_path = str_replace(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
       $file_path = str_replace('/apps/wp2pcs/share','',$file_path);
       $file_name = substr($file->path,strrpos($file->path,'/')+1);
       $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';

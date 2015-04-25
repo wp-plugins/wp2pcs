@@ -79,7 +79,7 @@ function upload_baidupcs($zip_file_path){
   global $BaiduPCS;
   $file_blocks = array();//分片上传文件成功后返回的md5值数组集合
   $file_block_size = 2*1024*1024;// 2M
-  $remote_dir = BAIDUPCS_REMOTE_ROOT.'/backup/';
+  $remote_dir = WP2PCS_BAIDUPCS_REMOTE_ROOT.'/backup/';
   $file_name = substr($zip_file_path,strrpos($zip_file_path,'/')+1);
   // 使用普通上传
   if(filesize($zip_file_path) <= 20*1024*1024) {

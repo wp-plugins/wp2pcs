@@ -32,7 +32,7 @@ function wp2pcs_video_player_script() {
       echo 'if(root_dir == "share") root_dir = "/apps/wp2pcs/share";';
   echo '}';
   echo 'else {';
-      echo 'root_dir = "'.BAIDUPCS_REMOTE_ROOT.'/load";';
+      echo 'root_dir = "'.WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load";';
   echo '}';
   echo 'if(path.indexOf(root_dir) != 0) path = root_dir + path;';
   echo 'path = path.replace("&","%26");';

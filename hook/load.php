@@ -33,7 +33,7 @@ wp2pcs_http_cache();
 global $BaiduPCS;
 
 // 先检查文件是否存在
-$path = BAIDUPCS_REMOTE_ROOT.str_replace('//','/','/load/'.$path);
+$path = WP2PCS_BAIDUPCS_REMOTE_ROOT.str_replace('//','/','/load/'.$path);
 $meta = $BaiduPCS->getMeta($path);
 $meta = json_decode($meta);
 // 如果该access_token无法正确获取权限
@@ -57,7 +57,7 @@ if(isset($meta->error_code) && in_array($meta->error_code,array(100,110,111,3102
 }
 // 如果文件不存在，就试图从共享目录中抓取文件
 if(isset($meta->error_code) && $meta->error_code == 31066) {
-  $path = str_replace(BAIDUPCS_REMOTE_ROOT.'/load/','/apps/wp2pcs/share/',$path);
+  $path = str_replace(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load/','/apps/wp2pcs/share/',$path);
   $meta = $BaiduPCS->getMeta($path);
   $meta = json_decode($meta);
 }

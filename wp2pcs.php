@@ -23,7 +23,7 @@ require('libs/DBZIP.class.php');
 require('libs/functions.backup.php');
 
 // 直接初始化全局变量
-$BaiduPCS = new BaiduPCS(BAIDU_ACCESS_TOKEN);
+$BaiduPCS = new BaiduPCS(WP2PCS_BAIDU_ACCESS_TOKEN);
 $FileZIP = new FileZIP;
 $DBZIP = new DBZIP(DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
 

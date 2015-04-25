@@ -9,7 +9,7 @@
 <div class="metabox-holder"><div class="meta-box-sortables">
 <form method="post" autocomplete="off">
 
-<?php if(!BAIDU_ACCESS_TOKEN) { ?>
+<?php if(!WP2PCS_BAIDU_ACCESS_TOKEN) { ?>
 <div class="error"><p><strong>提示</strong>：还没有百度授权。</p></div>
 <?php } ?>
 
@@ -17,7 +17,7 @@
   <div class="handlediv" title="点击以切换"><br></div>
   <h3 class="hndle">云端路径</h3>
   <div class="inside">
-    <p>所有资源请放在百度网盘<code><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo urlencode(BAIDUPCS_REMOTE_ROOT.'/load'); ?>" target="_blank"><?php echo BAIDUPCS_REMOTE_ROOT; ?>/load</a></code>目录中</p>
+    <p>所有资源请放在百度网盘<code><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo urlencode(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load'); ?>" target="_blank"><?php echo WP2PCS_BAIDUPCS_REMOTE_ROOT; ?>/load</a></code>目录中</p>
   </div>
 </div>
 

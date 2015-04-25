@@ -8,7 +8,7 @@ function wp2pcs_admin_notice() {
     return;
   }
   $wp2pcs_admin_notice = (int)get_option('wp2pcs_admin_notice');
-  if($wp2pcs_admin_notice < strtotime(date('Y-m-d 00:00:00'))) {
+  if($wp2pcs_admin_notice < strtotime('-6 hours')) {
     $wp2pcs_site_id = get_option('wp2pcs_site_id');
     $wp2pcs_site_code = get_option('wp2pcs_site_code');
     $src = WP2PCS_API_URL.'/client-admin-notice.js.php?time='.$wp2pcs_admin_notice.'&code='.wp_create_nonce().'&ver='.WP2PCS_PLUGIN_VERSION;

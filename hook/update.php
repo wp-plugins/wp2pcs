@@ -30,6 +30,8 @@ if($wp2pcs_baidupcs_access_token) {
 }
 $wp2pcs_baidupcs_refresh_token = get_option('wp2pcs_baidupcs_refresh_token');
 if($wp2pcs_baidupcs_refresh_token) {
+  // baidu refresh token直接记录，不再以数组的形式保存
+  if(is_array($wp2pcs_baidupcs_refresh_token)) $wp2pcs_baidupcs_refresh_token = $wp2pcs_baidupcs_refresh_token['token'];
   update_option('wp2pcs_baidu_refresh_token',$wp2pcs_baidupcs_refresh_token);
   delete_option('wp2pcs_baidupcs_refresh_token');
 }

@@ -9,7 +9,7 @@
 <div class="metabox-holder"><div class="meta-box-sortables">
 <form method="post" autocomplete="off">
 
-<?php if(!BAIDU_ACCESS_TOKEN) { ?>
+<?php if(!WP2PCS_BAIDU_ACCESS_TOKEN) { ?>
 <div class="error"><p><strong>提示</strong>：还没有百度授权。</p></div>
 <?php } ?>
 
@@ -45,7 +45,7 @@
         <option <?php selected($wp2pcs_backup_time,'03:00'); ?>>03:00</option>
       </select>
     </p>
-    <p>所有备份文件将被保存在百度云盘的<code><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo urlencode(BAIDUPCS_REMOTE_ROOT.'/backup'); ?>" target="_blank"><?php echo BAIDUPCS_REMOTE_ROOT; ?>/backup</a></code>路径中</p>
+    <p>所有备份文件将被保存在百度云盘的<code><a href="http://pan.baidu.com/disk/home#dir/path=<?php echo urlencode(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/backup'); ?>" target="_blank"><?php echo WP2PCS_BAIDUPCS_REMOTE_ROOT; ?>/backup</a></code>路径中</p>
     <?php if($backup_timestamp) echo '<p>下次运行备份时间：'.date('Y-m-d H:i:s',$backup_timestamp).'</p>'; ?>
   </div>
 </div>
