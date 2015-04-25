@@ -24,7 +24,7 @@ global $wp_rewrite;
     <p>
       <label>
       <input type="radio" name="wp2pcs_load_linktype" value="2" <?php checked($wp2pcs_load_linktype,2); ?> <?php if(!$wp2pcs_site_id || $wp2pcs_site_expire < date('Y-m-d H:i:s')) echo 'disabled'; ?>>
-      <?php echo WP2PCS_APP_URL; if($wp2pcs_site_id) echo $wp2pcs_site_id; else echo '站点号'; ?>/img/test.jpg （付费后专享）
+      <?php echo WP2PCS_APP_URL.'/'; if($wp2pcs_site_id) echo $wp2pcs_site_id; else echo '站点号'; ?>/img/test.jpg （付费后专享）
       </label>
     </p>
     <p><small>之前为第三种形式，更换为前面的形式时，要更换网站内之前使用的调用地址。</small></p>
