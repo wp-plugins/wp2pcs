@@ -6,7 +6,7 @@ function wp2pcs_video_player_style() {
   //if(!get_option('wp2pcs_site_id') || !get_option('wp2pcs_video_m3u8')) return;
   echo '<style>';
   echo 'iframe.wp2pcs-video-player{display:block;margin:1em auto;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;border:0;}';
-  echo 'iframe.wp2pcs-video-playing{display:block;margin:1em auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;border:0;}';
+  echo 'iframe.wp2pcs-video-playing{display:block;margin:1em auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;background-size:127px 130px;border:0;}';
   echo '</style>';
 }
 
@@ -38,7 +38,7 @@ function wp2pcs_video_player_script() {
   echo 'path = path.replace("&","%26");';
   echo 'path = path.replace("\'","%27");';
   echo 'path = path.replace("\"","%22");';
-  echo '$this.attr("src","'.WP2PCS_APP_URL.'/video?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&autostart=" + autostart + "&image=" + image + "&path=" + path);';
+  echo '$this.attr("src","'.WP2PCS_APP_URL.'/video?site_id='.$site_id.'&size=" + width + "_" + height + "&stretch=" + stretch + "&autostart=" + autostart + "&image=" + image + "&path=" + encodeURIComponent(path));';
   echo '$this.removeClass("wp2pcs-video-player").addClass("wp2pcs-video-playing");';
   echo '$this.attr("frameborder","0");';
   echo '$this.attr("scrolling","no");';

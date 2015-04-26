@@ -63,7 +63,7 @@ if(self != top) {
 </h2>
 
 <div class="update-about-feature headline-feature">
-  <h2>版本1.4.11，重构！</h2>
+  <h2>版本1.5.0，功能增强！</h2>
   <div class="featured-image">
     <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
   </div>
@@ -73,12 +73,13 @@ if(self != top) {
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.4.11的变化</h2>
+  <h2>1.5.0的变化</h2>
   <div class="featured-image">
     <ul>
       <li>部分重构WP2PCS的框架</li>
       <li>不同站点可以使用不同的百度账号授权</li>
       <li>增强了付费用户资源调用的稳定性</li>
+      <li>付费用户视频在IE下可以播放</li>
     </ul>
   </div>
   <div class="clear"></div>

@@ -3,7 +3,7 @@ Contributors: 否子戈
 Donate link: http://www.wp2pcs.com
 Tags:wp2pcs, 数据备份, 资源调用, baidu, cloud storage, PCS, 百度网盘
 Requires at least: 3.5.1
-Tested up to: 4.1.1
+Tested up to: 4.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -46,10 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.4.11 =
-增加功能：可以选择插入面板默认是打开共享目录还是站点目录
+= 1.5.0 =
+完善付费用户视频播放，IE下也可以播放了。
 
 == Upgrade Notice ==
 
-= 1.4.11 =
-增加功能：可以选择插入面板默认是打开共享目录还是站点目录
+= 1.5.0 =
+完善付费用户视频播放，IE下也可以播放了。
