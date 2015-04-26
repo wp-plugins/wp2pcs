@@ -139,7 +139,7 @@ jQuery(function($){
           if(is_videoplay) {
             html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-autostart="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"';
             if(root_dir) html += ' data-root-dir="' + root_dir + '"';
-            html += '></iframe></p>';
+            html += ' scrolling="no" frameborder="0"></iframe></p>';
           }
           else {
             html += '<p>' + url + '</p>';
