@@ -7,6 +7,7 @@ function wp2pcs_video_player_style() {
   echo '<style>';
   echo 'iframe.wp2pcs-video-player{display:block;margin:1em auto;background:url('.plugins_url('assets/video-play.png',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;border:0;}';
   echo 'iframe.wp2pcs-video-playing{display:block;margin:1em auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;background-size:127px 130px;border:0;}';
+  echo '@media screen and (max-width: 480px){iframe.wp2pcs-video-playing{background-size:63px 65px;}}';
   echo '</style>';
 }
 
