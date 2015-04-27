@@ -19,8 +19,8 @@ if(isset($_POST['action']) && $_POST['action'] == 'update-site-code') {
     'site_code' => $site_code,
     'baidu_access_token' => $baidu_access_token,
     'baidu_refresh_token' => $baidu_refresh_token
-  ));
-  if(trim($result) == '' || !$result){
+  ),false);
+  if(!$result || trim($result) == ''){
     wp_die('没有获取数据，请检查你的网站是否支持curl，或者官网服务器出问题，稍后再试试。<br><a href="javascript:history.go(-1);">返回</a>');
   }
   $data = json_decode($result,true);

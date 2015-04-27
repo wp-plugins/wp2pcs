@@ -7,7 +7,7 @@ function wp2pcs_refresh_baidu_token() {
   $wp2pcs_baidu_token_update_time = get_option('wp2pcs_baidu_token_update_time');
 
   // 每隔两个小时检查一次百度账号是否授权过期
-  if(strtotime($wp2pcs_baidu_token_update_time) < strtotime('-2 hours')) {
+  if(strtotime($wp2pcs_baidu_token_update_time.' +2 hours') < time()) {
     $meta = json_decode($BaiduPCS->getQuota());
     if(isset($meta->error_code) && in_array($meta->error_code,array(100,110,111,31023))) {
       $data = get_by_curl(WP2PCS_API_URL.'/client-baidu-refresh-token.php',array('refresh_token' => $refresh_token));

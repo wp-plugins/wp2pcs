@@ -14,13 +14,13 @@ define('WP2PCS_PLUGIN_NAME',__FILE__);
 define('WP2PCS_PLUGIN_VERSION','1.5.1');
 
 // 包含一些必备的函数和类，以提供下面使用
-if(file_exists('config.php')) include('config.php');
-else include('config-default.php');
-require('libs/functions.lib.php');
-require('libs/BaiduPCS.class.php');
-require('libs/File.ZIP.class.php');
-require('libs/Database.ZIP.class.php');
-require('libs/functions.backup.php');
+if(file_exists('config.php')) include(dirname(__FILE__).'/config.php');
+else include(dirname(__FILE__).'/config-default.php');
+require(dirname(__FILE__).'/libs/functions.lib.php');
+require(dirname(__FILE__).'/libs/BaiduPCS.class.php');
+require(dirname(__FILE__).'/libs/File.ZIP.class.php');
+require(dirname(__FILE__).'/libs/Database.ZIP.class.php');
+require(dirname(__FILE__).'/libs/functions.backup.php');
 
 // 直接初始化全局变量
 $BaiduPCS = new BaiduPCS(WP2PCS_BAIDU_ACCESS_TOKEN);
@@ -78,7 +78,7 @@ if(!is_multisite()) {
     if($hook_files){
       foreach($hook_files as $hook_file)
         if(substr($hook_file,-4) == '.php')
-          include_once($hook_dir.'/'.$hook_file);
+          include($hook_dir.'/'.$hook_file);
     }
   }
   //兼容的scandir

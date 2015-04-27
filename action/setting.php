@@ -21,7 +21,7 @@ if(isset($_GET['access_token']) && !empty($_GET['access_token'])) {
         'baidu_refresh_token' => $refresh_token
       ),false);
       // 如果通知app端时返回的数据为空
-      if(trim($result) == '' || !$result) {
+      if(!$result || trim($result) == '') {
         wp_die('更新远端数据时，远端无反应，可能你的主机不支持curl，或外链可能被损坏，请稍后再试。<a href="javascript:history.go(-1);">返回</a>');
       }
       $data = json_decode($result,true);
