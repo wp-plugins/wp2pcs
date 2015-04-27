@@ -36,7 +36,7 @@
           echo '<p>当前百度网盘总'.number_format(($quota->quota/(1024*1024)),2).'MB，剩余'.number_format((($quota->quota - $quota->used)/(1024*1024)),2).'MB。</p>';
         }
       }
-      if(!TENCENT_OPEN_ID || !TENCENT_ACCESS_TOKEN) {
+      if(!WP2PCS_TENCENT_OPEN_ID || !WP2PCS_TENCENT_ACCESS_TOKEN) {
         $weiyun_btn_class = 'button-primary';
       }
       else {
