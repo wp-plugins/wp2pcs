@@ -28,7 +28,7 @@ else{
   </div>
   <div id="wp2pcs-manage-media-page-place">
   当前位置：
-  <a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>" <?php if(strpos($dir_path,WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#999;"'; ?>>站点目录</a><?php
+  <a href="<?php echo remove_query_arg(array('dir','paged','refresh')); ?>" <?php if(strpos($dir_path,WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load') === false)echo 'style="color:#999;text-decoration:line-through;"'; ?>>站点目录</a><?php
   if(strpos($dir_path,'/apps/wp2pcs/share') === false) {
     $current_path = str_replace(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
@@ -41,7 +41,7 @@ else{
     }
   }
   ?>
-  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share'); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#999;"'; ?>>共享目录</a><?php
+  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share'); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#999;text-decoration:line-through;"'; ?>>共享目录</a><?php
   if(strpos($dir_path,'/apps/wp2pcs/share') !== false) {
     $current_path = str_replace('/apps/wp2pcs/share','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
