@@ -13,7 +13,7 @@ if(get_option('permalink_structure')) {
     $path = substr($URI,$pos+7);
   }
 }
-$GET = rawurldecode($_GET['wp2pcs']);
+$GET = isset($_GET['wp2pcs']) ? rawurldecode($_GET['wp2pcs']) : false;
 $path = !$path && $GET ? $GET : $path;
 
 // 如果这些路径都是无效的话，就不往下执行
