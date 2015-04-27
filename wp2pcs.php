@@ -18,8 +18,8 @@ if(file_exists('config.php')) include('config.php');
 else include('config-default.php');
 require('libs/functions.lib.php');
 require('libs/BaiduPCS.class.php');
-require('libs/FileZIP.class.php');
-require('libs/DBZIP.class.php');
+require('libs/File.ZIP.class.php');
+require('libs/Database.ZIP.class.php');
 require('libs/functions.backup.php');
 
 // 直接初始化全局变量
