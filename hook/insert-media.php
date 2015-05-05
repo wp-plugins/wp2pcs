@@ -155,7 +155,7 @@ function wp2pcs_insert_media_iframe_content() {
       else {
         $file_format = 'file';
       }
-      echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-size="'.$file->size.'">';
+      echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-size="'.$file->size.'" data-file-type="'.$file_type.'">';
       if($file_type == 'dir') {
         echo '<a href="'.remove_query_arg('refresh',add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
       }
@@ -169,7 +169,7 @@ function wp2pcs_insert_media_iframe_content() {
           echo '<img src="'.$file_url.'" title="图片 '.$file_name.'">';
         }
         elseif($file_format == 'video') {
-          echo '<input type="checkbox" value="'.$file_url.'" data-video-path="'.$file_path.'" data-video-md5="'.$file->md5.'">';
+          echo '<input type="checkbox" value="'.$file_url.'" data-video-path="'.$file_path.'" data-video-md5="'.$file->md5.'" data-site-id="'.$site_id.'">';
           echo '<a title="视频 '.$file_name.'">'.$file_name.'</a>';
         }
         elseif($file_format == 'music') {

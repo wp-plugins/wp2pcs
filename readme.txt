@@ -46,10 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.5.0 =
-完善付费用户视频播放，IE下也可以播放了。
+= 1.5.1 =
+更加稳定
 
 == Upgrade Notice ==
 
-= 1.5.0 =
-完善付费用户视频播放，IE下也可以播放了。
+= 1.5.1 =
+更加稳定

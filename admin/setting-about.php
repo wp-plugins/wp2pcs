@@ -63,7 +63,7 @@ if(self != top) {
 </h2>
 
 <div class="update-about-feature headline-feature">
-  <h2>版本1.5.0，功能增强！</h2>
+  <h2>版本1.5.1，更稳定！</h2>
   <div class="featured-image">
     <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
   </div>
@@ -73,13 +73,14 @@ if(self != top) {
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.5.0的变化</h2>
+  <h2>1.5.1的变化</h2>
   <div class="featured-image">
     <ul>
-      <li>部分重构WP2PCS的框架</li>
-      <li>不同站点可以使用不同的百度账号授权</li>
-      <li>增强了付费用户资源调用的稳定性</li>
-      <li>付费用户视频在IE下可以播放</li>
+      <li>WP2PCS更加稳定</li>
+      <li>插入音乐、视频URL时，插入[audio][video]来插入播放器</li>
+      <li>视频采用浏览器缓存，可秒开</li>
+      <li>增加脚本钩子，可以通过do_action('wp2pcs_print_video_player_script');来调用视频脚本，这样就不必加载在网页底部，拖慢视频加载速度</li>
+      <li>使用不一样的loading.gif</li>
     </ul>
   </div>
   <div class="clear"></div>

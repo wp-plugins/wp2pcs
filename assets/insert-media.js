@@ -121,12 +121,14 @@ jQuery(function($){
       var html = '';
       $('.file-on-pcs.selected').each(function(){
         var $this = $(this),
+            file_type = $this.attr('date-file-type'),
             $input = $this.children('input'),
             is_imglink = $('#wp2pcs-insert-media-iframe-check-imglink').prop('checked'),
             is_videoplay = $('#wp2pcs-insert-media-iframe-check-videoplay').prop('checked'),
             root_dir = $('#wp2pcs-insert-media-iframe-check-root-dir').val(),
             video_path = $input.attr('data-video-path'),
             video_md5 = $input.attr('data-video-md5'),
+            site_id = $input.attr('data-site-id'),
             url = $input.val();
         // 如果被选择的是图片
         if($this.hasClass('file-format-image')){
@@ -137,20 +139,24 @@ jQuery(function($){
         // 如果是视频
         else if($this.hasClass('file-format-video')) {
           if(is_videoplay) {
-            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-autostart="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '"';
+            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-autostart="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '" data-site-id="' + site_id + '"';
             if(root_dir) html += ' data-root-dir="' + root_dir + '"';
             html += ' scrolling="no" frameborder="0"></iframe></p>';
           }
           else {
-            html += '<p>' + url + '</p>';
+            html += '<p>[video width="" height="" src="' + url + '" poster="none" loop="off" autoplay="off" data-site-id="' + site_id + '"]</p>';
           }
         }
         else if($this.hasClass('file-format-music')) {
-          html += '<p>' + url + '</p>';
+          html += '<p>[audio src="' + url + '" loop="off" autoplay="off" data-site-id="' + site_id + '"]</p>';
         }
         // 如果是其他文件，就直接给媒体链接
         else{
-          html += '&nbsp;' + url + '&nbsp;';
+          html += '&nbsp;';
+          if(is_imglink) html += '<a href="' + url + '">';
+          html += url;
+          if(is_imglink) html += '</a>';
+          html += '&nbsp;';
         }
       });
       $('#wp2pcs-insert-media-btn-clear').click();

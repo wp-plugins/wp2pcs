@@ -124,7 +124,7 @@ else{
           echo '<img src="'.$file_url.'" title="图片 '.$file_name.'" data-url="'.$file_url.'">';
         }
         elseif($file_format == 'video') {
-          echo '<a title="视频 '.$file_name.'" data-url="'.$file_url.'" data-video-path="'.$file_path.'" data-video-md5="'.$file->md5.'">'.$file_name.'</a>';
+          echo '<a title="视频 '.$file_name.'" data-url="'.$file_url.'" data-video-path="'.$file_path.'" data-video-md5="'.$file->md5.'" data-site-id="'.$site_id.'">'.$file_name.'</a>';
         }
         elseif($file_format == 'music') {
           echo '<a title="音乐 '.$file_name.'" data-url="'.$file_url.'">'.$file_name.'</a>';

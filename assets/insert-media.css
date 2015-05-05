@@ -134,3 +134,6 @@ body {
 #wp2pcs-insert-media-iframe-pagenavi a {
   margin: 0 .5em;
 }
+#wp2pcs-insert-media-iframe-pagenavi img {
+  margin-top: 40px;
+}
