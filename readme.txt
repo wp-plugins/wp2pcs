@@ -46,10 +46,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.5.1 =
-更加稳定
+= 1.5.2 =
+修复BUG
 
 == Upgrade Notice ==
 
-= 1.5.1 =
-更加稳定
+= 1.5.2 =
+修复BUG

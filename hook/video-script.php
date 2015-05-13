@@ -31,7 +31,7 @@ function wp2pcs_video_player_script() {
       echo 'site_id = $this.attr("data-site-id"),';
       echo 'root_dir = $this.attr("data-root-dir"),';
       echo 'image = $this.attr("data-image");';
-    echo 'if(site_id == "undefined" || isNaN(site_id)) site_id="'.$site_id.'";';
+    echo 'if(site_id == undefined || isNaN(site_id)) site_id="'.$site_id.'";';
     echo 'if(root_dir != undefined) {';
       echo 'if(root_dir == "share") root_dir = "/apps/wp2pcs/share";';
     echo '}';

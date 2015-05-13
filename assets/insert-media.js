@@ -74,9 +74,12 @@ jQuery(function($){
     $this.toggleClass('selected');
     if($this.hasClass('selected')) {
       $input.prop('checked',true);
+      $('#wp2pcs-insert-media-btn-help').next('span.wp2pcs-insert-media-show-url').remove();
+      $('#wp2pcs-insert-media-btn-help').after('<span class="wp2pcs-insert-media-show-url" style="float:left;margin-left:10px;"><input type="url" class="regular-text" value="' + $input.val() + '"></span>');
     }
     else {
       $input.prop('checked',false);
+      $('#wp2pcs-insert-media-btn-help').next('span.wp2pcs-insert-media-show-url').remove();
     }
   });
   // 变化勾选状况

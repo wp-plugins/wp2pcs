@@ -4,6 +4,22 @@
  * 利用原生的PHP和WP函数写的相关函数
  */
 
+// 兼容的scandir
+function wp2pcs_scandir($dir) {
+  if(function_exists('scandir')) {
+    return scandir($dir);
+  }
+  else {
+    $handle = @opendir($dir);
+    $arr = array();
+    while(($arr[] = @readdir($handle)) !== false) {}
+    @closedir($handle);
+    $arr = array_filter($arr);
+    return $arr;
+  }
+}
+
+
 // 读取http缓存
 function wp2pcs_http_cache() {
   header("Cache-Control: private, max-age=10800, pre-check=10800");

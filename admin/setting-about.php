@@ -63,7 +63,7 @@ if(self != top) {
 </h2>
 
 <div class="update-about-feature headline-feature">
-  <h2>版本1.5.1，更稳定！</h2>
+  <h2>版本1.5.x，更稳定，注重视频调用！</h2>
   <div class="featured-image">
     <img class="about-overview-img" src="<?php echo plugins_url('assets/about.png',WP2PCS_PLUGIN_NAME); ?>" width="640" height="360" />
   </div>
@@ -73,14 +73,15 @@ if(self != top) {
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.5.1的变化</h2>
+  <h2>1.5.2的变化</h2>
   <div class="featured-image">
     <ul>
-      <li>WP2PCS更加稳定</li>
+      <li>修复了BUG</li>
       <li>插入音乐、视频URL时，插入[audio][video]来插入播放器</li>
       <li>视频采用浏览器缓存，可秒开</li>
       <li>增加脚本钩子，可以通过do_action('wp2pcs_print_video_player_script');来调用视频脚本，这样就不必加载在网页底部，拖慢视频加载速度</li>
       <li>使用不一样的loading.gif</li>
+      <li>使用baidu.com.wp2pcs.com作为付费用户调用域名，并自动更新原本文章中的duapp调用域名</li>
     </ul>
   </div>
   <div class="clear"></div>

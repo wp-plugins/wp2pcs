@@ -90,14 +90,14 @@ function wp2pcs_insert_media_iframe_content() {
     }
   }
   ?>
-  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share'); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#ccc;text-decoration:line-through"'; ?>>共享目录</a><?php
+  | <a href="<?php echo add_query_arg('dir','/apps/wp2pcs/share',remove_query_arg(array('refresh','paged'))); ?>" <?php if(strpos($dir_path,'/apps/wp2pcs/share') === false)echo 'style="color:#ccc;text-decoration:line-through"'; ?>>共享目录</a><?php
   if(strpos($dir_path,'/apps/wp2pcs/share') !== false) {
     $current_path = str_replace('/apps/wp2pcs/share','',$dir_path);
     $current_path = array_filter(explode('/',$current_path));
     $place_path_arr = array();
     if(!empty($current_path)) foreach($current_path as $dir) {
       $place_path_arr[] = $dir;
-      $place_path_link = remove_query_arg('refresh');
+      $place_path_link = remove_query_arg(array('refresh','paged'));
       $place_path_link = add_query_arg('dir',WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load/'.implode('/',$place_path_arr),$place_path_link);
       echo ' &rsaquo; <a href="'.$place_path_link.'">'.$dir.'</a>';
     }
@@ -136,7 +136,7 @@ function wp2pcs_insert_media_iframe_content() {
     $files_on_pcs = array_slice($files_on_pcs,$begin,$end-$begin);
     $files_total_page = ceil($files_amount/$files_per_page);
     foreach($files_on_pcs as $file) {
-      $file_path = str_replace(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load','',str_replace(' ','%20',$file->path));
+      $file_path = str_replace(WP2PCS_BAIDUPCS_REMOTE_ROOT.'/load','',$file->path);
       $file_path = str_replace('/apps/wp2pcs/share','',$file_path);
       $file_name = substr($file->path,strrpos($file->path,'/')+1);
       $file_type = $file->isdir === 0 ? strtolower(substr($file_name,strrpos($file_name,'.')+1)) : 'dir';
@@ -157,7 +157,7 @@ function wp2pcs_insert_media_iframe_content() {
       }
       echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-size="'.$file->size.'" data-file-type="'.$file_type.'">';
       if($file_type == 'dir') {
-        echo '<a href="'.remove_query_arg('refresh',add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
+        echo '<a href="'.add_query_arg('dir',$file->path,remove_query_arg(array('refresh','paged'))).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
       }
       else {
         $load_linktype = get_option('wp2pcs_load_linktype');

@@ -4,14 +4,14 @@
 Plugin Name: WP2PCS
 Plugin URI: http://www.wp2pcs.com/
 Description: 本插件帮助网站站长将网站和百度网盘连接。网站定时备份，调用网盘资源在网站中使用。
-Version: 1.5.1
+Version: 1.5.2
 Author: 否子戈
 Author URI: http://www.utubon.com
 */
 
 date_default_timezone_set('PRC');
 define('WP2PCS_PLUGIN_NAME',__FILE__);
-define('WP2PCS_PLUGIN_VERSION','1.5.1');
+define('WP2PCS_PLUGIN_VERSION','1.5.2');
 
 // 包含一些必备的函数和类，以提供下面使用
 if(file_exists(dirname(__FILE__).'/config.php')) include(dirname(__FILE__).'/config.php');
@@ -74,22 +74,11 @@ function wp2pcs_admin_init_action() {
 if(!is_multisite()) {
   $hook_dir = dirname(WP2PCS_PLUGIN_NAME).'/hook';
   if(is_dir($hook_dir)) {
-    $hook_files = scandir($hook_dir);
+    $hook_files = wp2pcs_scandir($hook_dir);
     if($hook_files){
       foreach($hook_files as $hook_file)
         if(substr($hook_file,-4) == '.php')
           include($hook_dir.'/'.$hook_file);
-    }
-  }
-  //兼容的scandir
-  if(!function_exists('scandir')) {
-    function scandir($dir) {
-      $handle = @opendir($dir);
-      $arr = array();
-      while(($arr[] = @readdir($handle)) !== false) {}
-      @closedir($handle);
-      $arr = array_filter($arr);
-      return $arr;
     }
   }
 }

@@ -29,7 +29,7 @@ if(isset($_GET['access_token']) && !empty($_GET['access_token'])) {
         wp_die('更新远端数据时，错误：'.$result);
       }
       elseif(isset($data['error_code'])) {
-        wp_die("ERROR: {$data['error_code']}. {$data['error_msg']}");
+        wp_die("更新远端数据时，错误： {$data['error_code']}. {$data['error_msg']}");
       }
       elseif(!isset($data['success']) || $data['success'] != 'ok') {
         wp_die('更新远端数据时，没有成功更新数据');
