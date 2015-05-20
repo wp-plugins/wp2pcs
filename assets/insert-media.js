@@ -142,16 +142,16 @@ jQuery(function($){
         // 如果是视频
         else if($this.hasClass('file-format-video')) {
           if(is_videoplay) {
-            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="uniform" data-autostart="false" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '" data-site-id="' + site_id + '"';
+            html += '<iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="uniform" data-autostart="false" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '" data-site-id="' + site_id + '"';
             if(root_dir) html += ' data-root-dir="' + root_dir + '"';
-            html += ' scrolling="no" frameborder="0"></iframe></p>';
+            html += ' scrolling="no" frameborder="0"></iframe>';
           }
           else {
-            html += '<p>[video width="" height="" src="' + url + '" poster="none" loop="off" autoplay="off" data-site-id="' + site_id + '"]</p>';
+            html += '[video width="" height="" src="' + url + '" poster="none" loop="off" autoplay="off" data-site-id="' + site_id + '"]';
           }
         }
         else if($this.hasClass('file-format-music')) {
-          html += '<p>[audio src="' + url + '" loop="off" autoplay="off" data-site-id="' + site_id + '"]</p>';
+          html += '[audio src="' + url + '" loop="off" autoplay="off" data-site-id="' + site_id + '"]';
         }
         // 如果是其他文件，就直接给媒体链接
         else{
