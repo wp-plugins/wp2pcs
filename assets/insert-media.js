@@ -133,6 +133,7 @@ jQuery(function($){
             video_md5 = $input.attr('data-video-md5'),
             site_id = $input.attr('data-site-id'),
             url = $input.val();
+        if(site_id == undefined) site_id = '';
         // 如果被选择的是图片
         if($this.hasClass('file-format-image')){
           if(is_imglink) html += '<a href="' + url + '">';
@@ -156,7 +157,7 @@ jQuery(function($){
         // 如果是其他文件，就直接给媒体链接
         else{
           html += '&nbsp;';
-          if(is_imglink) html += '<a href="' + url + '">';
+          if(is_imglink) html += '<a href="' + url + '" class="wp2pcs-file">';
           html += url;
           if(is_imglink) html += '</a>';
           html += '&nbsp;';

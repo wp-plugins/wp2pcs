@@ -57,6 +57,7 @@ jQuery(function($){
         video_md5 = $child.attr('data-video-md5'),
         site_id = $child.attr('data-site-id'),
         is_vip = $('#wp2pcs-manage-media-page-check-vip').val();
+    if(site_id == undefined) site_id = '';
     $('#wp2pcs-manage-media-page-files .file-on-pcs').removeClass('selected');
     $this.addClass('selected');
     $file_info.find('.thumb').html('');
@@ -66,7 +67,7 @@ jQuery(function($){
     else if(file_format == 'image') {
       $file_info.find('.thumb').html('<img src="' + file_url + '">');
       $file_info.find('.format').text('图像');
-      $file_info.find('.code').text('<img src="' + file_url + '">');
+      $file_info.find('.code').text('<img src="' + file_url + '" class="wp2pcs-img">');
     }
     else if(file_format == 'music') {
       $file_info.find('.format').text('音乐');
@@ -79,7 +80,7 @@ jQuery(function($){
     }
     else {
       $file_info.find('.format').text('文件');
-      $file_info.find('.code').text('<a href="' + file_url + '">点击下载</a>');
+      $file_info.find('.code').text('<a href="' + file_url + '" class="wp2pcs-file">点击下载</a>');
     }
     $file_info.find('.name').text(file_name);
     if(file_size/(1024*1024*1024) > 1) {
