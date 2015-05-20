@@ -15,7 +15,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 把WordPress和云盘（PCS，个人云存储）连接在一起的插件。它的两项基本功能：将wordpress的数据库、文件<strong>定时自动备份</strong>到云盘，以防止由于过失而丢失了网站数据；把云盘作为网站的后备箱，<strong>存放</strong>图片、附件，解决网站空间不够用的烦恼，可以在网站内<strong>直接调用</strong>云盘上的文件。目前只支持百度云盘。
 
 官方网站 http://www.wp2pcs.com
-如有疑问请加官方唯一QQ群(292172954)参与讨论。
+使用中如有疑问请加官方唯一QQ群(292172954)参与讨论。
+技术问题请到官网查看文档，在对应的文档下方留言。
 
 <strong>说明</strong>
 
@@ -46,10 +47,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.5.2 =
-修复BUG
+= 1.5.3 =
+新增钩子。修复了在插入面板中进入多层目录后的链接错误问题。
 
 == Upgrade Notice ==
 
-= 1.5.2 =
-修复BUG
+= 1.5.3 =
+新增钩子。修复了在插入面板中进入多层目录后的链接错误问题。

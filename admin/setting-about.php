@@ -73,15 +73,14 @@ if(self != top) {
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.5.2的变化</h2>
+  <h2>1.5.3的变化</h2>
   <div class="featured-image">
     <ul>
       <li>修复了BUG</li>
-      <li>插入音乐、视频URL时，插入[audio][video]来插入播放器</li>
-      <li>视频采用浏览器缓存，可秒开</li>
-      <li>增加脚本钩子，可以通过do_action('wp2pcs_print_video_player_script');来调用视频脚本，这样就不必加载在网页底部，拖慢视频加载速度</li>
-      <li>使用不一样的loading.gif</li>
-      <li>使用baidu.com.wp2pcs.com作为付费用户调用域名，并自动更新原本文章中的duapp调用域名</li>
+      <li>修复了在插入面板中进入多层目录后的链接错误问题。</li>
+      <li>新增钩子，以免部分主题不好控制。</li>
+      <li>使用www.baidu.com.wp2pcs.com作为付费用户调用域名，并自动更新原本文章中的调用域名</li>
+      <li>默认插入autoplay等默认信息，防止调用过程中出问题</li>
     </ul>
   </div>
   <div class="clear"></div>

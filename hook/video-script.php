@@ -1,7 +1,8 @@
 <?php
 
 // 在网页头部增加样式
-add_action('wp_head','wp2pcs_video_player_style');
+add_action('wp2pcs_print_video_player_style','wp2pcs_video_player_style');
+if(!did_action('wp2pcs_print_video_player_style')) add_action('wp_head','wp2pcs_video_player_style');
 function wp2pcs_video_player_style() {
   //if(!get_option('wp2pcs_site_id') || !get_option('wp2pcs_video_m3u8')) return;
   echo '<style>';
@@ -9,6 +10,7 @@ function wp2pcs_video_player_style() {
   echo 'iframe.wp2pcs-video-playing{display:block;margin:1em auto;background:url('.plugins_url('assets/loading.gif',WP2PCS_PLUGIN_NAME).') no-repeat center #f5f5f5;border:0;}';
   //echo '@media screen and (max-width: 480px){iframe.wp2pcs-video-playing{background-size:63px 65px;}}';
   echo '</style>';
+  echo '<link rel="dns-prefetch" href="'.parse_url(WP2PCS_APP_URL,PHP_URL_HOST).'">'; // 与解析域名，在加载视频的时候就不用再解析域名，而是直接从远端读取网页
 }
 
 // 在网页底部增加脚本

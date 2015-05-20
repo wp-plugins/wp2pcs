@@ -55,7 +55,7 @@ jQuery(function($){
         file_url = $child.attr('data-url'),
         video_path = $child.attr('data-video-path'),
         video_md5 = $child.attr('data-video-md5'),
-        site_id = $input.attr('data-site-id'),
+        site_id = $child.attr('data-site-id'),
         is_vip = $('#wp2pcs-manage-media-page-check-vip').val();
     $('#wp2pcs-manage-media-page-files .file-on-pcs').removeClass('selected');
     $this.addClass('selected');
@@ -74,8 +74,8 @@ jQuery(function($){
     }
     else if(file_format == 'video') {
       $file_info.find('.format').text('视频');
-      if(is_vip) $file_info.find('.code').text('<iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '" data-site-id="' + site_id + '"' + (root_dir ? ' data-root-dir="' + root_dir + '"' : '') + '></iframe>');
-      else $file_info.find('.code').text(file_url);
+      if(is_vip) $file_info.find('.code').text('<iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="uniform" data-autostart="false" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '" data-site-id="' + site_id + '"' + (root_dir ? ' data-root-dir="' + root_dir + '"' : '') + ' scrolling="no" frameborder="0"></iframe>');
+      else $file_info.find('.code').text('[video width="" height="" src="' + file_url + '" poster="none" loop="off" autoplay="off" data-site-id="' + site_id + '"]');
     }
     else {
       $file_info.find('.format').text('文件');

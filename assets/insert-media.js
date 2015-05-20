@@ -142,7 +142,7 @@ jQuery(function($){
         // 如果是视频
         else if($this.hasClass('file-format-video')) {
           if(is_videoplay) {
-            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="" data-autostart="" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '" data-site-id="' + site_id + '"';
+            html += '<p><iframe class="wp2pcs-video-player" width="480" height="360" data-stretch="uniform" data-autostart="false" data-image="" data-path="' + video_path + '" data-md5="' + video_md5 + '" data-site-id="' + site_id + '"';
             if(root_dir) html += ' data-root-dir="' + root_dir + '"';
             html += ' scrolling="no" frameborder="0"></iframe></p>';
           }

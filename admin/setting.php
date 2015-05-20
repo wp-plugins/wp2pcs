@@ -13,7 +13,10 @@
   <h3 class="hndle">授权信息</h3>
   <div class="inside">
     <?php
-      if(!WP2PCS_BAIDU_ACCESS_TOKEN) {
+      if(!function_exists('curl_init') || !function_exists('curl_exec')) {
+        echo '<p style="color:red">主机对cURL模块支持不完整，请联系主机商咨询。</p>';
+      }
+      elseif(!WP2PCS_BAIDU_ACCESS_TOKEN) {
         $baidupcs_btn_class = 'button-primary';
       }
       else {
