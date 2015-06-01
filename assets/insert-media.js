@@ -155,11 +155,11 @@ jQuery(function($){
         }
         // 如果是其他文件，就直接给媒体链接
         else{
-          html += '&nbsp;';
+          html += '<span class="wp2pcs-file">';
           if(is_imglink) html += '<a href="' + url + '" class="wp2pcs-file">';
           html += url;
           if(is_imglink) html += '</a>';
-          html += '&nbsp;';
+          html += '</span>';
         }
       });
       $('#wp2pcs-insert-media-btn-clear').click();

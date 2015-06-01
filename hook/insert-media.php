@@ -173,7 +173,7 @@ function wp2pcs_insert_media_iframe_content() {
           echo '<a title="视频 '.$file_name.'">'.$file_name.'</a>';
         }
         elseif($file_format == 'music') {
-          echo '<input type="checkbox" value="'.$file_url.'">';
+          echo '<input type="checkbox" value="'.$file_url.'" data-site-id="'.$site_id.'">';
           echo '<a title="音乐 '.$file_name.'">'.$file_name.'</a>';
         }
         else {
