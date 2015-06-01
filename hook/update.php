@@ -40,12 +40,12 @@ if(wp_next_scheduled('wp2pcs_token_cron_task')) wp_clear_scheduled_hook('wp2pcs_
 if(wp_next_scheduled('wp_backup_to_pcs_corn_task_database')) wp_clear_scheduled_hook('wp_backup_to_pcs_corn_task_database');
 
 // 更新wp2pcs.duapp.com为baidu.com.wp2pcs.com
-$wp2pcs_update_post_app_url = get_option('wp2pcs_update_post_app_url');
+$wp2pcs_update_post_app_url = get_option('wp2pcs_update_app_url');
 if($wp2pcs_update_post_app_url != WP2PCS_APP_URL) {
   global $wpdb;
   $wpdb->query("UPDATE $wpdb->posts SET post_content=REPLACE(post_content,'http://wp2pcs.duapp.com/','".WP2PCS_APP_URL."/');");
   $wpdb->query("UPDATE $wpdb->posts SET post_content=REPLACE(post_content,'http://baidu.com.wp2pcs.com/','".WP2PCS_APP_URL."/');");
   $wpdb->query("UPDATE $wpdb->posts SET post_content=REPLACE(post_content,'http://www.baidu.com.wp2pcs.com/','".WP2PCS_APP_URL."/');");
   $wpdb->query("UPDATE $wpdb->posts SET post_content=REPLACE(post_content,'http://pan.baidu.com.wp2pcs.com/','".WP2PCS_APP_URL."/');");
-  update_option('wp2pcs_update_post_app_url',WP2PCS_APP_URL);
+  update_option('wp2pcs_update_app_url',WP2PCS_APP_URL);
 }
