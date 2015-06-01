@@ -73,14 +73,12 @@ if(self != top) {
 <hr />
 
 <div class="update-about-feature headline-feature">
-  <h2>1.5.3的变化</h2>
+  <h2>1.5.4的变化</h2>
   <div class="featured-image">
     <ul>
       <li>修复了BUG</li>
-      <li>修复了在插入面板中进入多层目录后的链接错误问题。</li>
-      <li>新增钩子，以免部分主题不好控制。</li>
-      <li>使用www.baidu.com.wp2pcs.com作为付费用户调用域名，并自动更新原本文章中的调用域名</li>
-      <li>默认插入autoplay等默认信息，防止调用过程中出问题</li>
+      <li>使用baidupcs.wp2pcs.com作为付费用户调用域名，并自动更新原本文章中的调用域名</li>
+      <li>增加视频动作事件监听功能</li>
     </ul>
   </div>
   <div class="clear"></div>
