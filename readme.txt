@@ -47,10 +47,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 1.5.3 =
+= 1.5.4 =
 新增钩子。修复了在插入面板中进入多层目录后的链接错误问题。
 
 == Upgrade Notice ==
 
-= 1.5.3 =
+= 1.5.4 =
 新增钩子。修复了在插入面板中进入多层目录后的链接错误问题。

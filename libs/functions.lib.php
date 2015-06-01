@@ -124,6 +124,7 @@ function get_by_curl($url,$post = false,$ssl = true,$referer = false,$headers = 
   $ch = curl_init();
   curl_setopt($ch,CURLOPT_URL,$url);
   curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
   if($referer) {
     curl_setopt ($ch,CURLOPT_REFERER,$referer);
   }
