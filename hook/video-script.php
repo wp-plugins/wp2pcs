@@ -1,6 +1,6 @@
 <?php
 
-if(!$site_id || !get_option('wp2pcs_video_m3u8') || get_option('wp2pcs_site_expire') < date('Y-m-d H:i:s')) return;
+if(!get_option('wp2pcs_site_id') || !get_option('wp2pcs_video_m3u8') || get_option('wp2pcs_site_expire') < date('Y-m-d H:i:s')) return;
 
 // 在网页头部增加样式
 add_action('wp2pcs_print_video_player_style','wp2pcs_video_player_style');
