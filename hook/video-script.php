@@ -1,5 +1,7 @@
 <?php
 
+if(!$site_id || !get_option('wp2pcs_video_m3u8') || get_option('wp2pcs_site_expire') < date('Y-m-d H:i:s')) return;
+
 // 在网页头部增加样式
 add_action('wp2pcs_print_video_player_style','wp2pcs_video_player_style');
 add_action('wp_head','wp2pcs_video_player_style');
@@ -20,7 +22,6 @@ add_action('wp_footer','wp2pcs_video_player_script');
 function wp2pcs_video_player_script() {
   if(did_action('wp2pcs_print_video_player_script')) return;
   $site_id = get_option('wp2pcs_site_id');
-  if(!$site_id || !get_option('wp2pcs_video_m3u8') || get_option('wp2pcs_site_expire') < date('Y-m-d H:i:s')) return;
   echo '<script>window.jQuery || document.write(\'<script type="text/javascript" src="'.plugins_url("assets/jquery-1.11.2.min.js",WP2PCS_PLUGIN_NAME).'">\x3C/script>\');</script>';
   echo '<script type="text/javascript">';
   echo 'function wp2pcs_setup_videos() {';

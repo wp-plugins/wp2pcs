@@ -140,8 +140,8 @@ elseif((in_array($file_ext,$video_exts) || in_array($file_ext,$audio_exts))) {
 }
 else{
   if(!$result) {
-    $src = "https://d.pcs.baidu.com/rest/2.0/pcs/file?method=download&access_token=$access_token&path=".rawurlencode($path);
-    $result = get_by_curl($src);
+    global $BaiduPCS;
+    $result = $BaiduPCS->download($path);
   }
   // 如果抓取错误
   $check = json_decode($result);

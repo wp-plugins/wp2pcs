@@ -113,7 +113,7 @@ else{
       }
       echo '<div class="file-on-pcs file-type-'.$file_type.' file-format-'.$file_format.'" data-file-type="'.$file_type.'" data-file-format="'.$file_format.'" data-file-size="'.$file->size.'" data-file-name="'.$file_name.'" data-file-path="'.$file->path.'">';
       if($file_type == 'dir') {
-        echo '<a href="'.remove_query_arg('refresh',add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
+        echo '<a href="'.remove_query_arg(array('refresh','paged'),add_query_arg('dir',$file->path)).'" title="目录 '.$file_name.'">'.$file_name.'</a>';
       }
       else {
         $load_linktype = get_option('wp2pcs_load_linktype');
