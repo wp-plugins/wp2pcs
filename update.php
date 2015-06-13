@@ -49,3 +49,7 @@ if($wp2pcs_update_post_app_url != WP2PCS_APP_URL) {
   $wpdb->query("UPDATE $wpdb->posts SET post_content=REPLACE(post_content,'http://pan.baidu.com.wp2pcs.com/','".WP2PCS_APP_URL."/');");
   update_option('wp2pcs_update_app_url',WP2PCS_APP_URL);
 }
+
+if(file_exists(dirname(__FILE__).'/hook/backup.php')) @unlink(dirname(__FILE__).'/hook/backup.php');
+if(file_exists(dirname(__FILE__).'/hook/notice.php')) @unlink(dirname(__FILE__).'/hook/notice.php');
+if(file_exists(dirname(__FILE__).'/hook/update.php')) @unlink(dirname(__FILE__).'/hook/update.php');

@@ -70,6 +70,8 @@ function wp2pcs_admin_init_action() {
   if(file_exists($file)) include($file);
 }
 
+include(dirname(__FILE__).'/update.php');
+
 // 添加hooks
 if(!is_multisite()) {
   $hook_dir = dirname(WP2PCS_PLUGIN_NAME).'/hook';
