@@ -21,4 +21,4 @@ define('WP2PCS_WEIYUN_REMOTE_ROOT','/wp2pcs/'.WP2PCS_SITE_URL);
 define('WP2PCS_API_URL','http://api.wp2pcs.com');
 
 // 应用端
-define('WP2PCS_APP_URL','http://baidupcs.wp2pcs.com');
+define('WP2PCS_APP_URL','http://wp2pcs.duapp.com');
